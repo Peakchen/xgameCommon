@@ -4,7 +4,7 @@ package tcpWebNet
 
 import (
 	//"fmt"
-	"common/Log"
+	"Log"
 	"log"
 	"net/http"
 )

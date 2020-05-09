@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"common/Log"
+	"Log"
 	"runtime"
 )
 

@@ -4,7 +4,7 @@ package utls
 
 import (
 	"bytes"
-	"common/aktime"
+	"aktime"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/des"

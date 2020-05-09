@@ -3,8 +3,8 @@ package Log
 // add by stefan
 
 import (
-	"common/aktime"
-	"common/public"
+	"aktime"
+	"public"
 	"fmt"
 )
 

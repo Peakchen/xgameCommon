@@ -6,8 +6,8 @@ import (
 	"bytes"
 	"encoding/json"
 	//"fmt"
-	"common/Log"
-	"common/tool"
+	"Log"
+	"tool"
 	"io/ioutil"
 	"net/http"
 )

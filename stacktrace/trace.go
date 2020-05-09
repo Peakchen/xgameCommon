@@ -6,7 +6,7 @@ package stacktrace
 */
 
 import (
-	"common/Log"
+	"Log"
 	"runtime/debug"
 )
 

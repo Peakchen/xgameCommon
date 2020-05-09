@@ -1,7 +1,7 @@
 package utls
 
 import (
-	"common/aktime"
+	"aktime"
 	"fmt"
 	"github.com/sony/sonyflake"
 	"strconv"

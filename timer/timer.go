@@ -6,7 +6,7 @@ package timer
 */
 
 import (
-	"common/Log"
+	"Log"
 	"reflect"
 	"time"
 )

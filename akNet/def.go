@@ -1,7 +1,7 @@
 package akNet
 
 import (
-	"common/define"
+	"define"
 	"net"
 	"reflect"
 	"sync"

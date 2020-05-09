@@ -5,7 +5,7 @@ package tcpWebNet
 import (
 	//"bytes"
 
-	"common/aktime"
+	"aktime"
 	"log"
 	"net/http"
 	"time"

@@ -1,7 +1,7 @@
 package Config
 
 import (
-	"common/Log"
+	"Log"
 	"encoding/json"
 	"io/ioutil"
 )

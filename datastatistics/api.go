@@ -1,7 +1,7 @@
 package datastatistics
 
 import (
-	"common/Log"
+	"Log"
 	"fmt"
 	"net/http"
 	"sort"

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"common/aktime"
+	"aktime"
 )
 
 var (

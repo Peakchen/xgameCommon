@@ -3,9 +3,9 @@ package Log
 // add by stefan
 
 import (
-	"common/aktime"
-	"common/public"
-	"common/utls"
+	"aktime"
+	"public"
+	"utls"
 	"context"
 	"fmt"
 	"os"

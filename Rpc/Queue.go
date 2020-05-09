@@ -1,8 +1,8 @@
 package Rpc
 
 import (
-	"common/Log"
-	. "common/RedisConn"
+	"Log"
+	. "RedisConn"
 	"context"
 	"encoding/json"
 	"fmt"

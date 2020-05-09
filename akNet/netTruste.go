@@ -3,7 +3,7 @@ package akNet
 // add by stefan
 
 import (
-	"common/Config/serverConfig"
+	"Config/serverConfig"
 )
 
 var (

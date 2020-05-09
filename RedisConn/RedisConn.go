@@ -3,10 +3,10 @@
 package RedisConn
 
 import (
-	"common/Log"
-	"common/ado"
-	"common/ado/dbStatistics"
-	"common/public"
+	"Log"
+	"ado"
+	"ado/dbStatistics"
+	"public"
 	"fmt"
 	"strconv"
 	"time"

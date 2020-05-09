@@ -1,12 +1,12 @@
 package service
 
 import (
-	"common/Config/serverConfig"
-	"common/Log"
-	"common/MgoConn"
-	"common/RedisConn"
-	"common/ado"
-	"common/public"
+	"Config/serverConfig"
+	"Log"
+	"MgoConn"
+	"RedisConn"
+	"ado"
+	"public"
 	"context"
 	"sync"
 )

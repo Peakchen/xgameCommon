@@ -1,7 +1,7 @@
 package serverConfig
 
 import (
-	"common/utls"
+	"utls"
 	"path/filepath"
 )
 

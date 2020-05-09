@@ -1,7 +1,7 @@
 package serverConfig
 
 import (
-	"common/Config"
+	"Config"
 	"fmt"
 	"path/filepath"
 )

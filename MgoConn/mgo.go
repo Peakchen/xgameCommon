@@ -3,10 +3,10 @@ package MgoConn
 // add by stefan
 
 import (
-	"common/Log"
-	"common/RedisConn"
-	"common/ado"
-	. "common/public"
+	"Log"
+	"RedisConn"
+	"ado"
+	. "public"
 	"fmt"
 	"reflect"
 	"sync"

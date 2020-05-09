@@ -5,7 +5,7 @@ package httpExService
 import (
 	"net/http"
 	//"fmt"
-	define "common/define"
+	define "define"
 	"encoding/json"
 	"log"
 	"strings"

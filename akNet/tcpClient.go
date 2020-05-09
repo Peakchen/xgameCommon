@@ -4,11 +4,11 @@ package akNet
 // add by stefan
 
 import (
-	"common/Log"
-	"common/define"
-	"common/msgProto/MSG_MainModule"
-	"common/msgProto/MSG_Server"
-	"common/pprof"
+	"Log"
+	"define"
+	"msgProto/MSG_MainModule"
+	"msgProto/MSG_Server"
+	"pprof"
 	"net"
 	"net/http"
 	"os"

@@ -1,10 +1,10 @@
 package dbCache
 
 import (
-	"common/Log"
-	"common/ado"
-	"common/ado/service"
-	"common/public"
+	"Log"
+	"ado"
+	"ado/service"
+	"public"
 	"github.com/globalsign/mgo/bson"
 	"sync"
 )

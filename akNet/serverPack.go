@@ -3,9 +3,9 @@ package akNet
 // add by stefan
 
 import (
-	"common/Log"
-	"common/stacktrace"
-	"common/utls"
+	"Log"
+	"stacktrace"
+	"utls"
 	"encoding/binary"
 	"fmt"
 	"github.com/golang/protobuf/proto"

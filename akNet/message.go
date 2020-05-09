@@ -3,13 +3,13 @@ package akNet
 // add by stefan
 
 import (
-	"common/Log"
-	"common/ado/dbStatistics"
-	"common/define"
-	"common/msgProto/MSG_HeartBeat"
-	"common/msgProto/MSG_Login"
-	"common/msgProto/MSG_MainModule"
-	"common/msgProto/MSG_Server"
+	"Log"
+	"ado/dbStatistics"
+	"define"
+	"msgProto/MSG_HeartBeat"
+	"msgProto/MSG_Login"
+	"msgProto/MSG_MainModule"
+	"msgProto/MSG_Server"
 	"encoding/binary"
 	"errors"
 	"fmt"

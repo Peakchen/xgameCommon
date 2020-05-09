@@ -3,23 +3,23 @@
 package akNet
 
 import (
-	"common/Log"
-	"common/aktime"
-	"common/define"
-	"common/msgProto/MSG_HeartBeat"
-	"common/msgProto/MSG_MainModule"
-	"common/msgProto/MSG_Server"
-	"common/stacktrace"
+	"Log"
+	"aktime"
+	"define"
+	"msgProto/MSG_HeartBeat"
+	"msgProto/MSG_MainModule"
+	"msgProto/MSG_Server"
+	"stacktrace"
 	"fmt"
 	"net"
 	"sync/atomic"
 	"time"
-	//"common/S2SMessage"
+	//"S2SMessage"
 	"context"
 	"sync"
 
 	"github.com/golang/protobuf/proto"
-	//. "common/define"
+	//. "define"
 )
 
 type ClientTcpSession struct {

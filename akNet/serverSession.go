@@ -3,8 +3,8 @@ package akNet
 // add by stefan
 
 import (
-	"common/define"
-	"common/utls"
+	"define"
+	"utls"
 	"sync"
 )
 

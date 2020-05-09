@@ -2,8 +2,8 @@ package pprof
 
 // add by stefan 20190606 16:12
 import (
-	"common/Log"
-	"common/aktime"
+	"Log"
+	"aktime"
 	"fmt"
 	"os"
 	"path"
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 	//"log"
-	"common/utls"
+	"utls"
 	"context"
 	"sync"
 )

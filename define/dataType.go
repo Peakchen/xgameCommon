@@ -8,7 +8,7 @@ package define
 
 import (
 	"bytes"
-	"common/Log"
+	"Log"
 	"strconv"
 )
 

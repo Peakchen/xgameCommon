@@ -3,8 +3,8 @@ package service
 // add by stefan
 
 import (
-	"common/ado"
-	"common/public"
+	"ado"
+	"public"
 	"github.com/gomodule/redigo/redis"
 )
 

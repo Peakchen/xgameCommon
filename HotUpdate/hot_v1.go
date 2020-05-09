@@ -3,7 +3,7 @@ package HotUpdate
 //add by stefan
 
 import (
-	"common/Log"
+	"Log"
 	"os"
 	"os/signal"
 	"syscall"

@@ -3,21 +3,21 @@
 package akNet
 
 import (
-	"common/Log"
-	"common/aktime"
-	"common/define"
-	"common/msgProto/MSG_HeartBeat"
-	"common/msgProto/MSG_MainModule"
+	"Log"
+	"aktime"
+	"define"
+	"msgProto/MSG_HeartBeat"
+	"msgProto/MSG_MainModule"
 	"fmt"
 	"net"
 	"sync/atomic"
 	"time"
-	//"common/S2SMessage"
-	"common/stacktrace"
+	//"S2SMessage"
+	"stacktrace"
 	"context"
 	"github.com/golang/protobuf/proto"
 	"sync"
-	//. "common/define"
+	//. "define"
 )
 
 type SvrTcpSession struct {

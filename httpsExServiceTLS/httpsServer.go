@@ -3,7 +3,7 @@
 package httpsExServiceTLS
 
 import (
-	"common/define"
+	"define"
 	"fmt"
 	"log"
 	"net/http"

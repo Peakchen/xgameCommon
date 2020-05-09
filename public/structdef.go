@@ -1,6 +1,6 @@
 package public
 
-import "common/ado"
+import "ado"
 
 /*
 

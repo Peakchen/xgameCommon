@@ -3,11 +3,11 @@
 package akNet
 
 import (
-	"common/Log"
-	"common/define"
-	"common/msgProto/MSG_MainModule"
-	"common/msgProto/MSG_Player"
-	"common/pprof"
+	"Log"
+	"define"
+	"msgProto/MSG_MainModule"
+	"msgProto/MSG_Player"
+	"pprof"
 	"context"
 	"fmt"
 	"net"
