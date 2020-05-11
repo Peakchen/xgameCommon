@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	//"fmt"
-	"Log"
+	"akLog"
 	"tool"
 	"io/ioutil"
 	"net/http"
@@ -15,14 +15,14 @@ import (
 func HttpPostJsonMsg(url string, src interface{}) {
 	data, err := json.Marshal(src)
 	if err != nil {
-		Log.Error("json marshal data fail, err: ", err)
+		akLog.Error("json marshal data fail, err: ", err)
 		return
 	}
 
 	buf := bytes.NewBuffer(data)
 	_, err = http.Post(url, jsonPostType, buf)
 	if err != nil {
-		Log.Error("http post fail, err: ", err)
+		akLog.Error("http post fail, err: ", err)
 		return
 	}
 }
@@ -30,7 +30,7 @@ func HttpPostJsonMsg(url string, src interface{}) {
 func HttpPostXMLMsg(url string, src interface{}) {
 	data, err := json.Marshal(src)
 	if err != nil {
-		Log.Error("json marshal data fail, err: ", err)
+		akLog.Error("json marshal data fail, err: ", err)
 		return
 	}
 
@@ -38,7 +38,7 @@ func HttpPostXMLMsg(url string, src interface{}) {
 	client := &http.Client{}
 	reqest, err := http.NewRequest("POST", url, buf)
 	if err != nil {
-		Log.Error("NewRequest data fail, err: ", err)
+		akLog.Error("NewRequest data fail, err: ", err)
 		return
 	}
 
@@ -51,23 +51,23 @@ func HttpPostXMLMsg(url string, src interface{}) {
 	resp, err := client.Do(reqest)
 	cookies := resp.Cookies()
 	for _, cookie := range cookies {
-		Log.Error("cookie:", cookie)
+		akLog.Error("cookie:", cookie)
 	}
 	defer resp.Body.Close()
 
 	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		Log.Error("ReadAll data fail, err: ", err)
+		akLog.Error("ReadAll data fail, err: ", err)
 		return
 	}
 
 }
 
 func HttpResponse(w http.ResponseWriter, headcontent []*THttpResponseHead, statusCode int, src string) {
-	Log.FmtPrintln("response: ", statusCode, len([]rune(src)))
+	akLog.FmtPrintln("response: ", statusCode, len([]rune(src)))
 	// data, err := json.Marshal(src)
 	// if err != nil {
-	// 	Log.Error("json marshal data fail, err: ", err)
+	// 	akLog.Error("json marshal data fail, err: ", err)
 	// 	return
 	// }
 
@@ -79,6 +79,6 @@ func HttpResponse(w http.ResponseWriter, headcontent []*THttpResponseHead, statu
 	w.WriteHeader(statusCode)
 	_, err := w.Write([]byte(src))
 	if err != nil {
-		Log.Error("write post fail.")
+		akLog.Error("write post fail.")
 	}
 }

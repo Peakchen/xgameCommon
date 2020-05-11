@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"Log"
+	"akLog"
 	"runtime"
 )
 
@@ -9,5 +9,5 @@ func GetMemoryUsage() {
 	mem := runtime.MemStats{}
 	runtime.ReadMemStats(&mem)
 	curMem = mem.TotalAlloc / MiB
-	Log.FmtPrintln("memory alloc: ", curMem)
+	akLog.FmtPrintln("memory alloc: ", curMem)
 }

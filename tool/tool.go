@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 	//"runtime"
-	"Log"
+	"akLog"
 	//"syscall"
 )
 
@@ -23,7 +23,7 @@ func CheckPortUsed(port int) bool {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		Log.Error(err.Error() + ": " + stderr.String())
+		akLog.Error(err.Error() + ": " + stderr.String())
 		return false
 	}
 
@@ -50,13 +50,13 @@ func CmdHide() {
 	cmd.Stderr = &stderr
 	err = cmd.Run()
 	if err != nil {
-		Log.Error(err.Error() + ": " + stderr.String())
+		akLog.Error(err.Error() + ": " + stderr.String())
 		return
 	}
 
 	err = os.Remove("hide.vbs")
 	if err != nil {
-		Log.Error(err.Error())
+		akLog.Error(err.Error())
 		return
 	}
 }
@@ -88,13 +88,13 @@ func BatHide(param []string) {
 	cmd.Stderr = &stderr
 	err = cmd.Run()
 	if err != nil {
-		Log.Error(err.Error() + ": " + stderr.String())
+		akLog.Error(err.Error() + ": " + stderr.String())
 		return
 	}
 
 	err = os.Remove("hide.bat")
 	if err != nil {
-		Log.Error(err.Error())
+		akLog.Error(err.Error())
 		return
 	}
 }

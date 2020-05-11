@@ -3,7 +3,7 @@
 package RedisConn
 
 import (
-	"Log"
+	"akLog"
 	"ado"
 	"ado/dbStatistics"
 	"public"
@@ -71,7 +71,7 @@ func (this *TAokoRedis) Insert(Identify string, Input public.IDBCache) (err erro
 	BMarlData, err := bson.Marshal(Input)
 	if err != nil {
 		err = fmt.Errorf("bson.Marshal err: %v.\n", err)
-		Log.Error("[Update] err: %v", err)
+		akLog.Error("[Update] err: %v", err)
 		return
 	}
 
@@ -89,7 +89,7 @@ func (this *TAokoRedis) Update(Identify string, Input public.IDBCache, SaveType 
 	BMarlData, err := bson.Marshal(Input)
 	if err != nil {
 		err = fmt.Errorf("bson.Marshal err: %v.\n", err)
-		Log.Error("%v", err)
+		akLog.Error("%v", err)
 		return
 	}
 
@@ -107,20 +107,20 @@ func (this *TAokoRedis) Query(Identify string, Output public.IDBCache) (ret erro
 	data, err := this.RedPool.Get().Do("GET", RedisKey)
 	if err != nil {
 		ret = fmt.Errorf("Identify: %v, MainModel: %v, SubModel: %v, data: %v.\n", Identify, Output.MainModel(), Output.SubModel(), data)
-		Log.Error("[Query] err: %v.\n", ret)
+		akLog.Error("[Query] err: %v.\n", ret)
 		return
 	}
 
 	if data == nil {
 		ret = fmt.Errorf("Identify: %v, MainModel: %v, SubModel: %v, Nil data is invalid.\n", Identify, Output.MainModel(), Output.SubModel())
-		Log.Error("[Query] err: %v.\n", ret)
+		akLog.Error("[Query] err: %v.\n", ret)
 		return
 	}
 
 	BUmalErr := bson.Unmarshal(data.([]byte), Output)
 	if BUmalErr != nil {
 		ret = fmt.Errorf("Identify: %v, MainModel: %v, SubModel: %v, data: %v.\n", Identify, Output.MainModel(), Output.SubModel(), data)
-		Log.Error("[Query] can not bson Unmarshal get data to Output, err: %v.\n", ret)
+		akLog.Error("[Query] can not bson Unmarshal get data to Output, err: %v.\n", ret)
 		return
 	}
 
@@ -134,14 +134,14 @@ func (this *TAokoRedis) Save(rolekey, RedisKey string, data interface{}, SaveTyp
 		ExpendCmd := []interface{}{RedisKey, data}
 		Ret, err := this.RedPool.Get().Do("SETNX", ExpendCmd...) // set if not exist
 		if err != nil {
-			Log.Error("[Save] SETNX data: %v, err: %v.\n", data, err)
+			akLog.Error("[Save] SETNX data: %v, err: %v.\n", data, err)
 			return
 		}
 
 		if Ret == 0 {
 			// connect key and value.
 			if _, err := this.RedPool.Get().Do("SET", ExpendCmd...); err != nil {
-				Log.Error("[Save] Insert SET data: %v, err: %v..\n", data, err)
+				akLog.Error("[Save] Insert SET data: %v, err: %v..\n", data, err)
 				return
 			}
 		}
@@ -150,14 +150,14 @@ func (this *TAokoRedis) Save(rolekey, RedisKey string, data interface{}, SaveTyp
 		// connect key and value.
 		var ExpendCmd = []interface{}{RedisKey, data, "EX", REDIS_SET_DEADLINE}
 		if _, err := this.RedPool.Get().Do("SETEX", ExpendCmd...); err != nil {
-			Log.Error("[Save] Update Set data: %v, err: %v.\n", data, err)
+			akLog.Error("[Save] Update Set data: %v, err: %v.\n", data, err)
 			return
 		}
 
 		CollectKey := ":" + RedisKey + "_Update_Oper"
 		// Add to collection.
 		if _, err := this.RedPool.Get().Do("SADD", CollectKey, RedisKey); err != nil {
-			Log.Error("[Save] SADD CollectKey: %v, RedisKey: %v, err: %v.", CollectKey, RedisKey, err)
+			akLog.Error("[Save] SADD CollectKey: %v, RedisKey: %v, err: %v.", CollectKey, RedisKey, err)
 			return
 		}
 
@@ -199,10 +199,10 @@ func (this *TAokoRedis) SaveEx(rolekey, RedisKey string, data interface{}, SaveT
 func (this *TAokoRedis) redSetAct(key string, fieldkey string, data interface{}, bsetEx bool, extime int32) (err error) {
 	nhashk := RoleKey2Haskey(key)
 	strkey := ERedScript_Update + strconv.Itoa(nhashk)
-	Log.FmtPrintf("redis act, hashKey: %v, fieldkey: %v.", strkey, fieldkey)
+	akLog.FmtPrintf("redis act, hashKey: %v, fieldkey: %v.", strkey, fieldkey)
 	c := this.RedPool.Get()
 	if c == nil {
-		err = Log.RetError("red pool get session fail.")
+		err = akLog.RetError("red pool get session fail.")
 		return
 	}
 
@@ -218,11 +218,11 @@ func (this *TAokoRedis) redSetAct(key string, fieldkey string, data interface{},
 
 	_, err = this.us.script.Do(c, exCmd...)
 	if err != nil {
-		err = Log.RetError("name: %v, ex cmd %v, err: %v", this.us.name, exCmd, err)
+		err = akLog.RetError("name: %v, ex cmd %v, err: %v", this.us.name, exCmd, err)
 		return
 	}
 
-	Log.FmtPrintf("redis update succ, hashKey: %v.", strkey)
+	akLog.FmtPrintf("redis update succ, hashKey: %v.", strkey)
 	err = nil
 	return
 }

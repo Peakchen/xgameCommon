@@ -1,7 +1,7 @@
 package datastatistics
 
 import (
-	"Log"
+	"akLog"
 	"fmt"
 	"net/http"
 	"sort"
@@ -22,6 +22,6 @@ func IsExistStatisticsTitle(SrcTitles []string, dstTitle string) (err error) {
 func MonitorRoutine(ip string, port string) {
 	err := http.ListenAndServe(ip+":"+port, nil)
 	if err != nil {
-		Log.Error("ListenAndServe: ", err)
+		akLog.Error("ListenAndServe: ", err)
 	}
 }

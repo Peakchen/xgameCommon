@@ -8,7 +8,7 @@ package define
 
 import (
 	"bytes"
-	"Log"
+	"akLog"
 	"strconv"
 )
 
@@ -34,12 +34,12 @@ func (this *Int32Array) UnmarshalJSONEx(data []byte) (err error) {
 		sval = bytes.TrimSpace(sval)
 		nval, converr := strconv.Atoi(string(sval))
 		if converr != nil {
-			err = Log.RetError("IntArry unmarshal json fail, err: %v, val: %v.", converr, sval)
+			err = akLog.RetError("IntArry unmarshal json fail, err: %v, val: %v.", converr, sval)
 			return
 		}
 		*this = append(*this, int32(nval))
 	}
-	Log.FmtPrintln("Int32Array: ", *this)
+	akLog.FmtPrintln("Int32Array: ", *this)
 	err = nil
 	return
 }
@@ -60,7 +60,7 @@ func (this *Int32Array2D) UnmarshalJSON(data []byte) (err error) {
 		childs := &Int32Array{}
 		childerr := childs.UnmarshalJSONEx(items)
 		if childerr != nil {
-			err = Log.RetError("Int32Array2D Unmashal fail, err: %v.", childerr)
+			err = akLog.RetError("Int32Array2D Unmashal fail, err: %v.", childerr)
 			return
 		}
 
@@ -68,7 +68,7 @@ func (this *Int32Array2D) UnmarshalJSON(data []byte) (err error) {
 			*this = append(*this, *childs)
 		}
 	}
-	Log.FmtPrintln("Int32Array2D: ", *this)
+	akLog.FmtPrintln("Int32Array2D: ", *this)
 	err = nil
 	return
 }
@@ -92,13 +92,13 @@ func (this *Property) UnmarshalJSON(data []byte) (err error) {
 
 func (this *Property) UnmarshalJSONEx(data []byte) (err error) {
 	if !bytes.Contains(data, []byte(",")) {
-		err = Log.RetError("Invalid data: %v.", data)
+		err = akLog.RetError("Invalid data: %v.", data)
 		return
 	}
 
 	splitItems := bytes.Split(data, []byte(","))
 	if len(splitItems) != 2 {
-		err = Log.RetError("Property childitems Invalid, data: %v, len is not equal 2.", string(data))
+		err = akLog.RetError("Property childitems Invalid, data: %v, len is not equal 2.", string(data))
 		return
 	}
 
@@ -106,7 +106,7 @@ func (this *Property) UnmarshalJSONEx(data []byte) (err error) {
 	byItem1 := bytes.TrimSpace(splitItems[0])
 	propid, covererr := strconv.Atoi(string(byItem1))
 	if covererr != nil {
-		err = Log.RetError("Property items cover fail, data1: %v, err: %v.", string(data[0]), covererr)
+		err = akLog.RetError("Property items cover fail, data1: %v, err: %v.", string(data[0]), covererr)
 		return
 	}
 
@@ -114,12 +114,12 @@ func (this *Property) UnmarshalJSONEx(data []byte) (err error) {
 	byItem2 := bytes.TrimSpace(splitItems[1])
 	propnum, covererr := strconv.Atoi(string(byItem2))
 	if covererr != nil {
-		err = Log.RetError("Property items cover fail, data2: %v, err: %v.", string(data[1]), covererr)
+		err = akLog.RetError("Property items cover fail, data2: %v, err: %v.", string(data[1]), covererr)
 		return
 	}
 
 	(*this).PropNum = int32(propnum)
-	Log.FmtPrintln("Property: ", *this)
+	akLog.FmtPrintln("Property: ", *this)
 	err = nil
 	return
 }
@@ -144,12 +144,12 @@ func (this *PropertyArray) UnmarshalJSON(data []byte) (err error) {
 		propitem := &Property{}
 		childerr := propitem.UnmarshalJSONEx(childitems)
 		if childerr != nil {
-			err = Log.RetError("PropertyArray child Unmarshl fail, er: %v.", childerr)
+			err = akLog.RetError("PropertyArray child Unmarshl fail, er: %v.", childerr)
 			return
 		}
 		*this = append(*this, propitem)
 	}
-	Log.FmtPrintln("PropertyArray: ", *this)
+	akLog.FmtPrintln("PropertyArray: ", *this)
 	err = nil
 	return
 }

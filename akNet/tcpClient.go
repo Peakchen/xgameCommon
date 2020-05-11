@@ -4,7 +4,7 @@ package akNet
 // add by stefan
 
 import (
-	"Log"
+	"akLog"
 	"define"
 	"msgProto/MSG_MainModule"
 	"msgProto/MSG_Server"
@@ -63,7 +63,7 @@ func (this *TcpClient) Run() {
 	go this.loopconn(ctx, &sw)
 	go this.loopoff(ctx, &sw)
 	go func() {
-		Log.FmtPrintln("[client] run http server, host: ", this.pprofAddr)
+		akLog.FmtPrintln("[client] run http server, host: ", this.pprofAddr)
 		http.ListenAndServe(this.pprofAddr, nil)
 	}()
 	sw.Wait()
@@ -72,17 +72,17 @@ func (this *TcpClient) Run() {
 func (this *TcpClient) connect(ctx context.Context, sw *sync.WaitGroup) (err error) {
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", this.host)
 	if err != nil {
-		Log.Error("resolve tcp error: %v.", err.Error())
+		akLog.Error("resolve tcp error: %v.", err.Error())
 		return err
 	}
 
 	c, err := net.DialTCP("tcp", nil, tcpAddr)
 	if err != nil {
-		Log.Error("net dial err: %v.", err)
+		akLog.Error("net dial err: %v.", err)
 		return err
 	}
 
-	Log.FmtPrintf("[----------client-----------] addr: %v, svrtype: %v.", c.RemoteAddr(), this.SvrType)
+	akLog.FmtPrintf("[----------client-----------] addr: %v, svrtype: %v.", c.RemoteAddr(), this.SvrType)
 	c.SetNoDelay(true)
 	this.dialsess = NewClientSession(c.RemoteAddr().String(), c, ctx, this.SvrType, this.off, this.mpobj, this.procName)
 	this.dialsess.HandleSession(sw)
@@ -106,7 +106,7 @@ func (this *TcpClient) loopconn(ctx context.Context, sw *sync.WaitGroup) {
 		case <-ticker.C:
 			if this.dialsess == nil || false == this.dialsess.isAlive {
 				if err := this.connect(ctx, sw); err != nil {
-					Log.FmtPrintf("dail to server fail, host: %v.", this.host)
+					akLog.FmtPrintf("dail to server fail, host: %v.", this.host)
 				} else {
 					// recover send cache msg.
 
@@ -158,14 +158,14 @@ func (this *TcpClient) Exit(sw *sync.WaitGroup) {
 }
 
 func (this *TcpClient) sendRegisterMsg() {
-	Log.FmtPrintf("after dial, send point: %v register message to server.", this.SvrType)
+	akLog.FmtPrintf("after dial, send point: %v register message to server.", this.SvrType)
 	req := &MSG_Server.CS_ServerRegister_Req{}
 	req.ServerType = int32(this.SvrType)
 	req.Msgs = GetAllMessageIDs()
-	Log.FmtPrintln("register context: ", req.Msgs)
+	akLog.FmtPrintln("register context: ", req.Msgs)
 	buff, err := this.mpobj.PackClientMsg(uint16(MSG_MainModule.MAINMSG_SERVER), uint16(MSG_Server.SUBMSG_CS_ServerRegister), req)
 	if err != nil {
-		Log.Error(err)
+		akLog.Error(err)
 		return
 	}
 	this.Send(buff)

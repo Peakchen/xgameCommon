@@ -3,7 +3,7 @@
 package akNet
 
 import (
-	"Log"
+	"akLog"
 	"define"
 	"msgProto/MSG_MainModule"
 	"msgProto/MSG_Player"
@@ -67,7 +67,7 @@ func (this *TcpServer) Run() {
 	go this.loop(ctx, &sw)
 	go this.loopoff(ctx, &sw)
 	go func() {
-		Log.FmtPrintln("[server] run http server, host: ", this.pprofAddr)
+		akLog.FmtPrintln("[server] run http server, host: ", this.pprofAddr)
 		http.ListenAndServe(this.pprofAddr, nil)
 	}()
 	sw.Wait()
@@ -85,14 +85,14 @@ func (this *TcpServer) loop(ctx context.Context, sw *sync.WaitGroup) {
 		default:
 			c, err := this.listener.AcceptTCP()
 			if err != nil || c == nil {
-				Log.Error("can not accept tcp.")
+				akLog.Error("can not accept tcp.")
 				continue
 			}
 
 			c.SetNoDelay(true)
 			c.SetKeepAlive(true)
 			atomic.AddUint64(&this.SessionID, 1)
-			Log.FmtPrintf("[server] accept connect here addr: %v, SessionID: %v.", c.RemoteAddr(), this.SessionID)
+			akLog.FmtPrintf("[server] accept connect here addr: %v, SessionID: %v.", c.RemoteAddr(), this.SessionID)
 			this.session = NewSvrSession(c.RemoteAddr().String(), c, ctx, this.SvrType, this.off, this.pack, this.procName)
 			this.session.HandleSession(sw)
 			this.online()
@@ -131,7 +131,7 @@ func (this *TcpServer) offline(offs *SvrTcpSession) {
 		ntf := &MSG_Player.CS_LeaveServer_Req{}
 		_, err := offs.GetPack().PackInnerMsg(uint16(MSG_MainModule.MAINMSG_PLAYER), uint16(MSG_Player.SUBMSG_CS_LeaveServer), ntf)
 		if err != nil {
-			Log.Error(err)
+			akLog.Error(err)
 			return
 		}
 		sendInnerSvr(offs)

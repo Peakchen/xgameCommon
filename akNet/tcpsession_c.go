@@ -3,7 +3,7 @@
 package akNet
 
 import (
-	"Log"
+	"akLog"
 	"aktime"
 	"define"
 	"msgProto/MSG_HeartBeat"
@@ -79,7 +79,7 @@ func (this *ClientTcpSession) close(sw *sync.WaitGroup) {
 		return
 	}
 
-	Log.FmtPrintf("session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.send))
+	akLog.FmtPrintf("session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.send))
 	GClient2ServerSession.RemoveSession(this.RemoteAddr)
 	this.off <- this
 	//close(this.send)
@@ -158,10 +158,10 @@ func (this *ClientTcpSession) WriteMessage(data []byte) (succ bool) {
 
 	this.conn.SetWriteDeadline(aktime.Now().Add(writeWait))
 	//send...
-	//Log.FmtPrintln("[client] begin send response message to server, message length: ", len(data))
+	//akLog.FmtPrintln("[client] begin send response message to server, message length: ", len(data))
 	_, err := this.conn.Write(data)
 	if err != nil {
-		Log.FmtPrintln("send data fail, err: ", err)
+		akLog.FmtPrintln("send data fail, err: ", err)
 		return false
 	}
 
@@ -212,7 +212,7 @@ func (this *ClientTcpSession) readMessage() (succ bool) {
 	if mainID != uint16(MSG_MainModule.MAINMSG_SERVER) &&
 		mainID != uint16(MSG_MainModule.MAINMSG_HEARTBEAT) &&
 		(this.SvrType == define.ERouteId_ER_ISG) {
-		//Log.FmtPrintf("[client] StrIdentify: %v.", this.StrIdentify)
+		//akLog.FmtPrintf("[client] StrIdentify: %v.", this.StrIdentify)
 		succ = innerMsgRouteAct(ESessionType_Client, route, mainID, this.pack.GetSrcMsg())
 	} else {
 		succ = this.checkmsgProc(route) //路由消息回调处理
@@ -246,7 +246,7 @@ func (this *ClientTcpSession) checkHeartBeatRet() (exist bool) {
 }
 
 func (this *ClientTcpSession) checkmsgProc(route define.ERouteId) (succ bool) {
-	//Log.FmtPrintf("recv response, route: %v.", route)
+	//akLog.FmtPrintf("recv response, route: %v.", route)
 	bRegister := this.checkRegisterRet(route)
 	bHeartBeat := checkHeartBeatRet(this.pack)
 	if bRegister || bHeartBeat {
@@ -274,7 +274,7 @@ func (this *ClientTcpSession) HandleSession(sw *sync.WaitGroup) {
 }
 
 func (this *ClientTcpSession) Push(RegPoint define.ERouteId) {
-	//Log.FmtPrintf("[client] push new sesson, reg point: %v.", RegPoint)
+	//akLog.FmtPrintf("[client] push new sesson, reg point: %v.", RegPoint)
 	this.RegPoint = RegPoint
 	GServer2ServerSession.AddSession(this.RemoteAddr, this)
 }
@@ -295,7 +295,7 @@ func (this *ClientTcpSession) Offline() {
 func (this *ClientTcpSession) SendSvrClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] send msg session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return succ, err
 	}
 
@@ -310,7 +310,7 @@ func (this *ClientTcpSession) SendSvrClientMsg(mainid, subid uint16, msg proto.M
 func (this *ClientTcpSession) SendInnerSvrMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] send svr session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 
@@ -325,7 +325,7 @@ func (this *ClientTcpSession) SendInnerSvrMsg(mainid, subid uint16, msg proto.Me
 func (this *ClientTcpSession) SendInnerClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 
@@ -346,7 +346,7 @@ func (this *ClientTcpSession) SendInnerClientMsg(mainid, subid uint16, msg proto
 func (this *ClientTcpSession) SendInnerBroadcastMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 

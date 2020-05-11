@@ -6,7 +6,7 @@ package stacktrace
 */
 
 import (
-	"Log"
+	"akLog"
 	"runtime/debug"
 )
 
@@ -27,6 +27,6 @@ func RedStackLog() {
 func Catchcrash() {
 	if r := recover(); r != nil {
 		stacklog := NormalStackLog()
-		Log.Error("catch recover: ", r, stacklog)
+		akLog.Error("catch recover: ", r, stacklog)
 	}
 }

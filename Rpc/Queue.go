@@ -1,7 +1,7 @@
 package Rpc
 
 import (
-	"Log"
+	"akLog"
 	. "RedisConn"
 	"context"
 	"encoding/json"
@@ -74,7 +74,7 @@ func (this *TAokoQueueRpc) Call(Identify, name string, model interface{}, args .
 	// Identify + value
 	_, err := this.conn.Do("RPUSH", name, bypack...)
 	if err != nil {
-		Log.Error("RPUSH data: %v, err: %v.\n", Ret, err)
+		akLog.Error("RPUSH data: %v, err: %v.\n", Ret, err)
 		return
 	}
 }
@@ -95,7 +95,7 @@ func (this *TAokoQueueRpc) handler() {
 	for _, name := range this.tmo {
 		data, err := this.conn.Do("LPOP", name)
 		if err != nil {
-			Log.Error("LPOP data: %v, err: %v.\n", data, err)
+			akLog.Error("LPOP data: %v, err: %v.\n", data, err)
 			continue
 		}
 
@@ -105,13 +105,13 @@ func (this *TAokoQueueRpc) handler() {
 
 		info := &TDataPack{}
 		if err := json.Unmarshal(data, info); err != nil {
-			Log.Error("unmarshal pack fail, model name: ", name)
+			akLog.Error("unmarshal pack fail, model name: ", name)
 			continue
 		}
 
 		cbdata := &TAokoCallBackParam{}
 		if err := json.Unmarshal(info.Data, cbdata); err != nil {
-			Log.Error("unmarshal callback fail, model name: ", name)
+			akLog.Error("unmarshal callback fail, model name: ", name)
 			continue
 		}
 

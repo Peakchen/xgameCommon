@@ -1,7 +1,7 @@
 package Config
 
 import (
-	"Log"
+	"akLog"
 	"encoding/json"
 	"io/ioutil"
 )
@@ -44,13 +44,13 @@ func init() {
 */
 func ParseJson2Cache(obj ICommonConfig, data interface{}, filename string) {
 	if data == nil {
-		Log.Error("config data is nil, filename: ", filename)
+		akLog.Error("config data is nil, filename: ", filename)
 		return
 	}
 
 	err := _JsonParseTool.Parse(filename, data)
 	if err != nil {
-		Log.Error("[Parse json fail] err: ", err)
+		akLog.Error("[Parse json fail] err: ", err)
 		return
 	}
 
@@ -62,7 +62,7 @@ func ParseJson2Cache(obj ICommonConfig, data interface{}, filename string) {
 	errlist := cfg.Before()
 	if errlist != nil && len(errlist) > 0 {
 		for _, err := range errlist {
-			Log.Error("[config Before] err: ", err)
+			akLog.Error("[config Before] err: ", err)
 		}
 		return
 	}
@@ -70,7 +70,7 @@ func ParseJson2Cache(obj ICommonConfig, data interface{}, filename string) {
 	errlist = cfg.After()
 	if errlist != nil && len(errlist) > 0 {
 		for _, err := range errlist {
-			Log.Error("[config After] err: ", err)
+			akLog.Error("[config After] err: ", err)
 		}
 		return
 	}

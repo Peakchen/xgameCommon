@@ -2,7 +2,7 @@ package service
 
 import (
 	"Config/serverConfig"
-	"Log"
+	"akLog"
 	"MgoConn"
 	"RedisConn"
 	"ado"
@@ -36,7 +36,7 @@ func (this *TDBProvider) GetAkRedis() *RedisConn.TAokoRedis {
 func (this *TDBProvider) RediSave(identify string, rediskey string, data []byte, Oper ado.EDBOperType) (err error) {
 	err, _ = this.rconn.SaveEx(identify, rediskey, data, Oper)
 	if err != nil {
-		Log.ErrorIDCard(identify, "update redis fail, rediskey: ", rediskey, ", err: ", err)
+		akLog.ErrorIDCard(identify, "update redis fail, rediskey: ", rediskey, ", err: ", err)
 	}
 	return
 }

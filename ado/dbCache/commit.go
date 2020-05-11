@@ -1,7 +1,7 @@
 package dbCache
 
 import (
-	"Log"
+	"akLog"
 	"ado"
 	"ado/service"
 	"public"
@@ -41,19 +41,19 @@ func (this *TDBCache) loadOrAddUser(identify string) (modeldata map[string]*TMod
 	modeldata = nil
 	value, _ := this.users.LoadOrStore(identify, make(map[string]*TModelOper, 0))
 	if value == nil {
-		Log.Error("can not load cache model.")
+		akLog.Error("can not load cache model.")
 		return
 	}
 
 	if value == nil {
-		Log.Error("cache model invalid.")
+		akLog.Error("cache model invalid.")
 		return
 	}
 
 	var ok bool
 	modeldata, ok = value.(map[string]*TModelOper)
 	if !ok {
-		Log.Error("cache model invalid data type.")
+		akLog.Error("cache model invalid data type.")
 		return
 	}
 	return
@@ -147,7 +147,7 @@ func (this *TDBCache) updateDB(identify string) {
 		RedisKey := smodel + "." + identify
 		err := this.dbprovider.RediSave(identify, RedisKey, Operdata.buff, ado.EDBOper_Update)
 		if err != nil {
-			Log.ErrorIDCard(identify, "update redis fail, model: ", smodel, ", err: ", err)
+			akLog.ErrorIDCard(identify, "update redis fail, model: ", smodel, ", err: ", err)
 		}
 	}
 }

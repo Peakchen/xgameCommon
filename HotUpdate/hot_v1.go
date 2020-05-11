@@ -3,7 +3,7 @@ package HotUpdate
 //add by stefan
 
 import (
-	"Log"
+	"akLog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -38,15 +38,15 @@ func (this *THotUpdate) checkloop(chsignal chan os.Signal) {
 		case s := <-chsignal:
 			switch s {
 			case syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
-				Log.FmtPrintln("signal exit:", s)
+				akLog.FmtPrintln("signal exit:", s)
 			/*
 				case syscall.SIGUSR1:
-					Log.FmtPrintln("signal usr1:", s)
+					akLog.FmtPrintln("signal usr1:", s)
 				case syscall.SIGUSR2:
-					Log.FmtPrintln("signal usr2:", s)
+					akLog.FmtPrintln("signal usr2:", s)
 			*/
 			default:
-				Log.FmtPrintln("other signal:", s)
+				akLog.FmtPrintln("other signal:", s)
 			}
 
 			if this.HUInfo.Recvsignal == s && this.HUInfo.HUCallback != nil {

@@ -3,7 +3,7 @@ package MgoConn
 // add by stefan
 
 import (
-	"Log"
+	"akLog"
 	"RedisConn"
 	"ado"
 	. "public"
@@ -44,7 +44,7 @@ func NewMgoConn(server, Username, Passwd, Host string) *TAokoMgo {
 func (this *TAokoMgo) NewDial() {
 	session, err := this.NewMgoSession()
 	if err != nil {
-		Log.FmtPrintln(err)
+		akLog.FmtPrintln(err)
 		return
 	}
 
@@ -69,15 +69,15 @@ func (this *TAokoMgo) NewMgoSession() (session *mgo.Session, err error) {
 
 	session, err = mgo.DialWithInfo(MdialInfo)
 	if err != nil {
-		err = Log.RetError("mgo dial err: %v.\n", err)
-		Log.Error("mgo dial err: %v.\n", err)
+		err = akLog.RetError("mgo dial err: %v.\n", err)
+		akLog.Error("mgo dial err: %v.\n", err)
 		return
 	}
 
 	err = session.Ping()
 	if err != nil {
-		err = Log.RetError("session ping out, err: %v.", err)
-		Log.Error("session ping out, err: %v.", err)
+		err = akLog.RetError("session ping out, err: %v.", err)
+		akLog.Error("session ping out, err: %v.", err)
 		return
 	}
 
@@ -146,7 +146,7 @@ func (this *TAokoMgo) QueryOne(Identify string, OutParam IDBCache) (err error, e
 func (this *TAokoMgo) QueryByCondition(condition bson.M, OutParam IDBCache) (err error, exist bool) {
 	session, err := this.GetMgoSession()
 	if err != nil {
-		err = Log.RetError("get sesson err: %v.", err)
+		err = akLog.RetError("get sesson err: %v.", err)
 		return
 	}
 
@@ -157,26 +157,26 @@ func (this *TAokoMgo) QueryByCondition(condition bson.M, OutParam IDBCache) (err
 	retQuerys := collection.Find(condition)
 	count, ret := retQuerys.Count()
 	if ret != nil || count == 0 {
-		err = Log.RetError("[mgo] query data err: %v, %v.", ret, count)
+		err = akLog.RetError("[mgo] query data err: %v, %v.", ret, count)
 		return
 	}
 
 	selectRet := retQuerys.Select(bson.M{OutParam.SubModel(): 1, "_id": 1}).Limit(1)
 	if selectRet == nil {
-		err = Log.RetError("[mgo] selectRet invalid, submodule: %v.", OutParam.SubModel())
+		err = akLog.RetError("[mgo] selectRet invalid, submodule: %v.", OutParam.SubModel())
 		return
 	}
 
 	outval := reflect.MakeMap(reflect.MapOf(reflect.TypeOf(""), reflect.TypeOf(OutParam)))
 	ret = selectRet.One(outval.Interface())
 	if ret != nil {
-		err = Log.RetError("[mgo] select one error: %v.", ret)
+		err = akLog.RetError("[mgo] select one error: %v.", ret)
 		return
 	}
 
 	retIdxVal := outval.MapIndex(reflect.ValueOf(OutParam.SubModel()))
 	if !retIdxVal.IsValid() {
-		err = Log.RetError("[mgo] outval MapIndex invalid.")
+		err = akLog.RetError("[mgo] outval MapIndex invalid.")
 		return
 	}
 
@@ -198,7 +198,7 @@ func (this *TAokoMgo) QuerySome(Identify string, OutParam IDBCache) (err error) 
 	err = collection.Find(bson.M{"_id": Identify}).All(&OutParam)
 	if err != nil {
 		err = fmt.Errorf("Identify: %v, MainModel: %v, SubModel: %v, err: %v.\n", Identify, OutParam.MainModel(), OutParam.SubModel(), err)
-		Log.Error("[QuerySome] err: %v.\n", err)
+		akLog.Error("[QuerySome] err: %v.\n", err)
 	}
 	return
 }
@@ -212,13 +212,13 @@ func (this *TAokoMgo) InsertOne(Identify string, InParam IDBCache) (err error) {
 	s := session.Clone()
 	defer s.Close()
 
-	Log.FmtPrintf("[Insert] main: %v, sub: %v, key: %v.", InParam.MainModel(), InParam.SubModel(), InParam.Identify())
+	akLog.FmtPrintf("[Insert] main: %v, sub: %v, key: %v.", InParam.MainModel(), InParam.SubModel(), InParam.Identify())
 	collection := s.DB(this.server).C(InParam.MainModel())
 	operAction := bson.M{"_id": InParam.Identify(), InParam.SubModel(): InParam}
 	err = collection.Insert(operAction)
 	if err != nil {
 		err = fmt.Errorf("main: %v, sub: %v, key: %v, err: %v.\n", InParam.MainModel(), InParam.SubModel(), InParam.Identify(), err)
-		Log.Error("[Insert] err: %v.\n", err)
+		akLog.Error("[Insert] err: %v.\n", err)
 	}
 	return
 }
@@ -239,13 +239,13 @@ func Save(mgosession *mgo.Session, dbserver, redkey string, data interface{}) (e
 	defer s.Close()
 
 	key, main, sub := RedisConn.ParseRedisKey(redkey)
-	Log.FmtPrintf("update origin: %v, main: %v, sub: %v, key: %v.", redkey, main, sub, key)
+	akLog.FmtPrintf("update origin: %v, main: %v, sub: %v, key: %v.", redkey, main, sub, key)
 	collection := s.DB(dbserver).C(main)
 	operAction := bson.M{"$set": bson.M{sub: data}}
 	_, err = collection.UpsertId(key, operAction)
 	if err != nil {
 		err = fmt.Errorf("main: %v, sub: %v, key: %v, err: %v.\n", main, sub, key, err)
-		Log.Error("[Save] err: %v.\n", err)
+		akLog.Error("[Save] err: %v.\n", err)
 	}
 	return
 }

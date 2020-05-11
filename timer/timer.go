@@ -6,7 +6,7 @@ package timer
 */
 
 import (
-	"Log"
+	"akLog"
 	"reflect"
 	"time"
 )
@@ -92,7 +92,7 @@ func (this *TAokoTimerMgr) register(fun interface{}, interval int, count int, ar
 	}
 
 	if cstTimerUpLimit <= len(_timerMgr.timers) {
-		Log.Error("timer list size limit arrives.")
+		akLog.Error("timer list size limit arrives.")
 		return
 	}
 

@@ -2,7 +2,7 @@ package service
 
 import (
 	"Config/serverConfig"
-	"Log"
+	"akLog"
 	"MgoConn"
 	"RedisConn"
 	"ado"
@@ -67,7 +67,7 @@ func (this *TClusterDBProvider) runDBloop(Server string) {
 	this.ctx, this.cancle = context.WithCancel(context.Background())
 	session, err := this.mgoConn.GetMgoSession()
 	if err != nil {
-		Log.Error(err)
+		akLog.Error(err)
 		return
 	}
 
@@ -106,7 +106,7 @@ func (this *TClusterDBProvider) flushdb() {
 
 	c := this.redConn.RedPool.Get()
 	if c == nil {
-		Log.Error("redis conn invalid or disconntion.")
+		akLog.Error("redis conn invalid or disconntion.")
 		return
 	}
 
@@ -124,10 +124,10 @@ func (this *TClusterDBProvider) flushdb() {
 }
 
 func (this *TClusterDBProvider) dbupdate(ridx int32, c redis.Conn) {
-	//Log.FmtPrintln("db update idx: ", ridx)
+	//akLog.FmtPrintln("db update idx: ", ridx)
 	// TODO: Presist redis...
 	if this.redConn == nil {
-		Log.Error("redis conn invalid or conn number invalid, info: ", this.redConn, ridx)
+		akLog.Error("redis conn invalid or conn number invalid, info: ", this.redConn, ridx)
 		return
 	}
 
@@ -135,14 +135,14 @@ func (this *TClusterDBProvider) dbupdate(ridx int32, c redis.Conn) {
 	onekey := RedisConn.ERedScript_Update + updateidx
 	members, err := c.Do("HKEYS", onekey)
 	if err != nil || members == nil {
-		Log.Error("ClusterDBProvider get redis,err: ", err)
+		akLog.Error("ClusterDBProvider get redis,err: ", err)
 		return
 	}
 
 	// TODO: Presist mgo...
 	mgosession := this.mgoSessions[ridx]
 	if mgosession == nil {
-		Log.Error("mgoConn invalid or disconntion.")
+		akLog.Error("mgoConn invalid or disconntion.")
 		return
 	}
 
@@ -150,14 +150,14 @@ func (this *TClusterDBProvider) dbupdate(ridx int32, c redis.Conn) {
 		dstkey := string(item.([]byte))
 		dstval, err := c.Do("GET", dstkey)
 		if err != nil {
-			Log.Error("get fail, err: ", err)
+			akLog.Error("get fail, err: ", err)
 			continue
 		}
 
 		bsdata := bson.Raw{Kind: byte(0), Data: dstval.([]byte)}
 		err = MgoConn.Save(mgosession, this.Server, dstkey, bsdata)
 		if err != nil {
-			Log.Error("mgo update err: ", err)
+			akLog.Error("mgo update err: ", err)
 		}
 	}
 }

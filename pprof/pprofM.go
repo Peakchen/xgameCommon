@@ -2,7 +2,7 @@ package pprof
 
 // add by stefan 20190606 16:12
 import (
-	"Log"
+	"akLog"
 	"aktime"
 	"fmt"
 	"os"
@@ -53,7 +53,7 @@ func (this *TPProfMgr) StartPProf(ctx context.Context) {
 }
 
 func (this *TPProfMgr) Exit() {
-	Log.FmtPrintln("pprof exist.")
+	akLog.FmtPrintln("pprof exist.")
 	this.flush()
 	if this.cpu != nil {
 		this.cpu.Close()
@@ -123,7 +123,7 @@ func createCpu() (file *os.File) {
 	cpuf := Newpprof("cpu")
 	f, err := os.OpenFile(cpuf, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		Log.FmtPrintln("cpu pprof open fail, err: ", err)
+		akLog.FmtPrintln("cpu pprof open fail, err: ", err)
 		return
 	}
 	pprof.StartCPUProfile(f)
@@ -134,7 +134,7 @@ func createMem() (file *os.File) {
 	cpuf := Newpprof("mem")
 	f, err := os.OpenFile(cpuf, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		Log.FmtPrintln("mem pprof open fail, err: ", err)
+		akLog.FmtPrintln("mem pprof open fail, err: ", err)
 		return
 	}
 	return f

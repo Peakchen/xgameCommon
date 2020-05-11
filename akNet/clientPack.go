@@ -3,7 +3,7 @@ package akNet
 // add by stefan
 
 import (
-	"Log"
+	"akLog"
 	"stacktrace"
 	"utls"
 	"encoding/binary"
@@ -43,12 +43,12 @@ func (this *ClientProtocol) PackAction(Output []byte) (err error) {
 	pos += 2
 
 	if len(this.identify) == 0 {
-		err = Log.RetError("[client] identify invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
+		err = akLog.RetError("[client] identify invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
 		return
 	}
 
 	if len(this.remoteAddr) == 0 {
-		err = Log.RetError("[client] remoteAddr invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
+		err = akLog.RetError("[client] remoteAddr invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (this *ClientProtocol) PackAction(Output []byte) (err error) {
 
 	binary.LittleEndian.PutUint32(Output[pos:], this.length)
 	pos += 4
-	//Log.FmtPrintln("client PackAction-> data len: ", this.length)
+	//akLog.FmtPrintln("client PackAction-> data len: ", this.length)
 	copy(Output[pos:], this.data)
 	err = nil
 	return
@@ -86,7 +86,7 @@ func (this *ClientProtocol) PackAction4Client(Output []byte) (err error) {
 
 	binary.LittleEndian.PutUint32(Output[pos:], this.length)
 	pos += 4
-	//Log.FmtPrintln("client PackAction4Client-> data len: ", this.length)
+	//akLog.FmtPrintln("client PackAction4Client-> data len: ", this.length)
 	copy(Output[pos:], this.data)
 	err = nil
 	return
@@ -130,7 +130,7 @@ func (this *ClientProtocol) SetCmd(mainid, subid uint16, data []byte) {
 	this.subid = subid
 	this.data = data
 	this.length = uint32(len(data))
-	//Log.FmtPrintf("[client] mainid: %v, subid: %v, data len: %v.", mainid, subid, this.length)
+	//akLog.FmtPrintf("[client] mainid: %v, subid: %v, data len: %v.", mainid, subid, this.length)
 }
 
 func (this *ClientProtocol) Clean() {
@@ -143,7 +143,7 @@ func (this *ClientProtocol) Clean() {
 func (this *ClientProtocol) PackInnerMsg(mainid, subid uint16, msg proto.Message) (out []byte, err error) {
 	data, err := proto.Marshal(msg)
 	if err != nil {
-		err = Log.RetError("client proto marshal fail, data: %v.", err)
+		err = akLog.RetError("client proto marshal fail, data: %v.", err)
 		return
 	}
 
@@ -156,7 +156,7 @@ func (this *ClientProtocol) PackInnerMsg(mainid, subid uint16, msg proto.Message
 func (this *ClientProtocol) PackClientMsg(mainid, subid uint16, msg proto.Message) (out []byte, err error) {
 	data, err := proto.Marshal(msg)
 	if err != nil {
-		err = Log.RetError("client for reg proto marshal fail, data: %v.", err)
+		err = akLog.RetError("client for reg proto marshal fail, data: %v.", err)
 		return
 	}
 

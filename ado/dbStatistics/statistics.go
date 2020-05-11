@@ -7,7 +7,7 @@ package dbStatistics
 
 import (
 	"bytes"
-	"Log"
+	"akLog"
 	"aktime"
 	"public"
 	"stacktrace"
@@ -52,14 +52,14 @@ func (this *TDBStatistics) Init() {
 	exename := utls.GetExeFileName()
 	_, err := os.Stat(cstStatisticsLog)
 	if err != nil {
-		Log.Error("err: ", err)
+		akLog.Error("err: ", err)
 		return
 	}
 
 	if os.IsNotExist(err) {
 		err := os.Mkdir("DBStatisticsLog", 0644)
 		if err != nil {
-			Log.Error("err: ", err)
+			akLog.Error("err: ", err)
 			return
 		}
 	}
@@ -67,7 +67,7 @@ func (this *TDBStatistics) Init() {
 	fileName := fmt.Sprintf("./DBStatisticsLog/%v_DBStatistics_%v.log", exename, aktime.Now().Local().Format(public.CstTimeDate))
 	filehandle, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		Log.Error("can not create db statistics log file, err：", err)
+		akLog.Error("can not create db statistics log file, err：", err)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (this *TDBStatistics) exit() {
 func (this *TDBStatistics) Update(content string) {
 	var buff bytes.Buffer
 	if err := gob.NewEncoder(&buff).Encode(content); err != nil {
-		Log.Error("cover to buffer fail, err: ", err)
+		akLog.Error("cover to buffer fail, err: ", err)
 		return
 	}
 
@@ -105,14 +105,14 @@ func (this *TDBStatistics) loadOrInitUser(identify string) (modeldata map[string
 	}
 	value, _ := this.userOperModels.LoadOrStore(identify, make(map[string][]*TModelStatistics, 0))
 	if value == nil {
-		Log.Error("cache model invalid.")
+		akLog.Error("cache model invalid.")
 		return
 	}
 
 	var ok bool
 	modeldata, ok = value.(map[string][]*TModelStatistics)
 	if !ok {
-		Log.Error("cache model invalid data type.")
+		akLog.Error("cache model invalid data type.")
 		return
 	}
 	return
