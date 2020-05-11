@@ -1,12 +1,12 @@
 package service
 
 import (
-	"Config/serverConfig"
-	"akLog"
-	"MgoConn"
-	"RedisConn"
-	"ado"
-	"public"
+	"github.com/Peakchen/xcommon/Config/serverConfig"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/MgoConn"
+	"github.com/Peakchen/xcommon/RedisConn"
+	"github.com/Peakchen/xcommon/ado"
+	"github.com/Peakchen/xcommon/public"
 	"context"
 	"sync"
 )

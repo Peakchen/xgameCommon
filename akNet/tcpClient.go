@@ -4,11 +4,11 @@ package akNet
 // add by stefan
 
 import (
-	"akLog"
-	"define"
-	"msgProto/MSG_MainModule"
-	"msgProto/MSG_Server"
-	"pprof"
+	"agithub.com/Peakchen/xcommon/kLog"
+	"github.com/Peakchen/xcommon/define"
+	"github.com/Peakchen/xcommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xcommon/msgProto/MSG_Server"
+	"github.com/Peakchen/xcommon/pprof"
 	"net"
 	"net/http"
 	"os"

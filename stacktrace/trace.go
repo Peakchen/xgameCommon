@@ -6,7 +6,7 @@ package stacktrace
 */
 
 import (
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"runtime/debug"
 )
 

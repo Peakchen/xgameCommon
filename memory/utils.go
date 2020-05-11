@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"runtime"
 )
 

@@ -1,7 +1,7 @@
 package Config
 
 import (
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"encoding/json"
 	"io/ioutil"
 )

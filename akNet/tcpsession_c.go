@@ -3,13 +3,13 @@
 package akNet
 
 import (
-	"akLog"
-	"aktime"
-	"define"
-	"msgProto/MSG_HeartBeat"
-	"msgProto/MSG_MainModule"
-	"msgProto/MSG_Server"
-	"stacktrace"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xcommon/define"
+	"github.com/Peakchen/xcommon/msgProto/MSG_HeartBeat"
+	"github.com/Peakchen/xcommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xcommon/msgProto/MSG_Server"
+	"github.com/Peakchen/xcommon/stacktrace"
 	"fmt"
 	"net"
 	"sync/atomic"

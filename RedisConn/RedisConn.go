@@ -3,10 +3,10 @@
 package RedisConn
 
 import (
-	"akLog"
-	"ado"
-	"ado/dbStatistics"
-	"public"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/ado"
+	"github.com/Peakchen/xcommon/ado/dbStatistics"
+	"github.com/Peakchen/xcommon/public"
 	"fmt"
 	"strconv"
 	"time"

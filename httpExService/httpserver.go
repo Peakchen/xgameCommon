@@ -5,7 +5,7 @@ package httpExService
 import (
 	"net/http"
 	//"fmt"
-	define "define"
+	define "github.com/Peakchen/xcommon/define"
 	"encoding/json"
 	"log"
 	"strings"

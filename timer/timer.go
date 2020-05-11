@@ -6,7 +6,7 @@ package timer
 */
 
 import (
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"reflect"
 	"time"
 )

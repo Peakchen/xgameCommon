@@ -2,8 +2,8 @@ package pprof
 
 // add by stefan 20190606 16:12
 import (
-	"akLog"
-	"aktime"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/aktime"
 	"fmt"
 	"os"
 	"path"

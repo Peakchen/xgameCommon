@@ -4,7 +4,7 @@ package utls
 
 import (
 	"bytes"
-	"aktime"
+	"github.com/Peakchen/xcommon/aktime"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/des"

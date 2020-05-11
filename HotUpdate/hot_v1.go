@@ -3,7 +3,7 @@ package HotUpdate
 //add by stefan
 
 import (
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"os"
 	"os/signal"
 	"syscall"

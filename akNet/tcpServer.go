@@ -3,11 +3,11 @@
 package akNet
 
 import (
-	"akLog"
-	"define"
-	"msgProto/MSG_MainModule"
-	"msgProto/MSG_Player"
-	"pprof"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/define"
+	"github.com/Peakchen/xcommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xcommon/msgProto/MSG_Player"
+	"github.com/Peakchen/xcommon/pprof"
 	"context"
 	"fmt"
 	"net"

@@ -8,7 +8,7 @@ package define
 
 import (
 	"bytes"
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"strconv"
 )
 

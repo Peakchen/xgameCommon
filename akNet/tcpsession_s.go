@@ -3,17 +3,17 @@
 package akNet
 
 import (
-	"akLog"
-	"aktime"
-	"define"
-	"msgProto/MSG_HeartBeat"
-	"msgProto/MSG_MainModule"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xcommon/define"
+	"github.com/Peakchen/xcommon/msgProto/MSG_HeartBeat"
+	"github.com/Peakchen/xcommon/msgProto/MSG_MainModule"
 	"fmt"
 	"net"
 	"sync/atomic"
 	"time"
 	//"S2SMessage"
-	"stacktrace"
+	"github.com/Peakchen/xcommon/stacktrace"
 	"context"
 	"github.com/golang/protobuf/proto"
 	"sync"

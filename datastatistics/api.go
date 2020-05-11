@@ -1,7 +1,7 @@
 package datastatistics
 
 import (
-	"akLog"
+	"github.com/Peakchen/xcommon/akLog"
 	"fmt"
 	"net/http"
 	"sort"

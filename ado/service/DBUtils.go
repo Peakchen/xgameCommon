@@ -3,8 +3,8 @@ package service
 // add by stefan
 
 import (
-	"ado"
-	"public"
+	"github.com/Peakchen/xcommon/ado"
+	"github.com/Peakchen/xcommon/public"
 	"github.com/gomodule/redigo/redis"
 )
 

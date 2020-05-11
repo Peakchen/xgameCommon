@@ -3,8 +3,8 @@ package akNet
 // add by stefan
 
 import (
-	"akLog"
-	"ado/dbStatistics"
+	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xcommon/ado/dbStatistics"
 	"define"
 	"msgProto/MSG_HeartBeat"
 	"msgProto/MSG_Login"
