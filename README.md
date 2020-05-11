@@ -1,3 +1,3 @@
 ## Welcome to xcommon ##
 
-**MarkdownPad** is game api.
+**xcommon** is game api.
