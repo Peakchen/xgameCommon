@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 	//"log"
-	"utls"
+	"github.com/Peakchen/xcommon/utls"
 	"context"
 	"sync"
 )
