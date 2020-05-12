@@ -3,7 +3,7 @@ package Kcpnet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/Log"
+	"github.com/Peakchen/xcommon/akLog"
 	"github.com/Peakchen/xcommon/stacktrace"
 	"github.com/Peakchen/xcommon/utls"
 	"encoding/binary"

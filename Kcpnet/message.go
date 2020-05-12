@@ -3,8 +3,8 @@ package Kcpnet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/Define"
-	"github.com/Peakchen/xcommon/Log"
+	"github.com/Peakchen/xcommon/define"
+	"github.com/Peakchen/xcommon/akLog"
 	"github.com/Peakchen/xcommon/ado/dbStatistics"
 	"github.com/Peakchen/xcommon/msgProto/MSG_HeartBeat"
 	"github.com/Peakchen/xcommon/msgProto/MSG_Login"
