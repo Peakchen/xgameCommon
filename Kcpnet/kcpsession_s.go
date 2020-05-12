@@ -13,32 +13,42 @@ import (
 type KcpServerSession struct {
 	conn *kcp.UDPSession
 
-	readCh  chan bool
-	writeCh chan []byte
+	readCh  	chan bool
+	writeCh 	chan []byte
 
-	RemoteAddr string
-	//message pack
-	pack IMessagePack
+	RemoteAddr 	string
+	pack 		IMessagePack
+	offCh 		chan *KcpServerSession
+	isAlive		bool
 }
 
-func NewKcpSvrSession(c *kcp.UDPSession) *KcpServerSession {
+func NewKcpSvrSession(c *kcp.UDPSession, offCh chan *KcpServerSession) *KcpServerSession {
 	return &KcpServerSession{
 		conn:       c,
 		readCh:     make(chan bool, 1000),
 		writeCh:    make(chan []byte, 1000),
 		RemoteAddr: this.conn.RemoteAddr().String(),
 		pack:       &KcpServerProtocol{},
+		offCh:		offCh,
 	}
 }
 
 func (this *KcpServerSession) Handler() {
+	this.isAlive = true
 	go this.readloop()
 	go this.writeloop()
 }
 
 func (this *KcpServerSession) close() {
+	this.isAlive = false
+	this.offCh <-this
 	this.conn.Close()
 }
+
+func (this *KcpServerSession) Offline() {
+
+}
+
 
 func (this *KcpServerSession) heartBeatloop(sw *sync.WaitGroup) {
 
@@ -180,6 +190,10 @@ func (this *KcpServerSession) writeloop() {
 			}
 		}
 	}
+}
+
+func (this *KcpServerSession) Alive() bool {
+	return this.isAlive
 }
 
 func (this *KcpServerSession) SetSendCache(data []byte) {

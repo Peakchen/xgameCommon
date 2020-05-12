@@ -20,6 +20,7 @@ type KcpServer struct {
 	addr		string
 	ppAddr		string
 	cancel    	context.CancelFunc
+	offCh 		chan *KcpServerSession
 }
 
 func NewKcpServer(Name string, addr string, pprofAddr string)*KcpServer{
@@ -27,6 +28,7 @@ func NewKcpServer(Name string, addr string, pprofAddr string)*KcpServer{
 		svrName: 	Name,
 		addr:		addr,
 		ppAddr:		pprofAddr,
+		offCh 		make(chan *KcpServerSession, 1000),
 	}
 }
 
@@ -68,6 +70,7 @@ func (this *KcpServer) Run(){
 			// start udp server...
 			this.sw.Add(1)
 			go this.kcpAccept(config)
+			go this.loopOffline()
 			this.sw.Wait()
 		},
 	}
@@ -111,7 +114,14 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig){
 
 		// start a goroutine for every incoming connection for read and write
 		//go handleClient(conn, config)
-		sess := NewKcpSvrSession(conn)
+		sess := NewKcpSvrSession(conn, this.offCh)
 		sess.Handler()
+	}
+}
+
+func (this *KcpServer) loopOffline(){
+	for {
+		offsession := <-this.offCh
+		offsession.Offline()
 	}
 }

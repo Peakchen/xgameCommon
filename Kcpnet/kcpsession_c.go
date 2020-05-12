@@ -3,22 +3,23 @@ package Kcpnet
 type KcpClientSession struct {
 	conn *kcp.UDPSession
 
-	readCh  chan []byte
-	writeCh chan []byte
+	readCh  	chan []byte
+	writeCh 	chan []byte
 
-	remoteAddr string
-	//message pack
-	pack    IMessagePack
-	isAlive bool
+	remoteAddr 	string
+	pack    	IMessagePack
+	isAlive 	bool
+	offCh 		chan *KcpClientSession
 }
 
-func NewKcpClientSession(c *kcp.UDPSession) *KcpServerSession {
+func NewKcpClientSession(c *kcp.UDPSession, offCh chan *KcpClientSession) *KcpServerSession {
 	return &KcpServerSession{
 		conn:       c,
 		readCh:     make(chan []byte, 1000),
 		writeCh:    make(chan []byte, 1000),
 		remoteAddr: this.conn.RemoteAddr().String(),
 		pack:       &KcpClientProtocol{},
+		offCh: 		offCh,
 	}
 }
 
@@ -37,7 +38,8 @@ func (this *KcpClientSession) close() {
 
 	Log.FmtPrintf("client session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.writeCh))
 	GClient2ServerSession.RemoveSession(this.RemoteAddr)
-	this.off <- this
+	this.isAlive = false
+	this.offCh <- this
 	this.Offline()
 	//close(this.writeCh)
 	this.conn.CloseRead()
