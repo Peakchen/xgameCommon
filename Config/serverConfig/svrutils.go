@@ -1,7 +1,7 @@
 package serverConfig
 
 import (
-	"utls"
+	"github.com/Peakchen/xcommon/utls"
 	"path/filepath"
 )
 
