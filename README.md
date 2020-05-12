@@ -1,3 +1,3 @@
 ## Welcome to xgameCommon ##
 
-**xgameCommon** is game api.
+**xgameCommon** is game api...
