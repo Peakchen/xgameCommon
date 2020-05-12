@@ -3,9 +3,9 @@ package Log
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/aktime"
-	"github.com/Peakchen/xcommon/public"
-	"github.com/Peakchen/xcommon/utls"
+	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/public"
+	"github.com/Peakchen/xgameCommon/utls"
 	"context"
 	"fmt"
 	"os"

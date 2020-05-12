@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xgameCommon/aktime"
 )
 
 var (

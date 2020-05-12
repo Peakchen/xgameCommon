@@ -3,9 +3,9 @@ package akNet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/stacktrace"
-	"github.com/Peakchen/xcommon/utls"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/stacktrace"
+	"github.com/Peakchen/xgameCommon/utls"
 	"encoding/binary"
 	"fmt"
 	"github.com/golang/protobuf/proto"

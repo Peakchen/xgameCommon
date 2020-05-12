@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 	//"runtime"
-	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xgameCommon/akLog"
 	//"syscall"
 )
 

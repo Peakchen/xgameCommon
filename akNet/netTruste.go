@@ -3,7 +3,7 @@ package akNet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/Config/serverConfig"
+	"github.com/Peakchen/xgameCommon/Config/serverConfig"
 )
 
 var (

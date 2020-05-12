@@ -3,8 +3,8 @@ package akNet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/define"
-	"github.com/Peakchen/xcommon/utls"
+	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/utls"
 	"sync"
 )
 

@@ -2,8 +2,8 @@ package pprof
 
 // add by stefan 20190606 16:12
 import (
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/aktime"
 	"fmt"
 	"os"
 	"path"
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 	//"log"
-	"github.com/Peakchen/xcommon/utls"
+	"github.com/Peakchen/xgameCommon/utls"
 	"context"
 	"sync"
 )

@@ -7,7 +7,7 @@ package Cache
 */
 
 import (
-	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xgameCommon/aktime"
 	"container/list"
 	"sync"
 	"time"

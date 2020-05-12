@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	//"fmt"
-	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xgameCommon/akLog"
 	"tool"
 	"io/ioutil"
 	"net/http"

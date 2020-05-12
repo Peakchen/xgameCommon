@@ -2,12 +2,12 @@ package Kcpnet
 
 import (
 	//"aktime"
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/stacktrace"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/stacktrace"
 	"fmt"
 	"github.com/xtaci/kcp-go"
 	"time"
-	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xgameCommon/aktime"
 )
 
 type KcpServerSession struct {

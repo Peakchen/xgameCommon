@@ -3,7 +3,7 @@ package HotUpdate
 //add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xgameCommon/akLog"
 	"os"
 	"os/signal"
 	"syscall"

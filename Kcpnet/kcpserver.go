@@ -6,10 +6,10 @@ import (
 	"github.com/xtaci/kcp-go"
 	//cli "gopkg.in/urfave/cli.v2"
 	cli "github.com/urfave/cli"
-	"github.com/Peakchen/xcommon/akLog"
+	"github.com/Peakchen/xgameCommon/akLog"
 	"sync"
 	"os"
-	"github.com/Peakchen/xcommon/pprof"
+	"github.com/Peakchen/xgameCommon/pprof"
 	"context"
 )
 

@@ -1,10 +1,10 @@
 package dbCache
 
 import (
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/ado"
-	"github.com/Peakchen/xcommon/ado/service"
-	"github.com/Peakchen/xcommon/public"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/ado"
+	"github.com/Peakchen/xgameCommon/ado/service"
+	"github.com/Peakchen/xgameCommon/public"
 	"github.com/globalsign/mgo/bson"
 	"sync"
 )

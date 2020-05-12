@@ -1,6 +1,6 @@
 package public
 
-import "github.com/Peakchen/xcommon/ado"
+import "github.com/Peakchen/xgameCommon/ado"
 
 /*
 

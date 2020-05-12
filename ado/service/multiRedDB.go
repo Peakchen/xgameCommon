@@ -1,11 +1,11 @@
 package service
 
 import (
-	"github.com/Peakchen/xcommon/Config/serverConfig"
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/MgoConn"
-	"github.com/Peakchen/xcommon/RedisConn"
-	"github.com/Peakchen/xcommon/ado"
+	"github.com/Peakchen/xgameCommon/Config/serverConfig"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/MgoConn"
+	"github.com/Peakchen/xgameCommon/RedisConn"
+	"github.com/Peakchen/xgameCommon/ado"
 	"context"
 	"net/http"
 	"strconv"

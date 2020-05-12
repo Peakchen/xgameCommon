@@ -3,13 +3,13 @@ package Kcpnet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/define"
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/ado/dbStatistics"
-	"github.com/Peakchen/xcommon/msgProto/MSG_HeartBeat"
-	"github.com/Peakchen/xcommon/msgProto/MSG_Login"
-	"github.com/Peakchen/xcommon/msgProto/MSG_MainModule"
-	"github.com/Peakchen/xcommon/msgProto/MSG_Server"
+	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/ado/dbStatistics"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_Login"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"encoding/binary"
 	"errors"
 	"fmt"

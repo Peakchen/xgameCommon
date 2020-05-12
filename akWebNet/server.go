@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"github.com/gorilla/websocket"
 	"fmt"
-	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xgameCommon/aktime"
 	//"strings"
 	//"strconv"
 )

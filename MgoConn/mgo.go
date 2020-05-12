@@ -3,10 +3,10 @@ package MgoConn
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/RedisConn"
-	"github.com/Peakchen/xcommon/ado"
-	. "github.com/Peakchen/xcommon/public"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/RedisConn"
+	"github.com/Peakchen/xgameCommon/ado"
+	. "github.com/Peakchen/xgameCommon/public"
 	"fmt"
 	"reflect"
 	"sync"

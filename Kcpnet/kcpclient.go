@@ -3,7 +3,7 @@ package Kcpnet
 // by udp
 
 import (
-	"github.com/Peakchen/xcommon/pprof"
+	"github.com/Peakchen/xgameCommon/pprof"
 	"context"
 )
 

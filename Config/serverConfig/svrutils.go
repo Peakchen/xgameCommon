@@ -1,7 +1,7 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xcommon/utls"
+	"github.com/Peakchen/xgameCommon/utls"
 	"path/filepath"
 )
 

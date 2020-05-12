@@ -1,8 +1,8 @@
 package Rpc
 
 import (
-	"github.com/Peakchen/xcommon/akLog"
-	. "github.com/Peakchen/xcommon/RedisConn"
+	"github.com/Peakchen/xgameCommon/akLog"
+	. "github.com/Peakchen/xgameCommon/RedisConn"
 	"context"
 	"encoding/json"
 	"fmt"

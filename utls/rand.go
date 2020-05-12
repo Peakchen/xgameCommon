@@ -3,7 +3,7 @@ package utls
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/aktime"
+	"github.com/Peakchen/xgameCommon/aktime"
 	"math/rand"
 )
 

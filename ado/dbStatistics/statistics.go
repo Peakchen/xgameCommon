@@ -7,11 +7,11 @@ package dbStatistics
 
 import (
 	"bytes"
-	"github.com/Peakchen/xcommon/akLog"
-	"github.com/Peakchen/xcommon/aktime"
-	"github.com/Peakchen/xcommon/public"
-	"github.com/Peakchen/xcommon/stacktrace"
-	"github.com/Peakchen/xcommon/utls"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/public"
+	"github.com/Peakchen/xgameCommon/stacktrace"
+	"github.com/Peakchen/xgameCommon/utls"
 	"encoding/gob"
 	"fmt"
 	"os"

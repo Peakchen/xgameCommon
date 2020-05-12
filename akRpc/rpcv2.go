@@ -3,7 +3,7 @@ package akRpc
 // server no block rpc, enter queue task call back for order.
 // add by stefan 20190704 19:24
 import (
-	. "github.com/Peakchen/xcommon/RedisConn"
+	. "github.com/Peakchen/xgameCommon/RedisConn"
 	"context"
 	"fmt"
 	"log"

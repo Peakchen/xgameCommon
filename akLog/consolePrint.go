@@ -3,8 +3,8 @@ package Log
 // add by stefan
 
 import (
-	"github.com/Peakchen/xcommon/aktime"
-	"github.com/Peakchen/xcommon/public"
+	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/public"
 	"fmt"
 )
 

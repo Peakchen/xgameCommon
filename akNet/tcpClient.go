@@ -4,11 +4,11 @@ package akNet
 // add by stefan
 
 import (
-	"agithub.com/Peakchen/xcommon/kLog"
-	"github.com/Peakchen/xcommon/define"
-	"github.com/Peakchen/xcommon/msgProto/MSG_MainModule"
-	"github.com/Peakchen/xcommon/msgProto/MSG_Server"
-	"github.com/Peakchen/xcommon/pprof"
+	"agithub.com/Peakchen/xgameCommon/kLog"
+	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
+	"github.com/Peakchen/xgameCommon/pprof"
 	"net"
 	"net/http"
 	"os"

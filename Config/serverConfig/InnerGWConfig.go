@@ -1,7 +1,7 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xcommon/Config"
+	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
