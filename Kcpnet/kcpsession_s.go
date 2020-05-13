@@ -8,6 +8,7 @@ import (
 	"github.com/xtaci/kcp-go"
 	"time"
 	"github.com/Peakchen/xgameCommon/aktime"
+	"sync"
 )
 
 type KcpServerSession struct {
@@ -20,6 +21,7 @@ type KcpServerSession struct {
 	pack 		IMessagePack
 	offCh 		chan *KcpServerSession
 	isAlive		bool
+	closeOnce   sync.Once
 }
 
 func NewKcpSvrSession(c *kcp.UDPSession, offCh chan *KcpServerSession) *KcpServerSession {
@@ -40,15 +42,16 @@ func (this *KcpServerSession) Handler() {
 }
 
 func (this *KcpServerSession) close() {
-	this.isAlive = false
-	this.offCh <-this
-	this.conn.Close()
+	closeOnce.Do(func(){
+		this.isAlive = false
+		this.offCh <-this
+		this.conn.Close()
+	})
 }
 
 func (this *KcpServerSession) Offline() {
-
+	// notify some one server...
 }
-
 
 func (this *KcpServerSession) heartBeatloop(sw *sync.WaitGroup) {
 

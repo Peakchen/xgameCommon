@@ -1,5 +1,9 @@
 package Kcpnet
 
+import (
+	"sync"
+)
+
 type KcpClientSession struct {
 	conn *kcp.UDPSession
 
@@ -10,6 +14,7 @@ type KcpClientSession struct {
 	pack    	IMessagePack
 	isAlive 	bool
 	offCh 		chan *KcpClientSession
+	closeOnce   sync.Once
 }
 
 func NewKcpClientSession(c *kcp.UDPSession, offCh chan *KcpClientSession) *KcpServerSession {
@@ -36,15 +41,15 @@ func (this *KcpClientSession) close() {
 		return
 	}
 
-	Log.FmtPrintf("client session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.writeCh))
-	GClient2ServerSession.RemoveSession(this.RemoteAddr)
-	this.isAlive = false
-	this.offCh <- this
-	this.Offline()
-	//close(this.writeCh)
-	this.conn.CloseRead()
-	this.conn.CloseWrite()
-	this.conn.Close()
+	closeOnce.Do(func(){
+		Log.FmtPrintf("client session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.writeCh))
+		GClient2ServerSession.RemoveSession(this.RemoteAddr)
+		this.isAlive = false
+		this.offCh <- this
+	
+		this.conn.Close()
+	})
+	
 }
 
 func (this *KcpClientSession) SetSendCache(data []byte) {
@@ -219,7 +224,7 @@ func (this *KcpClientSession) SetIdentify(StrIdentify string) {
 }
 
 func (this *KcpClientSession) Offline() {
-
+	// notify some one server...
 }
 
 func (this *KcpClientSession) SendSvrClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
