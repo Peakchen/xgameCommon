@@ -27,4 +27,8 @@ func (this *TCommonRedisCache) SubModel() string {
 	return ""
 }
 
+func (this *TCommonRedisCache) Version() string {
+	return "1.0"
+}
+
 type UpdateDBCacheCallBack func(string, string, []byte) bool
