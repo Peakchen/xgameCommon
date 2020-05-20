@@ -41,12 +41,12 @@ func (this *KcpServerProtocol) PackAction(Output []byte) (err error) {
 	pos += 2
 
 	if len(this.identify) == 0 {
-		err = Log.RetError("[server] identify invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
+		err = akLog.RetError("[server] identify invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
 		return
 	}
 
 	if len(this.remoteAddr) == 0 {
-		err = Log.RetError("[server] remoteAddr invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
+		err = akLog.RetError("[server] remoteAddr invalid, mainid: %v, subid: %v.", this.mainid, this.subid)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (this *KcpServerProtocol) PackAction(Output []byte) (err error) {
 	pos += 4
 
 	copy(Output[pos:], this.data)
-	//Log.FmtPrintln("server PackAction-> data len: ", this.length, len(Output))
+	//akLog.FmtPrintln("server PackAction-> data len: ", this.length, len(Output))
 	return
 }
 
@@ -84,7 +84,7 @@ func (this *KcpServerProtocol) PackAction4Client(Output []byte) (err error) {
 
 	binary.LittleEndian.PutUint32(Output[pos:], this.length)
 	pos += 4
-	//Log.FmtPrintln("PackAction4Client PackAction-> data len: ", this.length)
+	//akLog.FmtPrintln("PackAction4Client PackAction-> data len: ", this.length)
 	copy(Output[pos:], this.data)
 	return
 }
@@ -135,13 +135,13 @@ func (this *KcpServerProtocol) SetCmd(mainid, subid uint16, data []byte) {
 	this.data = data
 	this.length = uint32(len(data))
 
-	//Log.FmtPrintf("[server] SetCmd mainid: %v, subid: %v, data len: %v.", mainid, subid, this.length)
+	//akLog.FmtPrintf("[server] SetCmd mainid: %v, subid: %v, data len: %v.", mainid, subid, this.length)
 }
 
 func (this *KcpServerProtocol) PackInnerMsg(mainid, subid uint16, msg proto.Message) (out []byte, err error) {
 	data, err := proto.Marshal(msg)
 	if err != nil {
-		err = Log.RetError("server proto marshal fail, data: %v.", err)
+		err = akLog.RetError("server proto marshal fail, data: %v.", err)
 		return
 	}
 
@@ -154,7 +154,7 @@ func (this *KcpServerProtocol) PackInnerMsg(mainid, subid uint16, msg proto.Mess
 func (this *KcpServerProtocol) PackClientMsg(mainid, subid uint16, msg proto.Message) (out []byte, err error) {
 	data, err := proto.Marshal(msg)
 	if err != nil {
-		err = Log.RetError("client for reg proto marshal fail, data: %v.", err)
+		err = akLog.RetError("client for reg proto marshal fail, data: %v.", err)
 		return
 	}
 
@@ -213,7 +213,7 @@ func (this *KcpServerProtocol) UnPackMsg4Client(InData []byte) (pos int, err err
 	pos += 4
 
 	datalen := utls.SliceBytesLength(InData)
-	//Log.FmtPrintln("server UnPackMsg4Client-> len: ", this.length, datalen)
+	//akLog.FmtPrintln("server UnPackMsg4Client-> len: ", this.length, datalen)
 	if datalen < int(pos+int(this.length)) {
 		err = fmt.Errorf("server  mainid: %v, subid: %v; err: InData len: %v, pos: %v, data len: %v.", this.mainid, this.subid, len(InData), pos, this.length)
 		return
@@ -221,7 +221,7 @@ func (this *KcpServerProtocol) UnPackMsg4Client(InData []byte) (pos int, err err
 
 	this.data = InData[pos : pos+int(this.length)]
 	this.srcdata = InData[:]
-	//Log.FmtPrintf("message head: mainid: %v, subid: %v, srcdata len: %v.", this.mainid, this.subid, len(this.srcdata))
+	//akLog.FmtPrintf("message head: mainid: %v, subid: %v, srcdata len: %v.", this.mainid, this.subid, len(this.srcdata))
 	return pos, nil
 }
 
@@ -260,7 +260,7 @@ func (this *KcpServerProtocol) UnPackMsg4Svr(InData []byte) (pos int, err error)
 		pos += int(remoteAddrlength)
 	}
 
-	//Log.FmtPrintln("server UnPackMsg4Svr-> len: ", this.length)
+	//akLog.FmtPrintln("server UnPackMsg4Svr-> len: ", this.length)
 	this.length = binary.LittleEndian.Uint32(InData[pos:])
 	pos += 4
 
@@ -269,7 +269,7 @@ func (this *KcpServerProtocol) UnPackMsg4Svr(InData []byte) (pos int, err error)
 		return
 	}
 
-	//Log.FmtPrintf("message head: mainid: %v, subid: %v.", this.mainid, this.subid)
+	//akLog.FmtPrintf("message head: mainid: %v, subid: %v.", this.mainid, this.subid)
 	this.data = InData[pos : pos+int(this.length)]
 	this.srcdata = InData[:]
 	return pos, nil

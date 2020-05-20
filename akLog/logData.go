@@ -1,3 +1,3 @@
-package Log
+package akLog
 
 import ()

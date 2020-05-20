@@ -42,7 +42,7 @@ func (this *KcpClientSession) close() {
 	}
 
 	closeOnce.Do(func(){
-		Log.FmtPrintf("client session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.writeCh))
+		akLog.FmtPrintf("client session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.writeCh))
 		GClient2ServerSession.RemoveSession(this.RemoteAddr)
 		this.isAlive = false
 		this.offCh <- this
@@ -141,7 +141,7 @@ func (this *KcpClientSession) dispatch() (succ bool) {
 	if mainID != uint16(MSG_MainModule.MAINMSG_SERVER) &&
 		mainID != uint16(MSG_MainModule.MAINMSG_HEARTBEAT) &&
 		(this.SvrType == Define.ERouteId_ER_ISG) {
-		//Log.FmtPrintf("[client] StrIdentify: %v.", this.StrIdentify)
+		//akLog.FmtPrintf("[client] StrIdentify: %v.", this.StrIdentify)
 		succ = innerMsgRouteAct(ESessionType_Client, route, mainID, this.pack.GetSrcMsg())
 	} else {
 		succ = this.checkmsgProc(route) //路由消息回调处理
@@ -159,7 +159,7 @@ func (this *KcpClientSession) writeloop() {
 		case data := <-this.writeCh:
 			n, err := this.conn.Write(data)
 			if err != nil {
-				Log.Error("send reply data fail, size: %v, err: %v.", n, err)
+				akLog.Error("send reply data fail, size: %v, err: %v.", n, err)
 				return
 			}
 		}
@@ -192,7 +192,7 @@ func (this *KcpClientSession) checkHeartBeatRet() (exist bool) {
 }
 
 func (this *KcpClientSession) checkmsgProc(route Define.ERouteId) (succ bool) {
-	//Log.FmtPrintf("recv response, route: %v.", route)
+	//akLog.FmtPrintf("recv response, route: %v.", route)
 	bRegister := this.checkRegisterRet(route)
 	bHeartBeat := checkHeartBeatRet(this.pack)
 	if bRegister || bHeartBeat {
@@ -209,7 +209,7 @@ func (this *KcpClientSession) GetPack() (obj IMessagePack) {
 }
 
 func (this *KcpClientSession) Push(RegPoint Define.ERouteId) {
-	//Log.FmtPrintf("[client] push new sesson, reg point: %v.", RegPoint)
+	//akLog.FmtPrintf("[client] push new sesson, reg point: %v.", RegPoint)
 	this.RegPoint = RegPoint
 	GServer2ServerSession.AddSession(this.RemoteAddr, this)
 }
@@ -230,7 +230,7 @@ func (this *KcpClientSession) Offline() {
 func (this *KcpClientSession) SendSvrClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] writeCh msg session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("writeCh msg err: ", err)
+		akLog.FmtPrintln("writeCh msg err: ", err)
 		return succ, err
 	}
 
@@ -245,7 +245,7 @@ func (this *KcpClientSession) SendSvrClientMsg(mainid, subid uint16, msg proto.M
 func (this *KcpClientSession) SendInnerSvrMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] writeCh svr session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("writeCh msg err: ", err)
+		akLog.FmtPrintln("writeCh msg err: ", err)
 		return false, err
 	}
 
@@ -260,7 +260,7 @@ func (this *KcpClientSession) SendInnerSvrMsg(mainid, subid uint16, msg proto.Me
 func (this *KcpClientSession) SendInnerClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("writeCh msg err: ", err)
+		akLog.FmtPrintln("writeCh msg err: ", err)
 		return false, err
 	}
 
@@ -281,7 +281,7 @@ func (this *KcpClientSession) SendInnerClientMsg(mainid, subid uint16, msg proto
 func (this *KcpClientSession) SendInnerBroadcastMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[client] session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("writeCh msg err: ", err)
+		akLog.FmtPrintln("writeCh msg err: ", err)
 		return false, err
 	}
 

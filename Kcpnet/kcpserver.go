@@ -44,7 +44,7 @@ func (this *KcpServer) Run(){
 		Version: "v1.0",
 		Flags: []cli.Flag{},
 		Action: func(c *cli.Context) error {
-			Log.FmtPrintln("action begin...")
+			akLog.FmtPrintln("action begin...")
 
 			//setup net param
 			config := &KcpSvrConfig{
@@ -84,7 +84,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig){
 		panic(err)
 	}
 
-	Log.FmtPrintln("kcp listening on:", l.Addr())
+	akLog.FmtPrintln("kcp listening on:", l.Addr())
 	kcplis := l.(*kcp.Listener)
 	if err := kcplis.SetReadBuffer(c.sockbuf); err != nil {
 		panic(fmt.Errorf("SetReadBuffer, err: %v.", err))
@@ -102,7 +102,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig){
 	for {
 		conn, err := kcplis.AcceptKCP()
 		if err != nil {
-			Log.FmtPrintln("accept failed:", err)
+			akLog.FmtPrintln("accept failed:", err)
 			continue
 		}
 

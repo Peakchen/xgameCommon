@@ -2,26 +2,28 @@ package Kcpnet
 
 import (
 	//"aktime"
-	"github.com/Peakchen/xgameCommon/akLog"
-	"github.com/Peakchen/xgameCommon/stacktrace"
 	"fmt"
-	"github.com/xtaci/kcp-go"
-	"time"
-	"github.com/Peakchen/xgameCommon/aktime"
 	"sync"
+	"time"
+
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/stacktrace"
+	"github.com/golang/protobuf/proto"
+	"github.com/xtaci/kcp-go"
 )
 
 type KcpServerSession struct {
 	conn *kcp.UDPSession
 
-	readCh  	chan bool
-	writeCh 	chan []byte
+	readCh  chan bool
+	writeCh chan []byte
 
-	RemoteAddr 	string
-	pack 		IMessagePack
-	offCh 		chan *KcpServerSession
-	isAlive		bool
-	closeOnce   sync.Once
+	RemoteAddr string
+	pack       IMessagePack
+	offCh      chan *KcpServerSession
+	isAlive    bool
+	closeOnce  sync.Once
 }
 
 func NewKcpSvrSession(c *kcp.UDPSession, offCh chan *KcpServerSession) *KcpServerSession {
@@ -31,7 +33,7 @@ func NewKcpSvrSession(c *kcp.UDPSession, offCh chan *KcpServerSession) *KcpServe
 		writeCh:    make(chan []byte, 1000),
 		RemoteAddr: this.conn.RemoteAddr().String(),
 		pack:       &KcpServerProtocol{},
-		offCh:		offCh,
+		offCh:      offCh,
 	}
 }
 
@@ -42,9 +44,9 @@ func (this *KcpServerSession) Handler() {
 }
 
 func (this *KcpServerSession) close() {
-	closeOnce.Do(func(){
+	closeOnce.Do(func() {
 		this.isAlive = false
-		this.offCh <-this
+		this.offCh <- this
 		this.conn.Close()
 	})
 }
@@ -139,7 +141,7 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 
 	var route Define.ERouteId
 	mainID, SubID := this.pack.GetMessageID()
-	Log.FmtPrintf("recv message: mainID: %v, subID: %v.", mainID, SubID)
+	akLog.FmtPrintf("recv message: mainID: %v, subID: %v.", mainID, SubID)
 	if mainID == uint16(MSG_MainModule.MAINMSG_SERVER) &&
 		this.SvrType == Define.ERouteId_ER_ESG {
 		route = Define.ERouteId_ER_ISG
@@ -188,7 +190,7 @@ func (this *KcpServerSession) writeloop() {
 		case data := <-this.writeCh:
 			n, err := this.conn.Write(data)
 			if err != nil {
-				Log.Error("send reply data fail, size: %v, err: %v.", n, err)
+				akLog.Error("send reply data fail, size: %v, err: %v.", n, err)
 				return
 			}
 		}
@@ -232,7 +234,7 @@ func (this *KcpServerSession) Offline() {
 func (this *KcpServerSession) SendSvrClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[server] send msg session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 
@@ -247,7 +249,7 @@ func (this *KcpServerSession) SendSvrClientMsg(mainid, subid uint16, msg proto.M
 func (this *KcpServerSession) SendInnerSvrMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[server] send svr session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 
@@ -262,7 +264,7 @@ func (this *KcpServerSession) SendInnerSvrMsg(mainid, subid uint16, msg proto.Me
 func (this *KcpServerSession) SendInnerClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[server] session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 
@@ -283,7 +285,7 @@ func (this *KcpServerSession) SendInnerClientMsg(mainid, subid uint16, msg proto
 func (this *KcpServerSession) SendInnerBroadcastMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
 	if !this.isAlive {
 		err = fmt.Errorf("[server] session disconnection, mainid: %v, subid: %v.", mainid, subid)
-		Log.FmtPrintln("send msg err: ", err)
+		akLog.FmtPrintln("send msg err: ", err)
 		return false, err
 	}
 

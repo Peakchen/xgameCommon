@@ -1,4 +1,4 @@
-package Log
+package akLog
 
 import (
 	"fmt"

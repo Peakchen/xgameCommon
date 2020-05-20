@@ -39,27 +39,27 @@ func RegisterMessage(mainID, subID uint16, proc interface{}) {
 
 	cbref := reflect.TypeOf(proc)
 	if cbref.Kind() != reflect.Func {
-		Log.FmtPrintln("proc type not is func, but is: %v.", cbref.Kind())
+		akLog.FmtPrintln("proc type not is func, but is: %v.", cbref.Kind())
 		return
 	}
 
 	if cbref.NumIn() != 2 {
-		Log.FmtPrintln("proc num input is not 2, but is: %v.", cbref.NumIn())
+		akLog.FmtPrintln("proc num input is not 2, but is: %v.", cbref.NumIn())
 		return
 	}
 
 	if cbref.NumOut() != 2 {
-		Log.FmtPrintln("proc num output is not 2, but is: %v.", cbref.NumOut())
+		akLog.FmtPrintln("proc num output is not 2, but is: %v.", cbref.NumOut())
 		return
 	}
 
 	if cbref.Out(0) != reflect.TypeOf(bool(false)) {
-		Log.FmtPrintln("proc num out 1 is not string, but is: %v.", cbref.Out(0))
+		akLog.FmtPrintln("proc num out 1 is not string, but is: %v.", cbref.Out(0))
 		return
 	}
 
 	if cbref.Out(1).Name() != "error" {
-		Log.FmtPrintln("proc num out 2 is not *proto.Message, but is: %v.", cbref.Out(1), reflect.TypeOf(error(nil)), errors.New("0"), fmt.Errorf("0"))
+		akLog.FmtPrintln("proc num out 2 is not *proto.Message, but is: %v.", cbref.Out(1), reflect.TypeOf(error(nil)), errors.New("0"), fmt.Errorf("0"))
 		return
 	}
 
@@ -137,7 +137,7 @@ func checkHeartBeatRet(pack IMessagePack) (exist bool) {
 	mainID, subID := pack.GetMessageID()
 	if mainID == uint16(MSG_MainModule.MAINMSG_HEARTBEAT) &&
 		uint16(MSG_HeartBeat.SUBMSG_SC_HeartBeat) == subID {
-		//Log.FmtPrintf("<heart beat> RemoteAddr: %v.", pack.GetRemoteAddr())
+		//akLog.FmtPrintf("<heart beat> RemoteAddr: %v.", pack.GetRemoteAddr())
 		exist = true
 	}
 	return
@@ -148,7 +148,7 @@ func msgCallBack(sessionobj TcpSession) (succ bool) {
 	protocolPack := sessionobj.GetPack()
 	msg, cb, unpackerr, exist := protocolPack.UnPackData()
 	if unpackerr != nil || !exist {
-		Log.FmtPrintf("unpack data, ModuleName: %v, reg point: %v, err: %v.", sessionobj.GetModuleName(), sessionobj.GetRegPoint(), unpackerr)
+		akLog.FmtPrintf("unpack data, ModuleName: %v, reg point: %v, err: %v.", sessionobj.GetModuleName(), sessionobj.GetRegPoint(), unpackerr)
 		return
 	}
 
@@ -167,7 +167,7 @@ func msgCallBack(sessionobj TcpSession) (succ bool) {
 	succ = ret[0].Interface().(bool)
 	reterr := ret[1].Interface()
 	if reterr != nil || !succ {
-		Log.FmtPrintln("[client] message return err: ", reterr.(error).Error())
+		akLog.FmtPrintln("[client] message return err: ", reterr.(error).Error())
 	}
 
 	return
@@ -185,22 +185,22 @@ func UnPackExternalMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 		if err.Error() == "EOF" {
 			succ = true
 		} else {
-			Log.FmtPrintln("pack External msg read data fail, err: ", err, readn)
+			akLog.FmtPrintln("pack External msg read data fail, err: ", err, readn)
 		}
 		return
 	}
 
-	Log.FmtPrintln("identify is empty, read data: ", len(packLenBuf))
+	akLog.FmtPrintln("identify is empty, read data: ", len(packLenBuf))
 	packlen := binary.LittleEndian.Uint32(packLenBuf[EnMessage_DataPackLen:EnMessage_NoDataLen])
 	if packlen > maxMessageSize {
-		Log.FmtPrintln("error receiving packLen:", packlen)
+		akLog.FmtPrintln("error receiving packLen:", packlen)
 		return
 	}
 
 	data := make([]byte, EnMessage_NoDataLen+packlen)
 	readn, err = io.ReadFull(c, data[EnMessage_NoDataLen:])
 	if err != nil || readn < int(packlen) {
-		Log.FmtPrintln("error receiving msg, readn:", readn, "packLen:", packlen, "reason:", err)
+		akLog.FmtPrintln("error receiving msg, readn:", readn, "packLen:", packlen, "reason:", err)
 		return
 	}
 
@@ -208,7 +208,7 @@ func UnPackExternalMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 	copy(data[:EnMessage_NoDataLen], packLenBuf[:])
 	_, err = pack.UnPackMsg4Client(data)
 	if err != nil {
-		Log.FmtPrintln("unpack action err: ", err)
+		akLog.FmtPrintln("unpack action err: ", err)
 		return
 	}
 
@@ -228,22 +228,22 @@ func UnPackInnerMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 		if err.Error() == "EOF" {
 			succ = true
 		} else {
-			Log.FmtPrintln("pack Inner message read data fail, err: ", err, readn)
+			akLog.FmtPrintln("pack Inner message read data fail, err: ", err, readn)
 		}
 		return
 	}
 
-	//Log.FmtPrintln("identify not empty, read data: ", len(packLenBuf))
+	//akLog.FmtPrintln("identify not empty, read data: ", len(packLenBuf))
 	packlen := binary.LittleEndian.Uint32(packLenBuf[EnMessage_SvrDataPackLen:EnMessage_SvrNoDataLen])
 	if packlen > maxMessageSize {
-		Log.FmtPrintln("error receiving packLen:", packlen)
+		akLog.FmtPrintln("error receiving packLen:", packlen)
 		return
 	}
 
 	data := make([]byte, EnMessage_SvrNoDataLen+packlen)
 	readn, err = io.ReadFull(c, data[EnMessage_SvrNoDataLen:])
 	if err != nil || readn < int(packlen) {
-		Log.FmtPrintln("error receiving msg, readn:", readn, "packLen:", packlen, "reason:", err)
+		akLog.FmtPrintln("error receiving msg, readn:", readn, "packLen:", packlen, "reason:", err)
 		return
 	}
 
@@ -251,7 +251,7 @@ func UnPackInnerMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 	copy(data[:EnMessage_SvrNoDataLen], packLenBuf[:])
 	_, err = pack.UnPackMsg4Svr(data)
 	if err != nil {
-		Log.FmtPrintln("unpack action err: ", err)
+		akLog.FmtPrintln("unpack action err: ", err)
 		return
 	}
 	succ = true
@@ -268,22 +268,22 @@ func innerMsgRouteAct(pointType ESessionType, route Define.ERouteId, mainID uint
 
 	if mainID == uint16(MSG_MainModule.MAINMSG_RPC) {
 		//game rpc call back.
-		Log.FmtPrintln("inner game rpc route.")
+		akLog.FmtPrintln("inner game rpc route.")
 		session = GServer2ServerSession.GetSession(Define.ERouteId_ER_Game)
 	} else {
 		if route != 0 && pointType == ESessionType_Client {
 			//内网转发外网路由请求至xxx服务器 gateway route external message to some one server.
-			//Log.FmtPrintf("inner route requst message, route: %v.", route)
+			//akLog.FmtPrintf("inner route requst message, route: %v.", route)
 			session = GServer2ServerSession.GetSession(Define.ERouteId(route))
 		} else {
 			// 内网转发xxx服务器消息至外网 gateway route some one server message to external gateway.
-			//Log.FmtPrintln("inner route respnse message.")
+			//akLog.FmtPrintln("inner route respnse message.")
 			session = GServer2ServerSession.GetSession(Define.ERouteId_ER_ESG)
 		}
 	}
 
 	if session == nil {
-		Log.Error("can not find session from inner gateway, mainID: %v.", mainID)
+		akLog.Error("can not find session from inner gateway, mainID: %v.", mainID)
 		return
 	}
 
@@ -299,20 +299,20 @@ func innerMsgRouteAct(pointType ESessionType, route Define.ERouteId, mainID uint
 func sendInnerSvr(obj TcpSession) (succ bool) {
 	session := GServer2ServerSession.GetSession(Define.ERouteId_ER_ISG)
 	if session == nil {
-		Log.Error("[request] can not find session inner route from external gateway.")
+		akLog.Error("[request] can not find session inner route from external gateway.")
 		return
 	}
 
 	if !session.Alive() {
 		GServer2ServerSession.RemoveSession(session.GetRemoteAddr())
-		Log.FmtPrintln("s2s session not alive, addr: ", session.GetRemoteAddr())
+		akLog.FmtPrintln("s2s session not alive, addr: ", session.GetRemoteAddr())
 		return
 	}
 
 	out := make([]byte, EnMessage_SvrNoDataLen+int(obj.GetPack().GetDataLen()))
 	err := obj.GetPack().PackAction(out)
 	if err != nil {
-		Log.Error("unpack action err: ", err)
+		akLog.Error("unpack action err: ", err)
 		return
 	}
 
@@ -325,21 +325,21 @@ func sendUserClient(obj TcpSession) (succ bool) {
 	out := make([]byte, EnMessage_NoDataLen+int(obj.GetPack().GetDataLen()))
 	err := obj.GetPack().PackAction4Client(out)
 	if err != nil {
-		Log.Error("[response user client] unpack action err: ", err)
+		akLog.Error("[response user client] unpack action err: ", err)
 		return
 	}
 
-	Log.FmtPrintln("external response, addr: ", obj.GetPack().GetRemoteAddr(), len(obj.GetPack().GetRemoteAddr()))
+	akLog.FmtPrintln("external response, addr: ", obj.GetPack().GetRemoteAddr(), len(obj.GetPack().GetRemoteAddr()))
 	if obj.GetPack().GetPostType() == MsgPostType_Single {
 		session := GClient2ServerSession.GetSessionByIdentify(obj.GetPack().GetRemoteAddr())
 		if session == nil {
-			Log.Error("[response user client] can not find session route from external gateway.")
+			akLog.Error("[response user client] can not find session route from external gateway.")
 			return
 		}
 
 		if !session.Alive() {
 			GClient2ServerSession.RemoveSession(session.GetRemoteAddr())
-			Log.FmtPrintln("c2s session not alive, addr: ", session.GetRemoteAddr())
+			akLog.FmtPrintln("c2s session not alive, addr: ", session.GetRemoteAddr())
 			return
 		}
 		succ = session.WriteMessage(out)
@@ -363,7 +363,7 @@ func sendUserClient(obj TcpSession) (succ bool) {
 func externalRouteAct(route Define.ERouteId, obj TcpSession, responseCliented bool) (succ bool) {
 	//客户端请求消息 receive user client message.
 	if Define.ERouteId(route) != Define.ERouteId_ER_ISG && false == responseCliented {
-		Log.FmtPrintf("external request, route: %v, StrIdentify: %v.", route, obj.GetIdentify())
+		akLog.FmtPrintf("external request, route: %v, StrIdentify: %v.", route, obj.GetIdentify())
 		// add session.
 		GClient2ServerSession.AddSession(obj.GetRemoteAddr(), obj)
 		//内网关转发至相关服务器 route message to some one server.

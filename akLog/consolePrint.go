@@ -1,4 +1,4 @@
-package Log
+package akLog
 
 // add by stefan
 
