@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"github.com/Peakchen/xgameCommon/stacktrace"

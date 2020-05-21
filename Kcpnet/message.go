@@ -11,6 +11,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/ado/dbStatistics"
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Login"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/stacktrace"
 	"github.com/golang/protobuf/proto"
 	"github.com/xtaci/kcp-go"

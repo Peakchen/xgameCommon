@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/golang/protobuf/proto"
 )
 
