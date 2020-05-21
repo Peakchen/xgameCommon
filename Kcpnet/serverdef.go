@@ -1,6 +1,6 @@
 package Kcpnet
 
-import ()
+import "time"
 
 type KcpSvrConfig struct {
 	listen                        string

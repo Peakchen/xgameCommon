@@ -3,13 +3,14 @@ package Kcpnet
 // add by stefan
 
 import (
+	"encoding/binary"
+	"fmt"
+	"reflect"
+
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/stacktrace"
 	"github.com/Peakchen/xgameCommon/utls"
-	"encoding/binary"
-	"fmt"
 	"github.com/golang/protobuf/proto"
-	"reflect"
 )
 
 /*
