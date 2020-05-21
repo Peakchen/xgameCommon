@@ -3,36 +3,39 @@ package Kcpnet
 // by udp
 
 import (
+	"fmt"
+
 	"github.com/xtaci/kcp-go"
 	//cli "gopkg.in/urfave/cli.v2"
-	cli "github.com/urfave/cli"
-	"github.com/Peakchen/xgameCommon/akLog"
-	"sync"
-	"os"
-	"github.com/Peakchen/xgameCommon/pprof"
 	"context"
+	"os"
+	"sync"
+
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/pprof"
+	cli "github.com/urfave/cli"
 )
 
 type KcpServer struct {
-	sw 			sync.WaitGroup
-	svrName  	string
-	pack 		IMessagePack
-	addr		string
-	ppAddr		string
-	cancel    	context.CancelFunc
-	offCh 		chan *KcpServerSession
+	sw      sync.WaitGroup
+	svrName string
+	pack    IMessagePack
+	addr    string
+	ppAddr  string
+	cancel  context.CancelFunc
+	offCh   chan *KcpServerSession
 }
 
-func NewKcpServer(Name string, addr string, pprofAddr string)*KcpServer{
+func NewKcpServer(Name string, addr string, pprofAddr string) *KcpServer {
 	return &KcpServer{
-		svrName: 	Name,
-		addr:		addr,
-		ppAddr:		pprofAddr,
-		offCh 		make(chan *KcpServerSession, 1000),
+		svrName: Name,
+		addr:    addr,
+		ppAddr:  pprofAddr,
+		offCh:   make(chan *KcpServerSession, 1000),
 	}
 }
 
-func (this *KcpServer) Run(){
+func (this *KcpServer) Run() {
 	os.Setenv("GOTRACEBACK", "crash")
 
 	ctx, this.cancel = context.WithCancel(context.Background())
@@ -42,7 +45,7 @@ func (this *KcpServer) Run(){
 		Name:    this.svrName,
 		Usage:   "a server...",
 		Version: "v1.0",
-		Flags: []cli.Flag{},
+		Flags:   []cli.Flag{},
 		Action: func(c *cli.Context) error {
 			akLog.FmtPrintln("action begin...")
 
@@ -78,7 +81,7 @@ func (this *KcpServer) Run(){
 	app.Run(os.Args)
 }
 
-func (this *KcpServer) kcpAccept(c *KcpSvrConfig){
+func (this *KcpServer) kcpAccept(c *KcpSvrConfig) {
 	l, err := kcp.Listen(c.listen)
 	if err != nil {
 		panic(err)
@@ -89,7 +92,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig){
 	if err := kcplis.SetReadBuffer(c.sockbuf); err != nil {
 		panic(fmt.Errorf("SetReadBuffer, err: %v.", err))
 	}
-	
+
 	if err := kcplis.SetWriteBuffer(c.sockbuf); err != nil {
 		panic(fmt.Errorf("SetWriteBuffer, err: %v.", err))
 	}
@@ -119,7 +122,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig){
 	}
 }
 
-func (this *KcpServer) loopOffline(){
+func (this *KcpServer) loopOffline() {
 	for {
 		offsession := <-this.offCh
 		offsession.Offline()

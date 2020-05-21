@@ -1,7 +1,10 @@
 package Kcpnet
 
 import (
+	"reflect"
 	"time"
+
+	"github.com/golang/protobuf/proto"
 )
 
 /*
