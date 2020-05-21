@@ -7,16 +7,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"reflect"
 
 	"github.com/Peakchen/xgameCommon/ado/dbStatistics"
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/akNet"
 	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Login"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
-	"github.com/xtaci/kcp-go"
 )
 
 type TMessageProc struct {
@@ -30,7 +31,7 @@ var (
 )
 
 func RegisterMessage(mainID, subID uint16, proc interface{}) {
-	_cmd := EncodeCmd(mainID, subID)
+	_cmd := akNet.EncodeCmd(mainID, subID)
 	_, ok := _MessageTab[_cmd]
 	if ok {
 		return
@@ -81,7 +82,7 @@ func RegisterMessage(mainID, subID uint16, proc interface{}) {
 }
 
 func GetMessageInfo(mainID, subID uint16) (proc *TMessageProc, finded bool) {
-	_cmd := EncodeCmd(mainID, subID)
+	_cmd := akNet.EncodeCmd(mainID, subID)
 	proc, finded = _MessageTab[_cmd]
 	return
 }
@@ -174,10 +175,10 @@ func msgCallBack(sessionobj TcpSession) (succ bool) {
 
 /*
 @func: UnPackExternalMsg 解服务器外部消息（客户端，clientsession 注册消息）
-@parma1: 连接对象 c *kcp.UDPSession
+@parma1: 连接对象 c net.Conn
 @param2: 解包对象 pack IMessagePack
 */
-func UnPackExternalMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
+func UnPackExternalMsg(c net.Conn, pack IMessagePack) (succ bool) {
 	packLenBuf := make([]byte, EnMessage_NoDataLen)
 	readn, err := io.ReadFull(c, packLenBuf)
 	if err != nil || readn < EnMessage_NoDataLen {
@@ -217,10 +218,10 @@ func UnPackExternalMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 
 /*
 @func: UnPackInnerMsg 解服务器内部消息（server 间客户端发来的请求或者其他rpc消息传递）
-@parma1: 连接对象 c *kcp.UDPSession
+@parma1: 连接对象 c net.Conn
 @param2: 解包对象 pack IMessagePack
 */
-func UnPackInnerMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
+func UnPackInnerMsg(c net.Conn, pack IMessagePack) (succ bool) {
 	packLenBuf := make([]byte, EnMessage_SvrNoDataLen)
 	readn, err := io.ReadFull(c, packLenBuf)
 	if err != nil || readn < EnMessage_SvrNoDataLen {
@@ -260,7 +261,7 @@ func UnPackInnerMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 /*
 	内网关路由 inner gateway for message route (request and response).
 */
-func innerMsgRouteAct(pointType ESessionType, route define.ERouteId, mainID uint16, data []byte) (succ bool) {
+func innerMsgRouteAct(pointType akNet.ESessionType, route define.ERouteId, mainID uint16, data []byte) (succ bool) {
 	var (
 		session TcpSession
 	)
@@ -270,7 +271,7 @@ func innerMsgRouteAct(pointType ESessionType, route define.ERouteId, mainID uint
 		akLog.FmtPrintln("inner game rpc route.")
 		session = GServer2ServerSession.GetSession(define.ERouteId_ER_Game)
 	} else {
-		if route != 0 && pointType == ESessionType_Client {
+		if route != 0 && pointType == akNet.ESessionType_Client {
 			//内网转发外网路由请求至xxx服务器 gateway route external message to some one server.
 			//akLog.FmtPrintf("inner route requst message, route: %v.", route)
 			session = GServer2ServerSession.GetSession(define.ERouteId(route))

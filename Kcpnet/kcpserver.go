@@ -38,7 +38,7 @@ func NewKcpServer(Name string, addr string, pprofAddr string) *KcpServer {
 func (this *KcpServer) Run() {
 	os.Setenv("GOTRACEBACK", "crash")
 
-	ctx, this.cancel = context.WithCancel(context.Background())
+	ctx, _ := context.WithCancel(context.Background())
 	pprof.Run(ctx)
 
 	app := &cli.App{
@@ -75,6 +75,7 @@ func (this *KcpServer) Run() {
 			go this.kcpAccept(config)
 			go this.loopOffline()
 			this.sw.Wait()
+			return nil
 		},
 	}
 
@@ -117,7 +118,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig) {
 
 		// start a goroutine for every incoming connection for read and write
 		//go handleClient(conn, config)
-		sess := NewKcpSvrSession(conn, this.offCh)
+		sess := NewKcpSvrSession(conn, this.offCh, c)
 		sess.Handler()
 	}
 }

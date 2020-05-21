@@ -3,38 +3,45 @@ package Kcpnet
 import (
 	//"aktime"
 	"fmt"
+	"net"
 	"sync"
 	"time"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/akNet"
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
 	"github.com/Peakchen/xgameCommon/stacktrace"
 	"github.com/golang/protobuf/proto"
-	"github.com/xtaci/kcp-go"
 )
 
 type KcpServerSession struct {
-	conn *kcp.UDPSession
-
-	readCh  chan bool
-	writeCh chan []byte
-
-	RemoteAddr string
-	pack       IMessagePack
-	offCh      chan *KcpServerSession
-	isAlive    bool
-	closeOnce  sync.Once
+	conn              net.Conn
+	readCh            chan bool
+	writeCh           chan []byte
+	RemoteAddr        string
+	pack              IMessagePack
+	offCh             chan *KcpServerSession
+	isAlive           bool
+	closeOnce         sync.Once
+	SvrType           define.ERouteId
+	RegPoint          define.ERouteId
+	heartBeatDeadline int64
+	kcpConfig         *KcpSvrConfig
+	StrIdentify       string
+	Name              string
 }
 
-func NewKcpSvrSession(c *kcp.UDPSession, offCh chan *KcpServerSession) *KcpServerSession {
+func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrConfig) *KcpServerSession {
 	return &KcpServerSession{
 		conn:       c,
 		readCh:     make(chan bool, 1000),
 		writeCh:    make(chan []byte, 1000),
-		RemoteAddr: this.conn.RemoteAddr().String(),
+		RemoteAddr: c.RemoteAddr().String(),
 		pack:       &KcpServerProtocol{},
 		offCh:      offCh,
+		kcpConfig:  kcpcfg,
 	}
 }
 
@@ -45,7 +52,7 @@ func (this *KcpServerSession) Handler() {
 }
 
 func (this *KcpServerSession) close() {
-	closeOnce.Do(func() {
+	this.closeOnce.Do(func() {
 		this.isAlive = false
 		this.offCh <- this
 		this.conn.Close()
@@ -97,14 +104,14 @@ func (this *KcpServerSession) readloop() {
 		case rspcliented := <-this.readCh:
 			this.dispatch(rspcliented)
 		default:
-			this.conn.SetReadDeadline(time.Now().Add(config.readDeadline))
+			this.conn.SetReadDeadline(time.Now().Add(this.kcpConfig.readDeadline))
 			//是否加个消息队列处理 ?
-			this.read(data)
+			this.read()
 		}
 	}
 }
 
-func (this *KcpServerSession) read(data []byte) (succ bool) {
+func (this *KcpServerSession) read() (succ bool) {
 
 	defer func() {
 		stacktrace.Catchcrash()
@@ -129,6 +136,7 @@ func (this *KcpServerSession) read(data []byte) (succ bool) {
 	}
 
 	this.readCh <- responseCliented
+	return
 }
 
 func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
@@ -169,11 +177,12 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 		if this.SvrType == define.ERouteId_ER_ESG {
 			succ = externalRouteAct(route, this, responseCliented)
 		} else {
-			succ = innerMsgRouteAct(ESessionType_Server, route, mainID, this.pack.GetSrcMsg())
+			succ = innerMsgRouteAct(akNet.ESessionType_Server, route, mainID, this.pack.GetSrcMsg())
 		}
 	} else {
 		succ = msgCallBack(this) //路由消息回调处理
 	}
+	return
 }
 
 func (this *KcpServerSession) writeloop() {
@@ -185,13 +194,19 @@ func (this *KcpServerSession) writeloop() {
 	for {
 		select {
 		case data := <-this.writeCh:
-			n, err := this.conn.Write(data)
-			if err != nil {
-				akLog.Error("send reply data fail, size: %v, err: %v.", n, err)
-				return
-			}
+			this.WriteMessage(data)
 		}
 	}
+}
+
+func (this *KcpServerSession) WriteMessage(data []byte) (succ bool) {
+	n, err := this.conn.Write(data)
+	if err != nil {
+		akLog.Error("send reply data fail, size: %v, err: %v.", n, err)
+		return
+	}
+	succ = true
+	return
 }
 
 func (this *KcpServerSession) Alive() bool {
@@ -306,4 +321,16 @@ func (this *KcpServerSession) GetIdentify() string {
 
 func (this *KcpServerSession) GetRegPoint() (RegPoint define.ERouteId) {
 	return this.RegPoint
+}
+
+func (this *KcpServerSession) GetModuleName() string {
+	return this.Name
+}
+
+func (this *KcpServerSession) IsUser() bool {
+	return this.RegPoint == 0
+}
+
+func (this *KcpServerSession) RefreshHeartBeat(mainid, subid uint16) bool {
+	return true
 }

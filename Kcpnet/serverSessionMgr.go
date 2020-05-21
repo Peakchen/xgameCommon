@@ -20,16 +20,17 @@ func (this *SessionMgr) AddSession(key interface{}, sess TcpSession) {
 func (this *SessionMgr) GetSession(key interface{}) (sess TcpSession) {
 	v, exist := this.sessionMap.Load(key)
 	if exist {
-		sess = v.(*TcpSession)
+		sess = v.(TcpSession)
 	}
 	return
 }
 
-func (this *SessionMgr) RemoveSession(key interface{}) (succ bool) {
-	_, exist := this.sessionMap.Load(key)
+func (this *SessionMgr) RemoveSession(key interface{}) (exist bool) {
+	_, exist = this.sessionMap.Load(key)
 	if exist {
 		this.sessionMap.Delete(key)
 	}
+	return
 }
 
 func (this *SessionMgr) GetSessionByIdentify(key interface{}) (sess TcpSession) {
