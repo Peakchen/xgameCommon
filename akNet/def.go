@@ -1,11 +1,12 @@
 package akNet
 
 import (
-	"define"
 	"net"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/Peakchen/xgameCommon/define"
 
 	"github.com/golang/protobuf/proto"
 )

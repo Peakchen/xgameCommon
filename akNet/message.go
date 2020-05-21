@@ -3,23 +3,24 @@ package akNet
 // add by stefan
 
 import (
-	"github.com/Peakchen/xgameCommon/akLog"
-	"github.com/Peakchen/xgameCommon/ado/dbStatistics"
-	"define"
-	"msgProto/MSG_HeartBeat"
-	"msgProto/MSG_Login"
-	"msgProto/MSG_MainModule"
-	"msgProto/MSG_Server"
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/Shopify/sarama"
-	"github.com/bsm/sarama-cluster"
 	"io"
 	"net"
 	"os"
 	"os/signal"
 	"reflect"
+
+	"github.com/Peakchen/xgameCommon/ado/dbStatistics"
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_Login"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
+	"github.com/Shopify/sarama"
+	"github.com/bsm/sarama-cluster"
 )
 
 type TMessageProc struct {
