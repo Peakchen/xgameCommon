@@ -20,7 +20,6 @@ type KcpClient struct {
 	Addr    string
 	ppAddr  string
 	cancel  context.CancelFunc
-	sw      sync.WaitGroup
 	sesson  *KcpClientSession
 	offCh   chan *KcpClientSession
 }

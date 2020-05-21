@@ -259,7 +259,7 @@ func UnPackInnerMsg(c *kcp.UDPSession, pack IMessagePack) (succ bool) {
 /*
 	内网关路由 inner gateway for message route (request and response).
 */
-func innerMsgRouteAct(pointType ESessionType, route Define.ERouteId, mainID uint16, data []byte) (succ bool) {
+func innerMsgRouteAct(pointType ESessionType, route define.ERouteId, mainID uint16, data []byte) (succ bool) {
 	var (
 		session TcpSession
 	)
@@ -267,16 +267,16 @@ func innerMsgRouteAct(pointType ESessionType, route Define.ERouteId, mainID uint
 	if mainID == uint16(MSG_MainModule.MAINMSG_RPC) {
 		//game rpc call back.
 		akLog.FmtPrintln("inner game rpc route.")
-		session = GServer2ServerSession.GetSession(Define.ERouteId_ER_Game)
+		session = GServer2ServerSession.GetSession(define.ERouteId_ER_Game)
 	} else {
 		if route != 0 && pointType == ESessionType_Client {
 			//内网转发外网路由请求至xxx服务器 gateway route external message to some one server.
 			//akLog.FmtPrintf("inner route requst message, route: %v.", route)
-			session = GServer2ServerSession.GetSession(Define.ERouteId(route))
+			session = GServer2ServerSession.GetSession(define.ERouteId(route))
 		} else {
 			// 内网转发xxx服务器消息至外网 gateway route some one server message to external gateway.
 			//akLog.FmtPrintln("inner route respnse message.")
-			session = GServer2ServerSession.GetSession(Define.ERouteId_ER_ESG)
+			session = GServer2ServerSession.GetSession(define.ERouteId_ER_ESG)
 		}
 	}
 
@@ -295,7 +295,7 @@ func innerMsgRouteAct(pointType ESessionType, route Define.ERouteId, mainID uint
 
 // send message for server by inner gateway from external gateway.
 func sendInnerSvr(obj TcpSession) (succ bool) {
-	session := GServer2ServerSession.GetSession(Define.ERouteId_ER_ISG)
+	session := GServer2ServerSession.GetSession(define.ERouteId_ER_ISG)
 	if session == nil {
 		akLog.Error("[request] can not find session inner route from external gateway.")
 		return
@@ -358,9 +358,9 @@ func sendUserClient(obj TcpSession) (succ bool) {
 /*
 	外网关路由 external gateway for message route (request and response).
 */
-func externalRouteAct(route Define.ERouteId, obj TcpSession, responseCliented bool) (succ bool) {
+func externalRouteAct(route define.ERouteId, obj TcpSession, responseCliented bool) (succ bool) {
 	//客户端请求消息 receive user client message.
-	if Define.ERouteId(route) != Define.ERouteId_ER_ISG && false == responseCliented {
+	if define.ERouteId(route) != define.ERouteId_ER_ISG && false == responseCliented {
 		akLog.FmtPrintf("external request, route: %v, StrIdentify: %v.", route, obj.GetIdentify())
 		// add session.
 		GClient2ServerSession.AddSession(obj.GetRemoteAddr(), obj)

@@ -37,10 +37,6 @@ func NewKcpClientSession(c *kcp.UDPSession, offCh chan *KcpClientSession) *KcpSe
 	}
 }
 
-func (this *KcpClientSession) GetRemoteAddr() string {
-	return this.remoteAddr
-}
-
 func (this *KcpClientSession) Alive() bool {
 	return this.isAlive
 }
@@ -111,7 +107,7 @@ func (this *KcpClientSession) read() (succ bool) {
 	}()
 
 	if len(this.StrIdentify) == 0 &&
-		(this.SvrType == Define.ERouteId_ER_ESG || this.SvrType == Define.ERouteId_ER_ISG) {
+		(this.SvrType == define.ERouteId_ER_ESG || this.SvrType == define.ERouteId_ER_ISG) {
 		succ = UnPackExternalMsg(this.conn, this.pack)
 		if !succ {
 			return
@@ -133,7 +129,7 @@ func (this *KcpClientSession) dispatch() (succ bool) {
 		stacktrace.Catchcrash()
 	}()
 
-	var route Define.ERouteId
+	var route define.ERouteId
 	mainID, _ := this.pack.GetMessageID()
 	if (mainID == uint16(MSG_MainModule.MAINMSG_SERVER) ||
 		mainID == uint16(MSG_MainModule.MAINMSG_LOGIN)) && len(this.StrIdentify) == 0 {
@@ -143,13 +139,13 @@ func (this *KcpClientSession) dispatch() (succ bool) {
 		this.pack.SetIdentify(this.StrIdentify)
 	}
 	if mainID == uint16(MSG_MainModule.MAINMSG_LOGIN) {
-		route = Define.ERouteId_ER_Login
+		route = define.ERouteId_ER_Login
 	} else if mainID >= uint16(MSG_MainModule.MAINMSG_PLAYER) {
-		route = Define.ERouteId_ER_Game
+		route = define.ERouteId_ER_Game
 	}
 	if mainID != uint16(MSG_MainModule.MAINMSG_SERVER) &&
 		mainID != uint16(MSG_MainModule.MAINMSG_HEARTBEAT) &&
-		(this.SvrType == Define.ERouteId_ER_ISG) {
+		(this.SvrType == define.ERouteId_ER_ISG) {
 		//akLog.FmtPrintf("[client] StrIdentify: %v.", this.StrIdentify)
 		succ = innerMsgRouteAct(ESessionType_Client, route, mainID, this.pack.GetSrcMsg())
 	} else {
@@ -175,15 +171,15 @@ func (this *KcpClientSession) writeloop() {
 	}
 }
 
-func (this *KcpClientSession) checkRegisterRet(route Define.ERouteId) (exist bool) {
+func (this *KcpClientSession) checkRegisterRet(route define.ERouteId) (exist bool) {
 	mainID, subID := this.pack.GetMessageID()
 	if mainID == uint16(MSG_MainModule.MAINMSG_SERVER) &&
 		uint16(MSG_Server.SUBMSG_SC_ServerRegister) == subID {
 		this.StrIdentify = this.RemoteAddr
-		if this.SvrType == Define.ERouteId_ER_ISG {
-			this.Push(Define.ERouteId_ER_ESG)
+		if this.SvrType == define.ERouteId_ER_ISG {
+			this.Push(define.ERouteId_ER_ESG)
 		} else {
-			this.Push(Define.ERouteId_ER_ISG)
+			this.Push(define.ERouteId_ER_ISG)
 		}
 
 		exist = true
@@ -200,7 +196,7 @@ func (this *KcpClientSession) checkHeartBeatRet() (exist bool) {
 	return
 }
 
-func (this *KcpClientSession) checkmsgProc(route Define.ERouteId) (succ bool) {
+func (this *KcpClientSession) checkmsgProc(route define.ERouteId) (succ bool) {
 	//akLog.FmtPrintf("recv response, route: %v.", route)
 	bRegister := this.checkRegisterRet(route)
 	bHeartBeat := checkHeartBeatRet(this.pack)
@@ -217,7 +213,7 @@ func (this *KcpClientSession) GetPack() (obj IMessagePack) {
 	return this.pack
 }
 
-func (this *KcpClientSession) Push(RegPoint Define.ERouteId) {
+func (this *KcpClientSession) Push(RegPoint define.ERouteId) {
 	//akLog.FmtPrintf("[client] push new sesson, reg point: %v.", RegPoint)
 	this.RegPoint = RegPoint
 	GServer2ServerSession.AddSession(this.RemoteAddr, this)
@@ -312,12 +308,12 @@ func (this *KcpClientSession) GetIdentify() string {
 	return this.StrIdentify
 }
 
-func (this *KcpClientSession) GetRegPoint() (RegPoint Define.ERouteId) {
+func (this *KcpClientSession) GetRegPoint() (RegPoint define.ERouteId) {
 	return this.RegPoint
 }
 
 func (this *KcpClientSession) GetRemoteAddr() string {
-	return this.RemoteAddr
+	return this.remoteAddr
 }
 
 func (this *KcpClientSession) IsUser() bool {

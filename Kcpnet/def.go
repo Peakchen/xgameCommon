@@ -56,10 +56,10 @@ type IMessagePack interface {
 
 type TcpSession interface {
 	GetRemoteAddr() string
-	GetRegPoint() (RegPoint Define.ERouteId)
+	GetRegPoint() (RegPoint define.ERouteId)
 	GetIdentify() string
 	SetSendCache(data []byte)
-	Push(RegPoint Define.ERouteId)
+	Push(RegPoint define.ERouteId)
 	SetIdentify(StrIdentify string)
 	SendInnerSvrMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error)
 	SendSvrClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error)

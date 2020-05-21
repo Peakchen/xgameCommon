@@ -51,10 +51,6 @@ func (this *KcpServerSession) close() {
 	})
 }
 
-func (this *KcpServerSession) Offline() {
-	// notify some one server...
-}
-
 func (this *KcpServerSession) heartBeatloop(sw *sync.WaitGroup) {
 
 	ticker := time.NewTicker(time.Duration(cstCheckHeartBeatMonitorSec) * time.Second)
@@ -126,7 +122,7 @@ func (this *KcpServerSession) read(data []byte) (succ bool) {
 			return
 		}
 		this.StrIdentify = this.pack.GetIdentify()
-		if this.SvrType == Define.ERouteId_ER_ESG {
+		if this.SvrType == define.ERouteId_ER_ESG {
 			responseCliented = true
 		}
 	}
@@ -139,14 +135,14 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 		stacktrace.Catchcrash()
 	}()
 
-	var route Define.ERouteId
+	var route define.ERouteId
 	mainID, SubID := this.pack.GetMessageID()
 	akLog.FmtPrintf("recv message: mainID: %v, subID: %v.", mainID, SubID)
 	if mainID == uint16(MSG_MainModule.MAINMSG_SERVER) &&
-		this.SvrType == Define.ERouteId_ER_ESG {
-		route = Define.ERouteId_ER_ISG
-		this.RegPoint = Define.ERouteId_ER_ISG
-		this.Push(Define.ERouteId_ER_ISG) //外网关加入内网关session
+		this.SvrType == define.ERouteId_ER_ESG {
+		route = define.ERouteId_ER_ISG
+		this.RegPoint = define.ERouteId_ER_ISG
+		this.Push(define.ERouteId_ER_ISG) //外网关加入内网关session
 		RegisterMessageRet(this)
 		succ = true
 		return
@@ -162,14 +158,14 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 	}
 
 	if mainID == uint16(MSG_MainModule.MAINMSG_LOGIN) {
-		route = Define.ERouteId_ER_Login
+		route = define.ERouteId_ER_Login
 	} else if mainID >= uint16(MSG_MainModule.MAINMSG_PLAYER) {
-		route = Define.ERouteId_ER_Game
+		route = define.ERouteId_ER_Game
 	}
 
 	if mainID != uint16(MSG_MainModule.MAINMSG_SERVER) && mainID != uint16(MSG_MainModule.MAINMSG_HEARTBEAT) &&
-		(this.SvrType == Define.ERouteId_ER_ESG || this.SvrType == Define.ERouteId_ER_ISG) {
-		if this.SvrType == Define.ERouteId_ER_ESG {
+		(this.SvrType == define.ERouteId_ER_ESG || this.SvrType == define.ERouteId_ER_ISG) {
+		if this.SvrType == define.ERouteId_ER_ESG {
 			succ = externalRouteAct(route, this, responseCliented)
 		} else {
 			succ = innerMsgRouteAct(ESessionType_Server, route, mainID, this.pack.GetSrcMsg())
@@ -213,7 +209,7 @@ func (this *KcpServerSession) GetRemoteAddr() string {
 	return this.RemoteAddr
 }
 
-func (this *KcpServerSession) Push(RegPoint Define.ERouteId) {
+func (this *KcpServerSession) Push(RegPoint define.ERouteId) {
 	this.RegPoint = RegPoint
 	GServer2ServerSession.AddSession(this.RemoteAddr, this)
 }
@@ -307,6 +303,6 @@ func (this *KcpServerSession) GetIdentify() string {
 	return this.StrIdentify
 }
 
-func (this *KcpServerSession) GetRegPoint() (RegPoint Define.ERouteId) {
+func (this *KcpServerSession) GetRegPoint() (RegPoint define.ERouteId) {
 	return this.RegPoint
 }
