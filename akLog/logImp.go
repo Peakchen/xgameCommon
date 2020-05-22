@@ -3,9 +3,6 @@ package akLog
 // add by stefan
 
 import (
-	"github.com/Peakchen/xgameCommon/aktime"
-	"github.com/Peakchen/xgameCommon/public"
-	"github.com/Peakchen/xgameCommon/utls"
 	"context"
 	"fmt"
 	"os"
@@ -14,6 +11,10 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/public"
+	"github.com/Peakchen/xgameCommon/utls"
 )
 
 type TAokoLog struct {
@@ -104,6 +105,7 @@ func initLogFile(logtype string, aokoLog *TAokoLog) {
 
 	filehandler, err := os.OpenFile(RealFileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
+		panic("open file fail, err: " + err.Error())
 		return
 	}
 
