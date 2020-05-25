@@ -2,18 +2,21 @@ package pprof
 
 // add by stefan 20190606 16:12
 import (
-	"github.com/Peakchen/xgameCommon/akLog"
-	"github.com/Peakchen/xgameCommon/aktime"
 	"fmt"
 	"os"
 	"path"
 	"runtime/pprof"
 	"strings"
 	"time"
+
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/aktime"
+
 	//"log"
-	"github.com/Peakchen/xgameCommon/utls"
 	"context"
 	"sync"
+
+	"github.com/Peakchen/xgameCommon/utls"
 )
 
 const (
@@ -46,9 +49,12 @@ func Exit() {
 func (this *TPProfMgr) StartPProf(ctx context.Context) {
 	this.ctx = ctx
 	this.wg.Add(1)
-	checkcreateTempDir()
-	this.cpu = createCpu()
-	this.mem = createMem()
+	filepath := checkcreateTempDir()
+	if len(filepath) == 0 {
+		panic("error exe path.")
+	}
+	this.cpu = createCpu(filepath)
+	this.mem = createMem(filepath)
 	go this.loop()
 }
 
@@ -97,13 +103,12 @@ func Newpprof(file string) (retfile string) {
 	execpath = strings.Replace(execpath, "\\", "/", -1)
 	_, sfile := path.Split(execpath)
 	arrfile := strings.Split(sfile, ".")
-	retfile = fmt.Sprintf("./pprof/%s_%v.prof", arrfile[0], retfile)
+	retfile = fmt.Sprintf("%s_%v.prof", arrfile[0], retfile)
 	return
 }
 
-func checkcreateTempDir() {
-	exepath := utls.GetExeFilePath()
-	filepath := exepath + "/pprof"
+func checkcreateTempDir() (filepath string) {
+	filepath = utls.GetExeFilePath() + "/pprof"
 	exist, err := utls.IsPathExisted(filepath)
 	if err != nil {
 		panic("check path exist err: " + err.Error())
@@ -117,11 +122,12 @@ func checkcreateTempDir() {
 			return
 		}
 	}
+	return
 }
 
-func createCpu() (file *os.File) {
+func createCpu(filepath string) (file *os.File) {
 	cpuf := Newpprof("cpu")
-	f, err := os.OpenFile(cpuf, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(filepath+"/"+cpuf, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		akLog.FmtPrintln("cpu pprof open fail, err: ", err)
 		return
@@ -130,9 +136,9 @@ func createCpu() (file *os.File) {
 	return f
 }
 
-func createMem() (file *os.File) {
+func createMem(filepath string) (file *os.File) {
 	cpuf := Newpprof("mem")
-	f, err := os.OpenFile(cpuf, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(filepath+"/"+cpuf, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		akLog.FmtPrintln("mem pprof open fail, err: ", err)
 		return
