@@ -83,7 +83,7 @@ func (this *KcpServer) Run() {
 }
 
 func (this *KcpServer) kcpAccept(c *KcpSvrConfig) {
-	l, err := kcp.Listen(c.listen)
+	l, err := kcp.Listen(this.addr)
 	if err != nil {
 		panic(err)
 	}

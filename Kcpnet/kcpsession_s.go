@@ -104,7 +104,7 @@ func (this *KcpServerSession) readloop() {
 		case rspcliented := <-this.readCh:
 			this.dispatch(rspcliented)
 		default:
-			this.conn.SetReadDeadline(time.Now().Add(this.kcpConfig.readDeadline))
+			this.conn.SetReadDeadline(aktime.Now().Add(this.kcpConfig.readDeadline))
 			//是否加个消息队列处理 ?
 			this.read()
 		}
@@ -194,6 +194,7 @@ func (this *KcpServerSession) writeloop() {
 	for {
 		select {
 		case data := <-this.writeCh:
+			this.conn.SetWriteDeadline(aktime.Now().Add(this.kcpConfig.writeDeadline))
 			this.WriteMessage(data)
 		}
 	}

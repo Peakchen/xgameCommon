@@ -8,6 +8,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/akNet"
+	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
@@ -99,7 +100,7 @@ func (this *KcpClientSession) readloop() {
 		case <-this.readCh:
 			this.dispatch()
 		default:
-			this.conn.SetReadDeadline(time.Now().Add(pongWait))
+			this.conn.SetReadDeadline(aktime.Now().Add(pongWait))
 			//是否加个消息队列处理 ?
 			this.read()
 		}
@@ -168,6 +169,7 @@ func (this *KcpClientSession) writeloop() {
 	for {
 		select {
 		case data := <-this.writeCh:
+			this.conn.SetReadDeadline(aktime.Now().Add(pongWait))
 			this.WriteMessage(data)
 		}
 	}

@@ -41,12 +41,14 @@ func (this *KcpClient) Run() {
 	pprof.Run(ctx)
 
 	this.connect(ctx, &this.sw)
+	this.sw.Add(2)
 	go this.loopconnect(ctx, &this.sw)
 	go this.loopOffline(ctx, &this.sw)
+	this.sw.Wait()
 }
 
 func (this *KcpClient) connect(ctx context.Context, sw *sync.WaitGroup) {
-	conn, err := kcp.Dial("127.0.0.1:10086")
+	conn, err := kcp.Dial(this.Addr)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -56,18 +58,30 @@ func (this *KcpClient) connect(ctx context.Context, sw *sync.WaitGroup) {
 }
 
 func (this *KcpClient) loopconnect(ctx context.Context, sw *sync.WaitGroup) {
+	defer sw.Done()
+
 	tick := time.NewTicker(time.Duration(5) * time.Second)
 	for {
-		<-tick.C
-		if this.sesson == nil || !this.sesson.Alive() {
-			this.connect(ctx, sw)
+		select {
+		case <-tick.C:
+			if this.sesson == nil || !this.sesson.Alive() {
+				this.connect(ctx, sw)
+			}
+		case <-ctx.Done():
+			return
 		}
 	}
 }
 
 func (this *KcpClient) loopOffline(ctx context.Context, sw *sync.WaitGroup) {
+	defer sw.Done()
+
 	for {
-		offsession := <-this.offCh
-		offsession.Offline()
+		select {
+		case <-ctx.Done():
+			return
+		case offsession := <-this.offCh:
+			offsession.Offline()
+		}
 	}
 }

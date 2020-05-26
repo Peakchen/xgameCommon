@@ -5,6 +5,7 @@ import "time"
 type KcpSvrConfig struct {
 	listen                        string
 	readDeadline                  time.Duration
+	writeDeadline                 time.Duration
 	sockbuf                       int
 	udp_sockbuf                   int
 	txqueuelen                    int
