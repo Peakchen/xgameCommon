@@ -42,11 +42,11 @@ func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrCo
 		pack:       &KcpServerProtocol{},
 		offCh:      offCh,
 		kcpConfig:  kcpcfg,
+		isAlive:    true,
 	}
 }
 
 func (this *KcpServerSession) Handler() {
-	this.isAlive = true
 	go this.readloop()
 	go this.writeloop()
 }
@@ -104,7 +104,7 @@ func (this *KcpServerSession) readloop() {
 		case rspcliented := <-this.readCh:
 			this.dispatch(rspcliented)
 		default:
-			this.conn.SetReadDeadline(aktime.Now().Add(this.kcpConfig.readDeadline))
+			this.conn.SetReadDeadline(aktime.Now().Add(this.kcpConfig.udp_readDeadline))
 			//是否加个消息队列处理 ?
 			this.read()
 		}
@@ -194,7 +194,7 @@ func (this *KcpServerSession) writeloop() {
 	for {
 		select {
 		case data := <-this.writeCh:
-			this.conn.SetWriteDeadline(aktime.Now().Add(this.kcpConfig.writeDeadline))
+			this.conn.SetWriteDeadline(aktime.Now().Add(this.kcpConfig.udp_writeDeadline))
 			this.WriteMessage(data)
 		}
 	}

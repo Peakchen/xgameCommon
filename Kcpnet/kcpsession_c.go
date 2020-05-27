@@ -40,6 +40,7 @@ func NewKcpClientSession(c net.Conn, offCh chan *KcpClientSession) *KcpClientSes
 		remoteAddr: c.RemoteAddr().String(),
 		pack:       &KcpClientProtocol{},
 		offCh:      offCh,
+		isAlive:    true,
 	}
 }
 

@@ -95,6 +95,11 @@ const (
 	maxMessageSize = 4096
 	//offline session
 	maxOfflineSize = 1024
+	//
+	udpBuffSize = 4 * 1024 * 1024
+	tcpBuffSize = 1024
+	queueSize   = 1000
+	dscp        = 46
 )
 
 // message Post type
