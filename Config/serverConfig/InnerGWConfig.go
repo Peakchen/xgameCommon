@@ -1,10 +1,11 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
@@ -30,7 +31,7 @@ type TInnergwconfig struct {
 }
 
 type TInnergwconfigConfig struct {
-	data *TInnergwconfig
+	data []*TInnergwconfig
 }
 
 type tArrInnergwconfig []*TInnergwconfigBase
@@ -80,10 +81,10 @@ func (this *TInnergwconfigConfig) ComfireAct(data interface{}) (errlist []string
 
 func (this *TInnergwconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrInnergwconfig)
-	this.data = &TInnergwconfig{}
+	this.data = []*TInnergwconfig{}
 	for _, item := range *cfg {
 		num := strconv.Itoa(int(item.No))
-		this.data = &TInnergwconfig{
+		this.data = append(this.data, &TInnergwconfig{
 			Id:          item.Id,
 			No:          num,
 			Connectaddr: item.Connectaddr,
@@ -91,12 +92,14 @@ func (this *TInnergwconfigConfig) DataRWAct(data interface{}) (errlist []string)
 			Zone:        item.Zone,
 			Pprofaddr:   item.Pprofaddr,
 			Name:        cstInnerGatewayDef + "_" + strconv.Itoa(int(item.Id)),
-		}
-		break
+		})
 	}
 	return
 }
 
-func (this *TInnergwconfigConfig) Get() *TInnergwconfig {
-	return this.data
+func (this *TInnergwconfigConfig) Get(idx int) *TInnergwconfig {
+	if idx >= len(this.data) {
+		return nil
+	}
+	return this.data[idx]
 }

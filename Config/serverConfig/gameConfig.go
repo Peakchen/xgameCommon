@@ -1,10 +1,11 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
@@ -28,7 +29,7 @@ type TGameconfig struct {
 }
 
 type TGameconfigConfig struct {
-	data *TGameconfig
+	data []*TGameconfig
 }
 
 type tArrGameconfig []*TGameconfigBase
@@ -74,22 +75,24 @@ func (this *TGameconfigConfig) ComfireAct(data interface{}) (errlist []string) {
 
 func (this *TGameconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrGameconfig)
-	this.data = &TGameconfig{}
+	this.data = []*TGameconfig{}
 	for _, item := range *cfg {
 		num := strconv.Itoa(int(item.No))
-		this.data = &TGameconfig{
+		this.data = append(this.data, &TGameconfig{
 			Id:         item.Id,
 			No:         num,
 			Listenaddr: item.Listenaddr,
 			Zone:       item.Zone,
 			Pprofaddr:  item.Pprofaddr,
 			Name:       cstGameDef + "_" + strconv.Itoa(int(item.Id)),
-		}
-		break
+		})
 	}
 	return
 }
 
-func (this *TGameconfigConfig) Get() *TGameconfig {
-	return this.data
+func (this *TGameconfigConfig) Get(idx int) *TGameconfig {
+	if idx >= len(this.data) {
+		return nil
+	}
+	return this.data[idx]
 }

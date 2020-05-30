@@ -1,10 +1,11 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
@@ -18,7 +19,7 @@ type TExternalgwconfigBase struct {
 }
 
 type TExternalgwconfigConfig struct {
-	data *TExternalgwconfigBase
+	data []*TExternalgwconfigBase
 }
 
 type tArrExternalgwconfig []*TExternalgwconfigBase
@@ -60,15 +61,17 @@ func (this *TExternalgwconfigConfig) ComfireAct(data interface{}) (errlist []str
 
 func (this *TExternalgwconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrExternalgwconfig)
-	this.data = &TExternalgwconfigBase{}
+	this.data = []*TExternalgwconfigBase{}
 	for _, item := range *cfg {
 		item.Name = cstExternalDef + "_" + strconv.Itoa(int(item.Id))
-		this.data = item
-		break
+		this.data = append(this.data, item)
 	}
 	return
 }
 
-func (this *TExternalgwconfigConfig) Get() *TExternalgwconfigBase {
-	return this.data
+func (this *TExternalgwconfigConfig) Get(idx int) *TExternalgwconfigBase {
+	if idx >= len(this.data) {
+		return nil
+	}
+	return this.data[idx]
 }

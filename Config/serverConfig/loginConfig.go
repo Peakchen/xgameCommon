@@ -1,10 +1,11 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
@@ -28,7 +29,7 @@ type TLoginconfig struct {
 }
 
 type TLoginconfigConfig struct {
-	data *TLoginconfig
+	data []*TLoginconfig
 }
 
 type tArrLoginconfig []*TLoginconfigBase
@@ -74,22 +75,24 @@ func (this *TLoginconfigConfig) ComfireAct(data interface{}) (errlist []string) 
 
 func (this *TLoginconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrLoginconfig)
-	this.data = &TLoginconfig{}
+	this.data = []*TLoginconfig{}
 	for _, item := range *cfg {
 		num := strconv.Itoa(int(item.No))
-		this.data = &TLoginconfig{
+		this.data = append(this.data, &TLoginconfig{
 			Id:         item.Id,
 			No:         num,
 			Listenaddr: item.Listenaddr,
 			Zone:       item.Zone,
 			Pprofaddr:  item.Pprofaddr,
 			Name:       cstLoginDef + "_" + strconv.Itoa(int(item.Id)),
-		}
-		break
+		})
 	}
 	return
 }
 
-func (this *TLoginconfigConfig) Get() *TLoginconfig {
-	return this.data
+func (this *TLoginconfigConfig) Get(idx int) *TLoginconfig {
+	if idx >= len(this.data) {
+		return nil
+	}
+	return this.data[idx]
 }

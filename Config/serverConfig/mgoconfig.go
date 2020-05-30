@@ -1,10 +1,11 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
@@ -23,7 +24,7 @@ type TMgoconfigBase struct {
 }
 
 type TMgoconfigConfig struct {
-	data *TMgoconfigBase
+	data []*TMgoconfigBase
 }
 
 type tArrMgoconfig []*TMgoconfigBase
@@ -74,15 +75,17 @@ func (this *TMgoconfigConfig) ComfireAct(data interface{}) (errlist []string) {
 func (this *TMgoconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrMgoconfig)
 	errlist = []string{}
-	this.data = &TMgoconfigBase{}
+	this.data = []*TMgoconfigBase{}
 	for _, item := range *cfg {
 		item.Name = cstMgoDef + "_" + strconv.Itoa(int(item.Id))
-		this.data = item
-		break
+		this.data = append(this.data, item)
 	}
 	return
 }
 
-func (this *TMgoconfigConfig) Get() *TMgoconfigBase {
-	return this.data
+func (this *TMgoconfigConfig) Get(idx int) *TMgoconfigBase {
+	if idx >= len(this.data) {
+		return nil
+	}
+	return this.data[idx]
 }

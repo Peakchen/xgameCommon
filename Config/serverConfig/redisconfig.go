@@ -1,10 +1,11 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
@@ -22,7 +23,7 @@ type TRedisconfigBase struct {
 }
 
 type TRedisconfigConfig struct {
-	data *TRedisconfigBase
+	data []*TRedisconfigBase
 }
 
 type tArrRedisconfig []*TRedisconfigBase
@@ -69,14 +70,17 @@ func (this *TRedisconfigConfig) ComfireAct(data interface{}) (errlist []string) 
 func (this *TRedisconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrRedisconfig)
 	errlist = []string{}
+	this.data = []*TRedisconfigBase{}
 	for _, item := range *cfg {
 		item.Name = cstRedisDef + "_" + strconv.Itoa(int(item.Id))
-		this.data = item
-		break
+		this.data = append(this.data, item)
 	}
 	return
 }
 
-func (this *TRedisconfigConfig) Get() *TRedisconfigBase {
-	return this.data
+func (this *TRedisconfigConfig) Get(idx int) *TRedisconfigBase {
+	if idx >= len(this.data) {
+		return nil
+	}
+	return this.data[idx]
 }

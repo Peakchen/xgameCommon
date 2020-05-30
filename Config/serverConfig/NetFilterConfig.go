@@ -1,9 +1,10 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/Config"
 	"fmt"
 	"path/filepath"
+
+	"github.com/Peakchen/xgameCommon/Config"
 )
 
 /*
