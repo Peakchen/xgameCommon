@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"github.com/Peakchen/xgameCommon/pprof"
 	cli "github.com/urfave/cli"
 	"github.com/xtaci/kcp-go"
@@ -26,14 +29,17 @@ type KcpClient struct {
 	cancel  context.CancelFunc
 	sesson  *KcpClientSession
 	offCh   chan *KcpClientSession
+	routeID define.ERouteId
 }
 
-func NewKcpClient(addr, pprofAddr string, name string) *KcpClient {
+func NewKcpClient(addr, pprofAddr string, name string, svrType define.ERouteId) *KcpClient {
 	return &KcpClient{
 		svrName: name,
 		Addr:    addr,
 		ppAddr:  pprofAddr,
 		offCh:   make(chan *KcpClientSession, 1000),
+		routeID: svrType,
+		pack:    &KcpClientProtocol{},
 	}
 }
 
@@ -220,10 +226,28 @@ func (this *KcpClient) connect(c *KcpSvrConfig, ctx context.Context, sw *sync.Wa
 	conn.SetDeadline(time.Now().Add(time.Minute))
 	this.sesson = NewKcpClientSession(conn, this.offCh)
 	this.sesson.Handler()
-	buf := make([]byte, 10)
-	if _, err := conn.Write(buf); err != nil {
-		akLog.FmtPrintln(err)
+	this.sendRegisterMsg()
+}
+
+func (this *KcpClient) sendRegisterMsg() {
+	akLog.FmtPrintf("after dial, send point: %v register message to server.", this.routeID)
+	req := &MSG_Server.CS_ServerRegister_Req{}
+	req.ServerType = int32(this.routeID)
+	req.Msgs = GetAllMessageIDs()
+	akLog.FmtPrintln("register context: ", req.Msgs)
+	data, err := this.pack.PackClientMsg(uint16(MSG_MainModule.MAINMSG_SERVER), uint16(MSG_Server.SUBMSG_CS_ServerRegister), req)
+	if err != nil {
+		akLog.Error(err)
+		return
 	}
+	this.Send(data)
+}
+
+func (this *KcpClient) Send(data []byte) {
+	if !this.sesson.Alive() {
+		return
+	}
+	this.sesson.SetSendCache(data)
 }
 
 func (this *KcpClient) loopconnect(c *KcpSvrConfig, ctx context.Context, sw *sync.WaitGroup) {
