@@ -3,20 +3,23 @@
 package akNet
 
 import (
+	"fmt"
+	"net"
+	"sync/atomic"
+	"time"
+
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
-	"fmt"
-	"net"
-	"sync/atomic"
-	"time"
+
 	//"S2SMessage"
-	"github.com/Peakchen/xgameCommon/stacktrace"
 	"context"
-	"github.com/golang/protobuf/proto"
 	"sync"
+
+	"github.com/Peakchen/xgameCommon/stacktrace"
+	"github.com/golang/protobuf/proto"
 	//. "define"
 )
 
@@ -28,7 +31,8 @@ type SvrTcpSession struct {
 	// The net connection.
 	conn *net.TCPConn
 	// Buffered channel of outbound messages.
-	send chan []byte
+	send   chan []byte
+	readCh chan bool
 	// send/recv
 	sw  sync.WaitGroup
 	ctx context.Context
@@ -45,8 +49,7 @@ type SvrTcpSession struct {
 	//person StrIdentify
 	StrIdentify       string
 	heartBeatDeadline int64
-	//
-	Name string
+	Name              string
 }
 
 func NewSvrSession(addr string,
@@ -60,6 +63,7 @@ func NewSvrSession(addr string,
 		RemoteAddr: addr,
 		conn:       conn,
 		send:       make(chan []byte, maxMessageSize),
+		readCh:     make(chan bool, maxMessageSize),
 		isAlive:    false,
 		ctx:        ctx,
 		pack:       pack,
@@ -122,6 +126,8 @@ func (this *SvrTcpSession) recvloop(sw *sync.WaitGroup) {
 		select {
 		case <-this.ctx.Done():
 			return
+		case brecvClient := <-this.readCh:
+			this.Invoke(brecvClient)
 		default:
 			if !this.readMessage() {
 				return
@@ -206,7 +212,11 @@ func (this *SvrTcpSession) readMessage() (succ bool) {
 			responseCliented = true
 		}
 	}
+	this.readCh <- responseCliented
+	return
+}
 
+func (this *SvrTcpSession) Invoke(responseCliented bool) (succ bool) {
 	var route define.ERouteId
 	mainID, SubID := this.pack.GetMessageID()
 	akLog.FmtPrintf("recv message: mainID: %v, subID: %v.", mainID, SubID)

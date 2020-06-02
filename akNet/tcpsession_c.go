@@ -3,6 +3,11 @@
 package akNet
 
 import (
+	"fmt"
+	"net"
+	"sync/atomic"
+	"time"
+
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/define"
@@ -10,10 +15,7 @@ import (
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"github.com/Peakchen/xgameCommon/stacktrace"
-	"fmt"
-	"net"
-	"sync/atomic"
-	"time"
+
 	//"S2SMessage"
 	"context"
 	"sync"
