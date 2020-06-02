@@ -2,52 +2,54 @@ package akWebNet
 
 //
 //from https://www.godoc.org/github.com/gorilla/websocket
-// 
+//
 
 import (
-	"net/http"
-	"github.com/gorilla/websocket"
 	"fmt"
+	"net/http"
+	"sync"
+
 	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/gorilla/websocket"
 	//"strings"
 	//"strconv"
 )
 
 type WebSocketSvr struct {
-	Addr 	string
-	offch 	chan *WebSession //离线通道
+	Addr  string
+	offch chan *WebSession //离线通道
 }
 
-func NewWebsocketSvr(addr string)*WebSocketSvr{
+func NewWebsocketSvr(addr string) *WebSocketSvr {
 	return &WebSocketSvr{
-		Addr: addr,
+		Addr:  addr,
 		offch: make(chan *WebSession, 1024),
 	}
 }
 
 var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
-    CheckOrigin: func(r *http.Request) bool {
-        return true
-    },
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
-func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Request){
+func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Request) {
 
 	wsSocket, err := upgrader.Upgrade(resp, req, nil)
-    if err != nil {
-        fmt.Println("upgrader websocket fail, err: ", err.Error())
-        return
+	if err != nil {
+		fmt.Println("upgrader websocket fail, err: ", err.Error())
+		return
 	}
-	
+
 	sess := NewWebSession(wsSocket, this.offch)
 	sess.Handle()
 	fmt.Println("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())
 	GwebSessionMgr.AddSession(sess)
 }
 
-func (this *WebSocketSvr) disconnloop(){
+func (this *WebSocketSvr) disconnloop() {
 	for {
 		sess := <-this.offch
 		mosterid := sess.GetId()
@@ -59,9 +61,11 @@ func (this *WebSocketSvr) disconnloop(){
 	}
 }
 
-func (this *WebSocketSvr) Run(){
+func (this *WebSocketSvr) Run() {
 
 	http.HandleFunc("/ws", this.wsSvrHandler)
+	var sw sync.WaitGroup
+	sw.Add(1)
 	go this.disconnloop()
+	sw.Wait()
 }
-
