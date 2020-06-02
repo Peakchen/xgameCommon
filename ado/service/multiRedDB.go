@@ -1,16 +1,17 @@
 package service
 
 import (
-	"github.com/Peakchen/xgameCommon/Config/serverConfig"
-	"github.com/Peakchen/xgameCommon/akLog"
-	"github.com/Peakchen/xgameCommon/MgoConn"
-	"github.com/Peakchen/xgameCommon/RedisConn"
-	"github.com/Peakchen/xgameCommon/ado"
 	"context"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/Peakchen/xgameCommon/Config/serverConfig"
+	"github.com/Peakchen/xgameCommon/MgoConn"
+	"github.com/Peakchen/xgameCommon/RedisConn"
+	"github.com/Peakchen/xgameCommon/ado"
+	"github.com/Peakchen/xgameCommon/akLog"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -58,10 +59,10 @@ func (this *TClusterDBProvider) Exit() {
 }
 
 func (this *TClusterDBProvider) runDBloop(Server string) {
-	rediscfg := serverConfig.GRedisconfigConfig.Get()
+	rediscfg := serverConfig.GRedisconfigConfig.Get(0)
 	this.redConn = RedisConn.NewRedisConn(rediscfg.Connaddr, rediscfg.DBIndex, rediscfg.Passwd, nil)
 
-	mgocfg := serverConfig.GMgoconfigConfig.Get()
+	mgocfg := serverConfig.GMgoconfigConfig.Get(0)
 	this.mgoConn = MgoConn.NewMgoConn(Server, mgocfg.Username, mgocfg.Passwd, mgocfg.Host)
 
 	this.ctx, this.cancle = context.WithCancel(context.Background())

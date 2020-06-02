@@ -1,14 +1,15 @@
 package service
 
 import (
+	"context"
+	"sync"
+
 	"github.com/Peakchen/xgameCommon/Config/serverConfig"
-	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/MgoConn"
 	"github.com/Peakchen/xgameCommon/RedisConn"
 	"github.com/Peakchen/xgameCommon/ado"
+	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/public"
-	"context"
-	"sync"
 )
 
 type TDBProvider struct {
@@ -22,10 +23,10 @@ type TDBProvider struct {
 
 func (this *TDBProvider) StartDBService(Server string, upcb public.UpdateDBCacheCallBack) {
 	this.Server = Server
-	rediscfg := serverConfig.GRedisconfigConfig.Get()
+	rediscfg := serverConfig.GRedisconfigConfig.Get(0)
 	this.rconn = RedisConn.NewRedisConn(rediscfg.Connaddr, rediscfg.DBIndex, rediscfg.Passwd, upcb)
 
-	mgocfg := serverConfig.GMgoconfigConfig.Get()
+	mgocfg := serverConfig.GMgoconfigConfig.Get(0)
 	this.mconn = MgoConn.NewMgoConn(Server, mgocfg.Username, mgocfg.Passwd, mgocfg.Host)
 }
 
