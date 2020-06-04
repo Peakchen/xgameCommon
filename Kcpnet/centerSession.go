@@ -24,21 +24,27 @@ func (this *CenterSessionMgr) AddPlayerSession(pkey string, session TcpSession) 
 func (this *CenterSessionMgr) AppendSvrSession(session TcpSession, vKey string) {
 	data, exist := this.serverSessions.Load(session.GetRemoteAddr())
 	if !exist {
-		data = []string{}
+		vKeys := []string{vKey}
+		this.serverSessions.Store(session.GetRemoteAddr(), vKeys)
+		return
 	}
-	data = append(data, vKey)
-	this.serverSessions.Store(session.GetRemoteAddr(), data)
+	vKeys := data.([]string)
+	vKeys = append(vKeys, vKey)
+	this.serverSessions.Store(session.GetRemoteAddr(), vKeys)
 }
 
 func (this *CenterSessionMgr) GetPlayerSession(pkey string) (session TcpSession) {
-	session, _ = this.playerSessions.Load(pkey)
+	data, exist := this.playerSessions.Load(pkey)
+	if exist {
+		session = data.(TcpSession)
+	}
 	return
 }
 
 func (this *CenterSessionMgr) ClearSvrSession(session TcpSession) {
 	pkeys, exist := this.serverSessions.Load(session.GetRemoteAddr())
 	if exist {
-		for _, pkey := range pkeys {
+		for _, pkey := range pkeys.([]string) {
 			this.ClearPlayerSession(pkey)
 		}
 	}
