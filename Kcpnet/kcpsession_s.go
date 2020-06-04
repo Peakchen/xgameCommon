@@ -177,7 +177,7 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 	if mainID != uint16(MSG_MainModule.MAINMSG_SERVER) && mainID != uint16(MSG_MainModule.MAINMSG_HEARTBEAT) &&
 		(this.SvrType == define.ERouteId_ER_ESG || this.SvrType == define.ERouteId_ER_ISG) {
 		if this.SvrType == define.ERouteId_ER_ESG {
-			succ = externalRouteAct(route, this, responseCliented)
+			succ = externalRouteAct(route, this, responseCliented, this.exCollection)
 		} else {
 			succ = innerMsgRouteAct(akNet.ESessionType_Server, route, mainID, this.pack.GetSrcMsg())
 		}
@@ -243,7 +243,9 @@ func (this *KcpServerSession) SetIdentify(StrIdentify string) {
 }
 
 func (this *KcpServerSession) Offline() {
-
+	if this.SvrType == define.ERouteId_ER_ESG && this.exCollection.GetClient() != nil {
+		sendCenterSvr4Leave(this, this.exCollection)
+	}
 }
 
 func (this *KcpServerSession) SendSvrClientMsg(mainid, subid uint16, msg proto.Message) (succ bool, err error) {
