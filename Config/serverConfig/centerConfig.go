@@ -18,14 +18,20 @@ type TCenterconfigBase struct {
 	Zone       string `json:"Zone"`
 }
 
+type TCenterconfig struct {
+	TCenterconfigBase
+	Name string
+}
+
 type TCenterconfigConfig struct {
-	data []*TCenterconfigBase
+	data []*TCenterconfig
 }
 
 type tArrCenterconfig []*TCenterconfigBase
 
 var (
 	GCenterconfigConfig *TCenterconfigConfig = &TCenterconfigConfig{}
+	cstCenterDef                             = "CenterGate"
 )
 
 func init() {
@@ -63,14 +69,21 @@ func (this *TCenterconfigConfig) ComfireAct(data interface{}) (errlist []string)
 
 func (this *TCenterconfigConfig) DataRWAct(data interface{}) (errlist []string) {
 	cfg := data.(*tArrCenterconfig)
-	this.data = []*TCenterconfigBase{}
+	this.data = []*TCenterconfig{}
 	for _, item := range *cfg {
-		this.data = append(this.data, item)
+		new := &TCenterconfig{}
+		new.Id = item.Id
+		new.Listenaddr = item.Listenaddr
+		new.No = item.No
+		new.Pprofaddr = item.Pprofaddr
+		new.Zone = item.Zone
+		new.Name = cstCenterDef
+		this.data = append(this.data, new)
 	}
 	return
 }
 
-func (this *TCenterconfigConfig) Get(idx int) *TCenterconfigBase {
+func (this *TCenterconfigConfig) Get(idx int) *TCenterconfig {
 	if idx >= len(this.data) {
 		return nil
 	}
