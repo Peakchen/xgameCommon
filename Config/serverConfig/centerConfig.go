@@ -31,7 +31,7 @@ var (
 func init() {
 }
 
-func loadcenterConfig() {
+func loadCenterconfig() {
 	var (
 		path string
 	)
