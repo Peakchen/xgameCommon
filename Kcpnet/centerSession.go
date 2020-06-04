@@ -41,6 +41,14 @@ func (this *CenterSessionMgr) GetPlayerSession(pkey string) (session TcpSession)
 	return
 }
 
+func (this *CenterSessionMgr) GetSvrSession(skey string) (session TcpSession) {
+	data, exist := this.serverSessions.Load(skey)
+	if exist {
+		session = data.(TcpSession)
+	}
+	return
+}
+
 func (this *CenterSessionMgr) ClearSvrSession(session TcpSession) {
 	pkeys, exist := this.serverSessions.Load(session.GetRemoteAddr())
 	if exist {
