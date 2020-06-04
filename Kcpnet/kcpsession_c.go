@@ -18,29 +18,31 @@ import (
 )
 
 type KcpClientSession struct {
-	conn        net.Conn
-	readCh      chan []byte
-	writeCh     chan []byte
-	remoteAddr  string
-	pack        IMessagePack
-	isAlive     bool
-	offCh       chan *KcpClientSession
-	closeOnce   sync.Once
-	SvrType     define.ERouteId
-	RegPoint    define.ERouteId
-	StrIdentify string
-	Name        string
+	conn         net.Conn
+	readCh       chan []byte
+	writeCh      chan []byte
+	remoteAddr   string
+	pack         IMessagePack
+	isAlive      bool
+	offCh        chan *KcpClientSession
+	closeOnce    sync.Once
+	SvrType      define.ERouteId
+	RegPoint     define.ERouteId
+	StrIdentify  string
+	Name         string
+	exCollection *ExternalCollection //for external expand data
 }
 
-func NewKcpClientSession(c net.Conn, offCh chan *KcpClientSession) *KcpClientSession {
+func NewKcpClientSession(c net.Conn, offCh chan *KcpClientSession, exCol *ExternalCollection) *KcpClientSession {
 	return &KcpClientSession{
-		conn:       c,
-		readCh:     make(chan []byte, 1000),
-		writeCh:    make(chan []byte, 1000),
-		remoteAddr: c.RemoteAddr().String(),
-		pack:       &KcpClientProtocol{},
-		offCh:      offCh,
-		isAlive:    true,
+		conn:         c,
+		readCh:       make(chan []byte, 1000),
+		writeCh:      make(chan []byte, 1000),
+		remoteAddr:   c.RemoteAddr().String(),
+		pack:         &KcpClientProtocol{},
+		offCh:        offCh,
+		isAlive:      true,
+		exCollection: exCol,
 	}
 }
 
@@ -193,6 +195,8 @@ func (this *KcpClientSession) checkRegisterRet(route define.ERouteId) (exist boo
 		this.StrIdentify = this.remoteAddr
 		if this.SvrType == define.ERouteId_ER_ISG {
 			this.Push(define.ERouteId_ER_ESG)
+		} else if this.SvrType == define.ERouteId_ER_ESG {
+			this.Push(define.ERouteId_ER_CenterGate)
 		} else {
 			this.Push(define.ERouteId_ER_ISG)
 		}

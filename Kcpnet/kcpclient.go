@@ -21,25 +21,27 @@ import (
 )
 
 type KcpClient struct {
-	sw      sync.WaitGroup
-	svrName string
-	pack    IMessagePack
-	Addr    string
-	ppAddr  string
-	cancel  context.CancelFunc
-	sesson  *KcpClientSession
-	offCh   chan *KcpClientSession
-	routeID define.ERouteId
+	sw           sync.WaitGroup
+	svrName      string
+	pack         IMessagePack
+	Addr         string
+	ppAddr       string
+	cancel       context.CancelFunc
+	sesson       *KcpClientSession
+	offCh        chan *KcpClientSession
+	routeID      define.ERouteId
+	exCollection *ExternalCollection
 }
 
-func NewKcpClient(addr, pprofAddr string, name string, svrType define.ERouteId) *KcpClient {
+func NewKcpClient(addr, pprofAddr string, name string, svrType define.ERouteId, exCol *ExternalCollection) *KcpClient {
 	return &KcpClient{
-		svrName: name,
-		Addr:    addr,
-		ppAddr:  pprofAddr,
-		offCh:   make(chan *KcpClientSession, 1000),
-		routeID: svrType,
-		pack:    &KcpClientProtocol{},
+		svrName:      name,
+		Addr:         addr,
+		ppAddr:       pprofAddr,
+		offCh:        make(chan *KcpClientSession, 1000),
+		routeID:      svrType,
+		pack:         &KcpClientProtocol{},
+		exCollection: exCol,
 	}
 }
 
@@ -224,7 +226,7 @@ func (this *KcpClient) connect(c *KcpSvrConfig, ctx context.Context, sw *sync.Wa
 	conn.SetMtu(c.mtu)
 	conn.SetACKNoDelay(false)
 	conn.SetDeadline(time.Now().Add(time.Minute))
-	this.sesson = NewKcpClientSession(conn, this.offCh)
+	this.sesson = NewKcpClientSession(conn, this.offCh, this.exCollection)
 	this.sesson.Handler()
 	this.sendRegisterMsg()
 }

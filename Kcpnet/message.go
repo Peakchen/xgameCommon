@@ -352,6 +352,7 @@ func sendUserClient(obj TcpSession) (succ bool) {
 			}
 			return true
 		})
+		succ = true
 	}
 
 	return
@@ -372,4 +373,18 @@ func externalRouteAct(route define.ERouteId, obj TcpSession, responseCliented bo
 
 	//外网回复客户端消息 external gateway response user client message.
 	return sendUserClient(obj)
+}
+
+func sendCenterSvr(sess TcpSession) {
+	mainID, SubID := sess.GetPack().GetMessageID()
+	if mainID != uint16(MSG_MainModule.MAINMSG_PLAYER) {
+		return
+	}
+	if SubID != uint16(MSG_Player.SUBMSG_CS_EnterServer) {
+		return
+	}
+	ntf := &MSG_CenterGate.CS_PlayerOnline_Req{
+		PlayerIdentify: sess.GetPack().GetIdentify(),
+	}
+
 }

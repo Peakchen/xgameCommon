@@ -18,7 +18,8 @@ const (
 	ERouteId_ER_DBProxy    ERouteId = 7
 	ERouteId_ER_Game       ERouteId = 8
 	ERouteId_ER_Client     ERouteId = 9
-	ERouteId_ER_Max        ERouteId = 10
+	ERouteId_ER_CenterGate ERouteId = 10
+	ERouteId_ER_Max        ERouteId = 11
 )
 
 type HandlerFunc func(http.ResponseWriter, *http.Request)

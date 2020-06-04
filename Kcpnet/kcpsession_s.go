@@ -31,18 +31,20 @@ type KcpServerSession struct {
 	kcpConfig         *KcpSvrConfig
 	StrIdentify       string
 	Name              string
+	exCollection      *ExternalCollection //for external expand data
 }
 
-func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrConfig) *KcpServerSession {
+func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrConfig, exCol *ExternalCollection) *KcpServerSession {
 	return &KcpServerSession{
-		conn:       c,
-		readCh:     make(chan bool, 1000),
-		writeCh:    make(chan []byte, 1000),
-		RemoteAddr: c.RemoteAddr().String(),
-		pack:       &KcpServerProtocol{},
-		offCh:      offCh,
-		kcpConfig:  kcpcfg,
-		isAlive:    true,
+		conn:         c,
+		readCh:       make(chan bool, 1000),
+		writeCh:      make(chan []byte, 1000),
+		RemoteAddr:   c.RemoteAddr().String(),
+		pack:         &KcpServerProtocol{},
+		offCh:        offCh,
+		kcpConfig:    kcpcfg,
+		isAlive:      true,
+		exCollection: exCol,
 	}
 }
 

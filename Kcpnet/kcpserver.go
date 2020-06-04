@@ -21,21 +21,23 @@ import (
 )
 
 type KcpServer struct {
-	sw      sync.WaitGroup
-	svrName string
-	pack    IMessagePack
-	addr    string
-	ppAddr  string
-	cancel  context.CancelFunc
-	offCh   chan *KcpServerSession
+	sw           sync.WaitGroup
+	svrName      string
+	pack         IMessagePack
+	addr         string
+	ppAddr       string
+	cancel       context.CancelFunc
+	offCh        chan *KcpServerSession
+	exCollection *ExternalCollection
 }
 
-func NewKcpServer(Name string, addr string, pprofAddr string) *KcpServer {
+func NewKcpServer(Name string, addr string, pprofAddr string, exCol *ExternalCollection) *KcpServer {
 	return &KcpServer{
-		svrName: Name,
-		addr:    addr,
-		ppAddr:  pprofAddr,
-		offCh:   make(chan *KcpServerSession, 1000),
+		svrName:      Name,
+		addr:         addr,
+		ppAddr:       pprofAddr,
+		offCh:        make(chan *KcpServerSession, 1000),
+		exCollection: exCol,
 	}
 }
 
@@ -244,7 +246,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig) {
 
 		// start a goroutine for every incoming connection for read and write
 		//go handleClient(conn, config)
-		sess := NewKcpSvrSession(conn, this.offCh, c)
+		sess := NewKcpSvrSession(conn, this.offCh, c, this.exCollection)
 		sess.Handler()
 	}
 }

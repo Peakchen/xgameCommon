@@ -355,6 +355,7 @@ func sendUserClient(obj TcpSession) (succ bool) {
 			}
 			return true
 		})
+		succ = true
 	}
 
 	return
