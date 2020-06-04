@@ -12,6 +12,9 @@ enum SUBMSG
 
     CS_PlayerOffline = 3; //玩家下线请求
     SC_PlayerOffline = 4; //玩家下线回复
+
+    CS_GetBroadCastSessions     = 5; //获取多个玩家广播所在服会话请求
+    SC_GetBroadCastSessions     = 6; //获取多个玩家广播所在服会话回复
 }
 
 enum ErrorCode
@@ -31,6 +34,7 @@ message CS_PlayerOnline_Req
 message SC_PlayerOnline_Rsp
 {
     ErrorCode Ret = 1; //返回码
+    string PlayerIdentify = 2;
 }
 
 //CS_PlayerOffline
@@ -43,4 +47,18 @@ message CS_PlayerOffline_Req
 message SC_PlayerOffline_Rsp
 {
     ErrorCode Ret = 1; //返回码
+    string PlayerIdentify = 2;
+}
+
+//CS_GetBroadCastSessions
+message CS_GetBroadCastSessions_Req
+{
+    repeated string PlayerIdentifys = 1;
+}
+
+//SC_GetBroadCastSessions
+message SC_GetBroadCastSessions_Rsp
+{
+    ErrorCode Ret = 1; //返回码
+    repeated string PlayerIdentifys = 2;
 }
