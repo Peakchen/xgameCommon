@@ -15,5 +15,6 @@ enum MAINMSG
 
     // for game server
     PLAYER = 11; //玩家消息
+    CHAT   = 12; //聊天
 }
 

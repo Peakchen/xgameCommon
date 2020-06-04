@@ -55,7 +55,7 @@ message SC_PlayerOffline_Rsp
 message CS_GetBroadCastSessions_Req
 {
     repeated string PlayerIdentifys = 1; //broadcast object 广播对象
-    bytes   Data = 2; //broadcast data 广播数据
+    string   Data = 2; //broadcast data 广播数据
 }
 
 //SC_GetBroadCastSessions
@@ -63,5 +63,5 @@ message SC_GetBroadCastSessions_Rsp
 {
     ErrorCode Ret = 1; //返回码
     repeated string PlayerIdentifys = 2; //broadcast object 广播对象
-    bytes   Data = 3; //broadcast data 广播数据
+    string   Data = 3; //broadcast data 广播数据
 }
