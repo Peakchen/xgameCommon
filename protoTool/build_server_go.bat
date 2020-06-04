@@ -10,4 +10,10 @@ for %%i in (*.proto) do (
 	  protoc -I %DIR%proto\  --go_out=!pbname! %%i
 )
 
+cd ..
+cd .\go
+xcopy msgProto %DIR%..\msgProto\ /D /I /F /Y /S/E
+
+cd ..\..\..\
+
 pause

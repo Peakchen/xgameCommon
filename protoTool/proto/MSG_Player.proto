@@ -1,4 +1,5 @@
 syntax = "proto3";
+option go_package = "msgProto/MSG_Player";
 package MSG_Player;
 
 // add by stefanchen 

@@ -1,4 +1,5 @@
 syntax = "proto3";
+option go_package = "msgProto/error_message";
 package ErrMessage;
 
 // add by stefanchen 

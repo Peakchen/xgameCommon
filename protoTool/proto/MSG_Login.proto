@@ -1,4 +1,5 @@
 syntax = "proto3";
+option go_package = "msgProto/MSG_Login";
 package MSG_Login;
 
 // add by stefanchen 
