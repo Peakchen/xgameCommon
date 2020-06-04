@@ -72,6 +72,7 @@ type TcpSession interface {
 	IsUser() bool
 	RefreshHeartBeat(mainid, subid uint16) bool
 	GetModuleName() string
+	GetExternalCollection() *ExternalCollection
 }
 
 const (

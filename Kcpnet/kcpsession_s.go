@@ -178,6 +178,9 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 		(this.SvrType == define.ERouteId_ER_ESG || this.SvrType == define.ERouteId_ER_ISG) {
 		if this.SvrType == define.ERouteId_ER_ESG {
 			succ = externalRouteAct(route, this, responseCliented, this.exCollection)
+			if succ {
+				this.exCollection.SetExternalClient(GClient2ServerSession)
+			}
 		} else {
 			succ = innerMsgRouteAct(akNet.ESessionType_Server, route, mainID, this.pack.GetSrcMsg())
 		}
@@ -243,7 +246,7 @@ func (this *KcpServerSession) SetIdentify(StrIdentify string) {
 }
 
 func (this *KcpServerSession) Offline() {
-	if this.SvrType == define.ERouteId_ER_ESG && this.exCollection.GetClient() != nil {
+	if this.SvrType == define.ERouteId_ER_ESG && this.exCollection.GetCenterClient() != nil {
 		sendCenterSvr4Leave(this, this.exCollection)
 	}
 }
@@ -338,4 +341,8 @@ func (this *KcpServerSession) IsUser() bool {
 
 func (this *KcpServerSession) RefreshHeartBeat(mainid, subid uint16) bool {
 	return true
+}
+
+func (this *KcpServerSession) GetExternalCollection() *ExternalCollection {
+	return this.exCollection
 }

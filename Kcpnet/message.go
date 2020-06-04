@@ -387,7 +387,7 @@ func sendCenterSvr4Enter(sess TcpSession, excol *ExternalCollection) {
 	if SubID != uint16(MSG_Player.SUBMSG_CS_EnterServer) {
 		return
 	}
-	if excol.GetClient() == nil {
+	if excol.GetCenterClient() == nil {
 		return
 	}
 	ntf := &MSG_CenterGate.CS_PlayerOnline_Req{
@@ -399,7 +399,7 @@ func sendCenterSvr4Enter(sess TcpSession, excol *ExternalCollection) {
 		akLog.Error(err)
 		return
 	}
-	excol.GetClient().Send(data)
+	excol.GetCenterClient().Send(data)
 }
 
 func sendCenterSvr4Leave(sess TcpSession, excol *ExternalCollection) {
@@ -412,5 +412,5 @@ func sendCenterSvr4Leave(sess TcpSession, excol *ExternalCollection) {
 		akLog.Error(err)
 		return
 	}
-	excol.GetClient().Send(data)
+	excol.GetCenterClient().Send(data)
 }

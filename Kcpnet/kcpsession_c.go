@@ -346,3 +346,7 @@ func (this *KcpClientSession) RefreshHeartBeat(mainid, subid uint16) bool {
 func (this *KcpClientSession) GetModuleName() string {
 	return this.Name
 }
+
+func (this *KcpClientSession) GetExternalCollection() *ExternalCollection {
+	return this.exCollection
+}
