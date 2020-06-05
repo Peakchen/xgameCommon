@@ -13,5 +13,5 @@ func LoadSvrAllConfig(CfgPath string) {
 	loadMgoConfig()
 	loadNetFilterConfig()
 	loadRedisConfig()
-
+	loadCenterconfig()
 }
