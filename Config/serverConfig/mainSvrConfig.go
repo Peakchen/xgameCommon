@@ -1,5 +1,7 @@
 package serverConfig
 
+import "github.com/Peakchen/xgameCommon/akLog"
+
 var (
 	SvrPath string
 )

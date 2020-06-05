@@ -1,8 +1,9 @@
 package serverConfig
 
 import (
-	"github.com/Peakchen/xgameCommon/utls"
 	"path/filepath"
+
+	"github.com/Peakchen/xgameCommon/utls"
 )
 
 func getserverpath() (path string) {
