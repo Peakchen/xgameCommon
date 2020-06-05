@@ -232,6 +232,7 @@ func (this *KcpClient) connect(c *KcpSvrConfig, ctx context.Context, sw *sync.Wa
 	this.sesson = NewKcpClientSession(conn, this.offCh, this.exCollection)
 	this.sesson.Handler()
 	this.sendRegisterMsg()
+	this.exCollection.SetCenterClient(this)
 }
 
 func (this *KcpClient) sendRegisterMsg() {
