@@ -14,4 +14,5 @@ func LoadSvrAllConfig(CfgPath string) {
 	loadNetFilterConfig()
 	loadRedisConfig()
 	loadCenterconfig()
+	loadServerglobalconfig()
 }
