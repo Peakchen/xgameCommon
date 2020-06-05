@@ -6,6 +6,8 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"net"
+	"os/signal"
+	"syscall"
 
 	"github.com/xtaci/kcp-go"
 	"golang.org/x/crypto/pbkdf2"
@@ -26,7 +28,9 @@ type KcpServer struct {
 	pack         IMessagePack
 	addr         string
 	ppAddr       string
+	ctx          context.Context
 	cancel       context.CancelFunc
+	kcplis       *kcp.Listener
 	offCh        chan *KcpServerSession
 	exCollection *ExternalCollection
 }
@@ -44,8 +48,8 @@ func NewKcpServer(Name string, addr string, pprofAddr string, exCol *ExternalCol
 func (this *KcpServer) Run() {
 	os.Setenv("GOTRACEBACK", "crash")
 
-	ctx, _ := context.WithCancel(context.Background())
-	pprof.Run(ctx)
+	this.ctx, this.cancel = context.WithCancel(context.Background())
+	pprof.Run(this.ctx)
 
 	app := &cli.App{
 		Name:    this.svrName,
@@ -198,8 +202,9 @@ func (this *KcpServer) Run() {
 
 			// start udp server...
 			this.sw.Add(1)
-			go this.kcpAccept(config)
-			go this.loopOffline()
+			go this.kcpAccept(config, this.ctx, &this.sw)
+			go this.loopOffline(this.ctx, &this.sw)
+			go this.loopSignalCheck(this.ctx, &this.sw)
 			this.sw.Wait()
 			return nil
 		},
@@ -214,25 +219,34 @@ func (this *KcpServer) listenEcho(c *KcpSvrConfig) (net.Listener, error) {
 	return kcp.ListenWithOptions(c.listen, block, c.dataShard, c.parityShards)
 }
 
-func (this *KcpServer) kcpAccept(c *KcpSvrConfig) {
+func (this *KcpServer) kcpAccept(c *KcpSvrConfig, ctx context.Context, sw *sync.WaitGroup) {
+	defer func() {
+		this.exit()
+		sw.Done()
+	}()
+
 	l, err := this.listenEcho(c)
 	if err != nil {
-		panic(err)
+		akLog.Error(err)
+		return
 	}
 	akLog.FmtPrintln("kcp listening on:", l.Addr())
-	kcplis := l.(*kcp.Listener)
-	if err := kcplis.SetReadBuffer(c.udp_sockbuf_r); err != nil {
-		panic(fmt.Errorf("SetReadBuffer, err: %v.", err))
+	this.kcplis = l.(*kcp.Listener)
+	if err := this.kcplis.SetReadBuffer(c.udp_sockbuf_r); err != nil {
+		akLog.Error(fmt.Errorf("SetReadBuffer, err: %v.", err))
+		return
 	}
-	if err := kcplis.SetWriteBuffer(c.udp_sockbuf_w); err != nil {
-		panic(fmt.Errorf("SetWriteBuffer, err: %v.", err))
+	if err := this.kcplis.SetWriteBuffer(c.udp_sockbuf_w); err != nil {
+		akLog.Error(fmt.Errorf("SetWriteBuffer, err: %v.", err))
+		return
 	}
-	if err := kcplis.SetDSCP(c.dscp); err != nil {
-		panic(fmt.Errorf("SetDSCP, err: %v.", err))
+	if err := this.kcplis.SetDSCP(c.dscp); err != nil {
+		akLog.Error(fmt.Errorf("SetDSCP, err: %v.", err))
+		return
 	}
 	// loop accepting
 	for {
-		conn, err := kcplis.AcceptKCP()
+		conn, err := this.kcplis.AcceptKCP()
 		if err != nil {
 			akLog.FmtPrintln("accept failed:", err)
 			continue
@@ -249,11 +263,49 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig) {
 		sess := NewKcpSvrSession(conn, this.offCh, c, this.exCollection)
 		sess.Handler()
 	}
+	return
 }
 
-func (this *KcpServer) loopOffline() {
+func (this *KcpServer) loopOffline(ctx context.Context, sw *sync.WaitGroup) {
+	defer func() {
+		this.exit()
+		sw.Done()
+	}()
+
 	for {
-		offsession := <-this.offCh
-		offsession.Offline()
+		select {
+		case <-ctx.Done():
+			return
+		case offsession := <-this.offCh:
+			offsession.Offline()
+		}
+	}
+}
+
+func (this *KcpServer) exit() {
+	this.cancel()
+}
+
+func (this *KcpServer) loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
+	defer func() {
+		sw.Done()
+		this.exit()
+	}()
+
+	chsignal := make(chan os.Signal, 1)
+	signal.Notify(chsignal, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case s := <-chsignal:
+			switch s {
+			case syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
+				akLog.FmtPrintln("signal exit:", s)
+				return
+			default:
+				akLog.FmtPrintln("other signal:", s)
+			}
+		}
 	}
 }

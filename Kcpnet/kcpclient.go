@@ -7,7 +7,9 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/Peakchen/xgameCommon/akLog"
@@ -26,6 +28,7 @@ type KcpClient struct {
 	pack         IMessagePack
 	Addr         string
 	ppAddr       string
+	ctx          context.Context
 	cancel       context.CancelFunc
 	sesson       *KcpClientSession
 	offCh        chan *KcpClientSession
@@ -48,9 +51,8 @@ func NewKcpClient(addr, pprofAddr string, name string, svrType define.ERouteId, 
 func (this *KcpClient) Run() {
 	os.Setenv("GOTRACEBACK", "crash")
 
-	var ctx context.Context
-	ctx, this.cancel = context.WithCancel(context.Background())
-	pprof.Run(ctx)
+	this.ctx, this.cancel = context.WithCancel(context.Background())
+	pprof.Run(this.ctx)
 
 	app := &cli.App{
 		Name:    this.svrName,
@@ -197,10 +199,11 @@ func (this *KcpClient) Run() {
 				nc:                c.Int("nc"),
 			}
 			// start udp server...
-			this.connect(config, ctx, &this.sw)
-			this.sw.Add(2)
-			go this.loopconnect(config, ctx, &this.sw)
-			go this.loopOffline(ctx, &this.sw)
+			this.connect(config, this.ctx, &this.sw)
+			this.sw.Add(1)
+			go this.loopconnect(config, this.ctx, &this.sw)
+			go this.loopOffline(this.ctx, &this.sw)
+			go this.loopSignalCheck(this.ctx, &this.sw)
 			this.sw.Wait()
 			return nil
 		},
@@ -253,7 +256,10 @@ func (this *KcpClient) Send(data []byte) {
 }
 
 func (this *KcpClient) loopconnect(c *KcpSvrConfig, ctx context.Context, sw *sync.WaitGroup) {
-	defer sw.Done()
+	defer func() {
+		this.exit()
+		sw.Done()
+	}()
 
 	tick := time.NewTicker(time.Duration(5) * time.Second)
 	for {
@@ -269,7 +275,10 @@ func (this *KcpClient) loopconnect(c *KcpSvrConfig, ctx context.Context, sw *syn
 }
 
 func (this *KcpClient) loopOffline(ctx context.Context, sw *sync.WaitGroup) {
-	defer sw.Done()
+	defer func() {
+		this.exit()
+		sw.Done()
+	}()
 
 	for {
 		select {
@@ -277,6 +286,34 @@ func (this *KcpClient) loopOffline(ctx context.Context, sw *sync.WaitGroup) {
 			return
 		case offsession := <-this.offCh:
 			offsession.Offline()
+		}
+	}
+}
+
+func (this *KcpClient) exit() {
+	this.cancel()
+}
+
+func (this *KcpClient) loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
+	defer func() {
+		sw.Done()
+		this.exit()
+	}()
+
+	chsignal := make(chan os.Signal, 1)
+	signal.Notify(chsignal, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case s := <-chsignal:
+			switch s {
+			case syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
+				akLog.FmtPrintln("signal exit:", s)
+				return
+			default:
+				akLog.FmtPrintln("other signal:", s)
+			}
 		}
 	}
 }
