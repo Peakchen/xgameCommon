@@ -40,7 +40,7 @@ var (
 )
 
 func init() {
-	//loadGameConfig()
+	akLog.FmtPrintln("load	gameConfig.json")
 }
 
 func loadGameConfig() {

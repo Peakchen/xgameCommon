@@ -33,7 +33,7 @@ var (
 )
 
 func init() {
-	//loadNetFilterConfig()
+	akLog.FmtPrintln("load	NetFilter.json")
 }
 
 func loadNetFilterConfig() {

@@ -40,7 +40,7 @@ var (
 )
 
 func init() {
-	//loadLoginConfig()
+	akLog.FmtPrintln("load	LoginConfig.json")
 }
 
 func loadLoginConfig() {

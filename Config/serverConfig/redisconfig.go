@@ -34,7 +34,7 @@ var (
 )
 
 func init() {
-	//loadRedisConfig()
+	akLog.FmtPrintln("load	redisconfig.json")
 }
 
 func loadRedisConfig() {

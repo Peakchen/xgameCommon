@@ -30,7 +30,7 @@ var (
 )
 
 func init() {
-	//loadExternalgwConfig()
+	akLog.FmtPrintln("load	ExternalGWConfig.json")
 }
 
 func loadExternalgwConfig() {

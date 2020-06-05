@@ -35,7 +35,7 @@ var (
 )
 
 func init() {
-	//loadMgoConfig()
+	akLog.FmtPrintln("load	mgoconfig.json")
 }
 
 func loadMgoConfig() {

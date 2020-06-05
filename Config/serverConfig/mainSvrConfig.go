@@ -5,6 +5,7 @@ var (
 )
 
 func LoadSvrAllConfig(CfgPath string) {
+	akLog.FmtPrintln("load config path: ", CfgPath)
 	SvrPath = CfgPath
 	loadExternalgwConfig()
 	loadGameConfig()

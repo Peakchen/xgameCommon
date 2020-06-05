@@ -35,6 +35,7 @@ var (
 )
 
 func init() {
+	akLog.FmtPrintln("load	centerConfig.json")
 }
 
 func loadCenterconfig() {

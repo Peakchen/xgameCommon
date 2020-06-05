@@ -26,6 +26,7 @@ var (
 )
 
 func init() {
+	akLog.FmtPrintln("load	serverGlobalConfig.json")
 }
 
 func loadServerglobalconfig() {

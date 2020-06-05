@@ -42,7 +42,7 @@ var (
 )
 
 func init() {
-	//loadInnergwConfig()
+	akLog.FmtPrintln("load	InnerGWConfig.json")
 }
 
 func loadInnergwConfig() {
