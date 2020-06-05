@@ -12,7 +12,9 @@ type ExternalCollection struct {
 }
 
 func NewExternalCollection() *ExternalCollection {
-	return &ExternalCollection{}
+	return &ExternalCollection{
+		centerSession: &CenterSessionMgr{},
+	}
 }
 
 func (this *ExternalCollection) GetCenterSession() *CenterSessionMgr {
