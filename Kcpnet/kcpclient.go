@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/sha1"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -204,6 +205,10 @@ func (this *KcpClient) Run() {
 			go this.loopconnect(config, this.ctx, &this.sw)
 			go this.loopOffline(this.ctx, &this.sw)
 			go this.loopSignalCheck(this.ctx, &this.sw)
+			go func() {
+				akLog.FmtPrintln("[client] run http server, host: ", this.ppAddr)
+				http.ListenAndServe(this.ppAddr, nil)
+			}()
 			this.sw.Wait()
 			return nil
 		},

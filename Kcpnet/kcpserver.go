@@ -6,6 +6,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"net"
+	"net/http"
 	"os/signal"
 	"syscall"
 
@@ -205,6 +206,10 @@ func (this *KcpServer) Run() {
 			go this.kcpAccept(config, this.ctx, &this.sw)
 			go this.loopOffline(this.ctx, &this.sw)
 			go this.loopSignalCheck(this.ctx, &this.sw)
+			go func() {
+				akLog.FmtPrintln("[server] run http server, host: ", this.ppAddr)
+				http.ListenAndServe(this.ppAddr, nil)
+			}()
 			this.sw.Wait()
 			return nil
 		},
