@@ -45,7 +45,7 @@ func loadCenterconfig() {
 		path = getserverpath()
 	}
 	path = filepath.Join(SvrPath, "centerConfig.json")
-	Config.ParseJson2Cache(GCenterconfigConfig, &tArrCenterconfig{}, "centerConfig.json")
+	Config.ParseJson2Cache(GCenterconfigConfig, &tArrCenterconfig{}, path)
 }
 
 func (this *TCenterconfigConfig) ComfireAct(data interface{}) (errlist []string) {
