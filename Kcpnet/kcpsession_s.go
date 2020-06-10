@@ -178,7 +178,7 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 		(this.SvrType == define.ERouteId_ER_ESG || this.SvrType == define.ERouteId_ER_ISG) {
 		if this.SvrType == define.ERouteId_ER_ESG {
 			succ = externalRouteAct(route, this, responseCliented, this.exCollection)
-			if succ {
+			if succ && this.exCollection != nil {
 				this.exCollection.SetExternalClient(GClient2ServerSession)
 			}
 		} else {
@@ -246,8 +246,10 @@ func (this *KcpServerSession) SetIdentify(StrIdentify string) {
 }
 
 func (this *KcpServerSession) Offline() {
-	if this.SvrType == define.ERouteId_ER_ESG && this.exCollection.GetCenterClient() != nil {
-		sendCenterSvr4Leave(this, this.exCollection)
+	if this.exCollection != nil && this.SvrType == define.ERouteId_ER_ESG {
+		if this.exCollection.GetCenterClient() != nil {
+			sendCenterSvr4Leave(this, this.exCollection)
+		}
 	}
 }
 

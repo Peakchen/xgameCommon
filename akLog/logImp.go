@@ -15,19 +15,21 @@ import (
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/public"
 	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Shopify/sarama"
 )
 
 type TAokoLog struct {
-	filename   string
-	filehandle *os.File
-	cancle     context.CancelFunc
-	ctx        context.Context
-	wg         sync.WaitGroup
-	filesize   uint64
-	logNum     uint64
-	data       chan string
-	sw         sync.WaitGroup
-	FileNo     uint32
+	filename      string
+	filehandle    *os.File
+	cancle        context.CancelFunc
+	ctx           context.Context
+	wg            sync.WaitGroup
+	filesize      uint64
+	logNum        uint64
+	data          chan string
+	sw            sync.WaitGroup
+	FileNo        uint32
+	consumeClient sarama.ConsumerGroup
 }
 
 const (
@@ -43,12 +45,34 @@ const (
 )
 
 var (
-	aokoLog map[string]*TAokoLog
+	aokoLog    map[string]*TAokoLog
+	brokerAddr []string
 )
+
 var exitchan = make(chan os.Signal, 1)
 
 func init() {
 	aokoLog = map[string]*TAokoLog{}
+}
+
+func InitLogBroker(addr []string) {
+	brokerAddr = addr
+}
+
+func (this *TAokoLog) createConsumer() {
+	config := sarama.NewConfig()
+	config.Consumer.Return.Errors = true
+	config.Consumer.Offsets.Initial = sarama.OffsetNewest
+	config.Consumer.Offsets.CommitInterval = 10
+	config.Consumer.Offsets.AutoCommit.Enable = true
+	config.Consumer.Offsets.AutoCommit.Interval = 2
+	config.Version = sarama.V2_5_0_0
+	client, err := sarama.NewConsumerGroup(brokerAddr, KAFKA_LOG_CONSUMER_GROUP, config)
+	if err != nil {
+		panic("create ConsumerGroup err: " + err.Error())
+		return
+	}
+	this.consumeClient = client
 }
 
 func checkNewLog(logtype string) (logobj *TAokoLog) {
@@ -57,12 +81,13 @@ func checkNewLog(logtype string) (logobj *TAokoLog) {
 	)
 	logobj, ok = aokoLog[logtype]
 	if !ok {
-		aokoLog[logtype] = &TAokoLog{
+		logobj = &TAokoLog{
 			FileNo: 1,
 		}
-		initLogFile(logtype, aokoLog[logtype])
-		go run(aokoLog[logtype])
-		logobj = aokoLog[logtype]
+		logobj.createConsumer()
+		aokoLog[logtype] = logobj
+		initLogFile(logtype, logobj)
+		go run(logobj)
 	}
 	return
 }
@@ -120,6 +145,7 @@ func run(aokoLog *TAokoLog) {
 	aokoLog.ctx, aokoLog.cancle = context.WithCancel(context.Background())
 	aokoLog.wg.Add(1)
 	go aokoLog.loop()
+	go aokoLog.loop2()
 	aokoLog.wg.Wait()
 }
 
@@ -233,8 +259,8 @@ func (this *TAokoLog) exit() {
 
 func (this *TAokoLog) loop() {
 	defer func() {
-		this.exit()
 		this.sw.Done()
+		this.exit()
 		time.Sleep(time.Duration(3) * time.Second)
 	}()
 
@@ -261,6 +287,33 @@ func (this *TAokoLog) loop() {
 	}
 }
 
+func (this *TAokoLog) loop2() {
+	defer func() {
+		this.sw.Done()
+		this.exit()
+	}()
+
+	tick := time.NewTicker(time.Duration(5 * time.Second))
+	for {
+		select {
+		case <-this.ctx.Done():
+			tick.Stop()
+			return
+		case s, ok := <-exitchan:
+			if !ok {
+				continue
+			}
+			fmt.Println("Got signal:", s)
+			return
+		case <-tick.C:
+			err := this.consumeClient.Consume(this.ctx, []string{KAFKA_LOG_TOPIC}, this)
+			if err != nil {
+				fmt.Println("client.Consume error=[%v]", err.Error())
+			}
+		}
+	}
+}
+
 func (this *TAokoLog) writelog(src string) {
 	_, err := this.filehandle.WriteString(src)
 	if err != nil {
@@ -270,4 +323,23 @@ func (this *TAokoLog) writelog(src string) {
 
 func (this *TAokoLog) flush() {
 	this.writelog(<-this.data)
+}
+
+func (this *TAokoLog) Setup(s sarama.ConsumerGroupSession) error {
+	return nil
+}
+
+func (this *TAokoLog) Cleanup(s sarama.ConsumerGroupSession) error {
+	return nil
+}
+
+func (this *TAokoLog) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+	for message := range claim.Messages() {
+		key := string(message.Key)
+		val := string(message.Value)
+		slog := fmt.Sprintf("module: %v, info: %v.", key, val)
+		this.writelog(slog)
+		session.MarkMessage(message, "")
+	}
+	return nil
 }

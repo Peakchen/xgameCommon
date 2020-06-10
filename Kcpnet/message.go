@@ -387,6 +387,9 @@ func sendCenterSvr4Enter(sess TcpSession, excol *ExternalCollection) {
 	if SubID != uint16(MSG_Player.SUBMSG_CS_EnterServer) {
 		return
 	}
+	if excol == nil {
+		return
+	}
 	if excol.GetCenterClient() == nil {
 		return
 	}
