@@ -12,29 +12,18 @@ var (
 )
 
 type TClient2ServerSession struct {
-	sync.Mutex
-
 	c2sSession sync.Map
 }
 
 func (this *TClient2ServerSession) RemoveSession(key interface{}) {
-	this.Lock()
-	defer this.Unlock()
-
 	this.c2sSession.Delete(key)
 }
 
 func (this *TClient2ServerSession) AddSession(key interface{}, session TcpSession) {
-	this.Lock()
-	defer this.Unlock()
-
 	this.c2sSession.Store(key, session)
 }
 
 func (this *TClient2ServerSession) GetSession(key interface{}) (session TcpSession) {
-	this.Lock()
-	defer this.Unlock()
-
 	val, exist := this.c2sSession.Load(key)
 	if exist {
 		session = val.(TcpSession)

@@ -19,6 +19,7 @@ import (
 	"sync"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/pprof"
 	cli "github.com/urfave/cli"
 )
@@ -34,15 +35,17 @@ type KcpServer struct {
 	kcplis       *kcp.Listener
 	offCh        chan *KcpServerSession
 	exCollection *ExternalCollection
+	svrType      define.ERouteId
 }
 
-func NewKcpServer(Name string, addr string, pprofAddr string, exCol *ExternalCollection) *KcpServer {
+func NewKcpServer(Name string, addr string, pprofAddr string, svrType define.ERouteId, exCol *ExternalCollection) *KcpServer {
 	return &KcpServer{
 		svrName:      Name,
 		addr:         addr,
 		ppAddr:       pprofAddr,
 		offCh:        make(chan *KcpServerSession, 1000),
 		exCollection: exCol,
+		svrType:      svrType,
 	}
 }
 
@@ -265,7 +268,7 @@ func (this *KcpServer) kcpAccept(c *KcpSvrConfig, ctx context.Context, sw *sync.
 
 		// start a goroutine for every incoming connection for read and write
 		//go handleClient(conn, config)
-		sess := NewKcpSvrSession(conn, this.offCh, c, this.exCollection)
+		sess := NewKcpSvrSession(conn, this.offCh, c, this.svrType, this.exCollection)
 		sess.Handler()
 	}
 	return

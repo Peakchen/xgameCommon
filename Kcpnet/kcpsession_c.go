@@ -56,7 +56,8 @@ func (this *KcpClientSession) close() {
 	}
 
 	this.closeOnce.Do(func() {
-		akLog.FmtPrintf("client session close, svr: %v, regpoint: %v, cache size: %v.", this.SvrType, this.RegPoint, len(this.writeCh))
+		leftplayers := GPlayerStaticis.SubPlayer(this.SvrType)
+		akLog.FmtPrintf("server session close, svr: %v, regpoint: %v, left players: %v.", this.SvrType, this.RegPoint, leftplayers)
 		GClient2ServerSession.RemoveSession(this.remoteAddr)
 		this.isAlive = false
 		this.offCh <- this
@@ -349,4 +350,16 @@ func (this *KcpClientSession) GetModuleName() string {
 
 func (this *KcpClientSession) GetExternalCollection() *ExternalCollection {
 	return this.exCollection
+}
+
+func (this *KcpClientSession) GetVer() int32 {
+	return 0
+}
+
+func (this *KcpClientSession) SetVer(ver int32) {
+
+}
+
+func (this *KcpClientSession) GetSvrType() (t define.ERouteId) {
+	return this.SvrType
 }

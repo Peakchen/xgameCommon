@@ -55,7 +55,7 @@ type IMessagePack interface {
 	GetPostType() (pt uint16)
 }
 
-type TcpSession interface {
+type TSession interface {
 	GetRemoteAddr() string
 	GetRegPoint() (RegPoint define.ERouteId)
 	GetIdentify() string
@@ -73,6 +73,9 @@ type TcpSession interface {
 	RefreshHeartBeat(mainid, subid uint16) bool
 	GetModuleName() string
 	GetExternalCollection() *ExternalCollection
+	GetVer() int32
+	SetVer(ver int32)
+	GetSvrType() (t define.ERouteId)
 }
 
 const (

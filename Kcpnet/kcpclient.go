@@ -33,19 +33,21 @@ type KcpClient struct {
 	cancel       context.CancelFunc
 	sesson       *KcpClientSession
 	offCh        chan *KcpClientSession
-	routeID      define.ERouteId
+	svrType      define.ERouteId
 	exCollection *ExternalCollection
+	versionNo    int32
 }
 
-func NewKcpClient(addr, pprofAddr string, name string, svrType define.ERouteId, exCol *ExternalCollection) *KcpClient {
+func NewKcpClient(addr, pprofAddr string, name string, svrType define.ERouteId, ver int32, exCol *ExternalCollection) *KcpClient {
 	return &KcpClient{
 		svrName:      name,
 		Addr:         addr,
 		ppAddr:       pprofAddr,
 		offCh:        make(chan *KcpClientSession, 1000),
-		routeID:      svrType,
+		svrType:      svrType,
 		pack:         &KcpClientProtocol{},
 		exCollection: exCol,
+		versionNo:    ver,
 	}
 }
 
@@ -243,10 +245,11 @@ func (this *KcpClient) connect(c *KcpSvrConfig, ctx context.Context, sw *sync.Wa
 }
 
 func (this *KcpClient) sendRegisterMsg() {
-	akLog.FmtPrintf("after dial, send point: %v register message to server.", this.routeID)
+	akLog.FmtPrintf("after dial, send point: %v register message to server.", this.svrType)
 	req := &MSG_Server.CS_ServerRegister_Req{}
-	req.ServerType = int32(this.routeID)
+	req.ServerType = int32(this.svrType)
 	req.Msgs = GetAllMessageIDs()
+	req.Version = this.versionNo
 	akLog.FmtPrintln("register context: ", req.Msgs)
 	data, err := this.pack.PackClientMsg(uint16(MSG_MainModule.MAINMSG_SERVER), uint16(MSG_Server.SUBMSG_CS_ServerRegister), req)
 	if err != nil {

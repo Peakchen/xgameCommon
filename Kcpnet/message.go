@@ -97,7 +97,7 @@ func GetAllMessageIDs() (msgs []uint32) {
 	return
 }
 
-func RegisterMessageRet(session TcpSession) (succ bool, err error) {
+func RegisterMessageRet(session TSession) (succ bool, err error) {
 	rsp := &MSG_Server.SC_ServerRegister_Rsp{}
 	rsp.Ret = MSG_Server.ErrorCode_Success
 	rsp.Identify = session.GetModuleName()
@@ -117,7 +117,7 @@ func SpecialLoginMsgFilter(main, sub uint16) (ok bool) {
 	return
 }
 
-func sendHeartBeat(session TcpSession) (succ bool, err error) {
+func sendHeartBeat(session TSession) (succ bool, err error) {
 	if !session.Alive() {
 		err = fmt.Errorf("session heartbeat disconnection, can not send.")
 		return
@@ -126,7 +126,7 @@ func sendHeartBeat(session TcpSession) (succ bool, err error) {
 	return session.SendInnerSvrMsg(uint16(MSG_MainModule.MAINMSG_HEARTBEAT), uint16(MSG_HeartBeat.SUBMSG_CS_HeartBeat), rsp)
 }
 
-func ResponseHeartBeat(session TcpSession) (succ bool, err error) {
+func ResponseHeartBeat(session TSession) (succ bool, err error) {
 	if !session.Alive() {
 		err = fmt.Errorf("session heartbeat disconnection, can not response.")
 		return
@@ -146,7 +146,7 @@ func checkHeartBeatRet(pack IMessagePack) (exist bool) {
 }
 
 //receive logic message call.
-func msgCallBack(sessionobj TcpSession) (succ bool) {
+func msgCallBack(sessionobj TSession) (succ bool) {
 	protocolPack := sessionobj.GetPack()
 	msg, cb, unpackerr, exist := protocolPack.UnPackData()
 	if unpackerr != nil || !exist {
@@ -265,7 +265,7 @@ func UnPackInnerMsg(c net.Conn, pack IMessagePack) (succ bool) {
 */
 func innerMsgRouteAct(pointType akNet.ESessionType, route define.ERouteId, mainID uint16, data []byte) (succ bool) {
 	var (
-		session TcpSession
+		session TSession
 	)
 
 	if mainID == uint16(MSG_MainModule.MAINMSG_RPC) {
@@ -276,7 +276,7 @@ func innerMsgRouteAct(pointType akNet.ESessionType, route define.ERouteId, mainI
 		if route != 0 && pointType == akNet.ESessionType_Client {
 			//内网转发外网路由请求至xxx服务器 gateway route external message to some one server.
 			//akLog.FmtPrintf("inner route requst message, route: %v.", route)
-			session = GServer2ServerSession.GetSession(define.ERouteId(route))
+			session = GServer2ServerSession.GetBalanceSession(define.ERouteId(route))
 		} else {
 			// 内网转发xxx服务器消息至外网 gateway route some one server message to external gateway.
 			//akLog.FmtPrintln("inner route respnse message.")
@@ -298,8 +298,8 @@ func innerMsgRouteAct(pointType akNet.ESessionType, route define.ERouteId, mainI
 }
 
 // send message for server by inner gateway from external gateway.
-func sendInnerSvr(obj TcpSession) (succ bool) {
-	session := GServer2ServerSession.GetSession(define.ERouteId_ER_ISG)
+func sendInnerSvr(obj TSession) (succ bool) {
+	session := GServer2ServerSession.GetBalanceSession(define.ERouteId_ER_ISG)
 	if session == nil {
 		akLog.Error("[request] can not find session inner route from external gateway.")
 		return
@@ -323,7 +323,7 @@ func sendInnerSvr(obj TcpSession) (succ bool) {
 }
 
 // send message for user from external gateway.
-func sendUserClient(obj TcpSession) (succ bool) {
+func sendUserClient(obj TSession) (succ bool) {
 	out := make([]byte, EnMessage_NoDataLen+int(obj.GetPack().GetDataLen()))
 	err := obj.GetPack().PackAction4Client(out)
 	if err != nil {
@@ -349,7 +349,7 @@ func sendUserClient(obj TcpSession) (succ bool) {
 		allsession := GClient2ServerSession.GetAllSession()
 		allsession.Range(func(key, value interface{}) bool {
 			if value != nil {
-				sess := value.(TcpSession)
+				sess := value.(TSession)
 				sess.WriteMessage(out)
 			}
 			return true
@@ -363,12 +363,13 @@ func sendUserClient(obj TcpSession) (succ bool) {
 /*
 	外网关路由 external gateway for message route (request and response).
 */
-func externalRouteAct(route define.ERouteId, obj TcpSession, responseCliented bool, excol *ExternalCollection) (succ bool) {
+func externalRouteAct(route define.ERouteId, obj TSession, responseCliented bool, excol *ExternalCollection) (succ bool) {
 	//客户端请求消息 receive user client message.
 	if define.ERouteId(route) != define.ERouteId_ER_ISG && false == responseCliented {
 		akLog.FmtPrintf("external request, route: %v, StrIdentify: %v.", route, obj.GetIdentify())
 		// add session.
 		GClient2ServerSession.AddSession(obj.GetRemoteAddr(), obj)
+		GPlayerStaticis.AddPlayer(obj.GetRemoteAddr())
 		//判断是否发送到中心网关
 		sendCenterSvr4Enter(obj, excol)
 		//内网关转发至相关服务器 route message to some one server.
@@ -379,7 +380,7 @@ func externalRouteAct(route define.ERouteId, obj TcpSession, responseCliented bo
 	return sendUserClient(obj)
 }
 
-func sendCenterSvr4Enter(sess TcpSession, excol *ExternalCollection) {
+func sendCenterSvr4Enter(sess TSession, excol *ExternalCollection) {
 	mainID, SubID := sess.GetPack().GetMessageID()
 	if mainID != uint16(MSG_MainModule.MAINMSG_PLAYER) {
 		return
@@ -405,7 +406,7 @@ func sendCenterSvr4Enter(sess TcpSession, excol *ExternalCollection) {
 	excol.GetCenterClient().Send(data)
 }
 
-func sendCenterSvr4Leave(sess TcpSession, excol *ExternalCollection) {
+func sendCenterSvr4Leave(sess TSession, excol *ExternalCollection) {
 	ntf := &MSG_CenterGate.CS_PlayerOffline_Req{
 		PlayerIdentify: sess.GetPack().GetIdentify(),
 	}

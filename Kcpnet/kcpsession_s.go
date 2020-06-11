@@ -32,9 +32,10 @@ type KcpServerSession struct {
 	StrIdentify       string
 	Name              string
 	exCollection      *ExternalCollection //for external expand data
+	versionNo         int32               //
 }
 
-func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrConfig, exCol *ExternalCollection) *KcpServerSession {
+func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrConfig, svrType define.ERouteId, exCol *ExternalCollection) *KcpServerSession {
 	return &KcpServerSession{
 		conn:         c,
 		readCh:       make(chan bool, 1000),
@@ -45,6 +46,7 @@ func NewKcpSvrSession(c net.Conn, offCh chan *KcpServerSession, kcpcfg *KcpSvrCo
 		kcpConfig:    kcpcfg,
 		isAlive:      true,
 		exCollection: exCol,
+		SvrType:      svrType,
 	}
 }
 
@@ -55,6 +57,8 @@ func (this *KcpServerSession) Handler() {
 
 func (this *KcpServerSession) close() {
 	this.closeOnce.Do(func() {
+		leftplayers := GPlayerStaticis.SubPlayer(this.SvrType)
+		akLog.FmtPrintf("server session close, svr: %v, regpoint: %v, left players: %v.", this.SvrType, this.RegPoint, leftplayers)
 		this.isAlive = false
 		this.offCh <- this
 		this.conn.Close()
@@ -182,6 +186,7 @@ func (this *KcpServerSession) dispatch(responseCliented bool) (succ bool) {
 				this.exCollection.SetExternalClient(GClient2ServerSession)
 			}
 		} else {
+			GPlayerStaticis.AddPlayer(this.RemoteAddr)
 			succ = innerMsgRouteAct(akNet.ESessionType_Server, route, mainID, this.pack.GetSrcMsg())
 		}
 	} else {
@@ -347,4 +352,16 @@ func (this *KcpServerSession) RefreshHeartBeat(mainid, subid uint16) bool {
 
 func (this *KcpServerSession) GetExternalCollection() *ExternalCollection {
 	return this.exCollection
+}
+
+func (this *KcpServerSession) GetVer() int32 {
+	return this.versionNo
+}
+
+func (this *KcpServerSession) SetVer(ver int32) {
+	this.versionNo = ver
+}
+
+func (this *KcpServerSession) GetSvrType() (t define.ERouteId) {
+	return this.SvrType
 }

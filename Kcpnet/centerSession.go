@@ -16,12 +16,12 @@ type CenterSessionMgr struct {
 	serverSessions sync.Map //key,value:[]string
 }
 
-func (this *CenterSessionMgr) AddPlayerSession(pkey string, session TcpSession) {
+func (this *CenterSessionMgr) AddPlayerSession(pkey string, session TSession) {
 	this.playerSessions.Store(pkey, session)
 	this.AppendSvrSession(session, pkey)
 }
 
-func (this *CenterSessionMgr) AppendSvrSession(session TcpSession, vKey string) {
+func (this *CenterSessionMgr) AppendSvrSession(session TSession, vKey string) {
 	data, exist := this.serverSessions.Load(session.GetRemoteAddr())
 	if !exist {
 		vKeys := []string{vKey}
@@ -33,23 +33,23 @@ func (this *CenterSessionMgr) AppendSvrSession(session TcpSession, vKey string) 
 	this.serverSessions.Store(session.GetRemoteAddr(), vKeys)
 }
 
-func (this *CenterSessionMgr) GetPlayerSession(pkey string) (session TcpSession) {
+func (this *CenterSessionMgr) GetPlayerSession(pkey string) (session TSession) {
 	data, exist := this.playerSessions.Load(pkey)
 	if exist {
-		session = data.(TcpSession)
+		session = data.(TSession)
 	}
 	return
 }
 
-func (this *CenterSessionMgr) GetSvrSession(skey string) (session TcpSession) {
+func (this *CenterSessionMgr) GetSvrSession(skey string) (session TSession) {
 	data, exist := this.serverSessions.Load(skey)
 	if exist {
-		session = data.(TcpSession)
+		session = data.(TSession)
 	}
 	return
 }
 
-func (this *CenterSessionMgr) ClearSvrSession(session TcpSession) {
+func (this *CenterSessionMgr) ClearSvrSession(session TSession) {
 	pkeys, exist := this.serverSessions.Load(session.GetRemoteAddr())
 	if exist {
 		for _, pkey := range pkeys.([]string) {

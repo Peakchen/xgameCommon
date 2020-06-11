@@ -3,9 +3,10 @@ package akNet
 // add by stefan
 
 import (
+	"sync"
+
 	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/utls"
-	"sync"
 )
 
 var (
@@ -13,29 +14,18 @@ var (
 )
 
 type TSvr2SvrSession struct {
-	sync.Mutex
-
 	s2sSession sync.Map
 }
 
 func (this *TSvr2SvrSession) RemoveSession(key interface{}) {
-	this.Lock()
-	defer this.Unlock()
-
 	this.s2sSession.Delete(key)
 }
 
 func (this *TSvr2SvrSession) AddSession(key interface{}, session TcpSession) {
-	this.Lock()
-	defer this.Unlock()
-
 	this.s2sSession.Store(key, session)
 }
 
 func (this *TSvr2SvrSession) GetSession(key interface{}) (session TcpSession) {
-	this.Lock()
-	defer this.Unlock()
-
 	var (
 		sessions = []TcpSession{}
 		slen     int32
@@ -61,9 +51,6 @@ func (this *TSvr2SvrSession) GetSession(key interface{}) (session TcpSession) {
 }
 
 func (this *TSvr2SvrSession) GetSessionByIdentify(key interface{}) (session TcpSession) {
-	this.Lock()
-	defer this.Unlock()
-
 	val, exist := this.s2sSession.Load(key)
 	if exist {
 		session = val.(TcpSession)
