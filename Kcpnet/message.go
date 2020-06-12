@@ -29,7 +29,6 @@ type TMessageProc struct {
 
 var (
 	_MessageTab      = map[uint32]*TMessageProc{}
-	_specialLoginMsg = map[uint16]bool{}
 )
 
 func RegisterMessage(mainID, subID uint16, proc interface{}) {

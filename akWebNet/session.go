@@ -11,6 +11,8 @@ import (
 	//"strings"
 	"sync"
 
+	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/akNet"
 	"github.com/Peakchen/xgameCommon/utls"
 )
 
@@ -28,8 +30,8 @@ type WebSession struct {
 	IdCh       *uint32
 	stopWrite  bool
 	stopRead   bool
-
-	one sync.Once
+	one        sync.Once
+	protoPack  *akNet.ServerProtocol
 }
 
 func NewWebSession(conn *websocket.Conn, off chan *WebSession) *WebSession {
@@ -40,6 +42,7 @@ func NewWebSession(conn *websocket.Conn, off chan *WebSession) *WebSession {
 		writeCh:    make(chan *wsMessage, maxWriteMsgSize),
 		readCh:     make(chan *wsMessage, maxWriteMsgSize),
 		IdCh:       new(uint32),
+		protoPack:  &akNet.ServerProtocol{},
 	}
 }
 
@@ -57,12 +60,10 @@ func (this *WebSession) Handle() {
 }
 
 func (this *WebSession) offline() {
-	mosterid := this.GetId()
-	fmt.Println("exit ws socket: ", this.RemoteAddr, mosterid, time.Now().Unix())
+	id := this.GetId()
+	fmt.Println("exit ws socket: ", this.RemoteAddr, id, time.Now().Unix())
 	GwebSessionMgr.RemoveSession(this.RemoteAddr)
-	if proc := GetGameLogicProcMsg(MID_logout); proc != nil {
-		proc(this, []uint32{mosterid})
-	}
+	//notify offline ... logout
 }
 
 func (this *WebSession) exit() {
@@ -117,6 +118,11 @@ func (this *WebSession) readloop() {
 func (this *WebSession) read() {
 	msg := <-this.readCh
 	fmt.Println("read messageType: ", msg.messageType, len(msg.data), time.Now().Unix())
+	_, err := this.protoPack.UnPackMsg4Client(msg.data)
+	if err != nil {
+		akLog.Error("unpack action err: ", err)
+		return
+	}
 	if handler := GetMessageHandler(msg.messageType); handler != nil {
 		handler(this, msg)
 	} else {
@@ -179,4 +185,8 @@ func (this *WebSession) broadcast(msgtype int, data []byte) {
 
 		return true
 	})
+}
+
+func (this *WebSession) GetProtoPack() *akNet.ServerProtocol {
+	return this.protoPack
 }

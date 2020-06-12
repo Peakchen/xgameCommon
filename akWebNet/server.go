@@ -67,12 +67,11 @@ func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
 	for {
 		select {
 		case sess := <-this.offch:
-			mosterid := sess.GetId()
-			fmt.Println("exit ws socket: ", sess.RemoteAddr, mosterid, aktime.Now().Unix())
+			id := sess.GetId()
+			fmt.Println("exit ws socket: ", sess.RemoteAddr, id, aktime.Now().Unix())
 			GwebSessionMgr.RemoveSession(sess.RemoteAddr)
-			if proc := GetGameLogicProcMsg(MID_logout); proc != nil {
-				proc(sess, []uint32{mosterid})
-			}
+			//notify offline ... logout
+
 		case <-ctx.Done():
 			return
 		}

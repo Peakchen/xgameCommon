@@ -20,7 +20,7 @@ import (
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"github.com/Shopify/sarama"
-	"github.com/bsm/sarama-cluster"
+	cluster "github.com/bsm/sarama-cluster"
 )
 
 type TMessageProc struct {
@@ -29,8 +29,7 @@ type TMessageProc struct {
 }
 
 var (
-	_MessageTab      = map[uint32]*TMessageProc{}
-	_specialLoginMsg = map[uint16]bool{}
+	_MessageTab = map[uint32]*TMessageProc{}
 )
 
 func RegisterMessage(mainID, subID uint16, proc interface{}) {
