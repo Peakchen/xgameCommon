@@ -3,17 +3,18 @@ package akLog
 // add by stefan
 
 import (
+	"fmt"
+
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/public"
-	"fmt"
 )
 
 func FmtPrintf(src string, params ...interface{}) {
 	var dst string
 	if len(params) == 0 {
-		dst = fmt.Sprintf(aktime.Now().Local().Format(public.CstTimeFmt)+" "+src) + "\n"
+		dst = fmt.Sprintf(aktime.Now().Local().Format(public.CstTimeFmt) + " " + src)
 	} else {
-		dst = fmt.Sprintf(aktime.Now().Local().Format(public.CstTimeFmt)+" "+src, params...) + "\n"
+		dst = fmt.Sprintf(aktime.Now().Local().Format(public.CstTimeFmt)+" "+src, params...)
 	}
 
 	fmt.Println(dst)
