@@ -84,7 +84,9 @@ func checkNewLog(logtype string) (logobj *TAokoLog) {
 		logobj = &TAokoLog{
 			FileNo: 1,
 		}
-		logobj.createConsumer()
+		if false == (brokerAddr == nil || len(brokerAddr) == 0) {
+			logobj.createConsumer()
+		}
 		aokoLog[logtype] = logobj
 		initLogFile(logtype, logobj)
 		go run(logobj)
@@ -145,7 +147,10 @@ func run(aokoLog *TAokoLog) {
 	aokoLog.ctx, aokoLog.cancle = context.WithCancel(context.Background())
 	aokoLog.wg.Add(1)
 	go aokoLog.loop()
-	go aokoLog.loop2()
+	if aokoLog.consumeClient != nil {
+		aokoLog.wg.Add(1)
+		go aokoLog.loop2()
+	}
 	aokoLog.wg.Wait()
 }
 
