@@ -4,8 +4,9 @@ package AsyncLock
 //etcd version for low frequency and long duration.
 
 import (
-	"github.com/zieckey/etcdsync"
 	"os"
+
+	"github.com/zieckey/etcdsync"
 )
 
 //ip -> ip:port
@@ -34,7 +35,7 @@ func AddEtcdLock(key, Name string) (succ bool) {
 		akLog.Error("etcdsync Lock failed.")
 		return
 	}
-
+	_etcdlocks[lockid] = m
 	succ = true
 	return
 }
