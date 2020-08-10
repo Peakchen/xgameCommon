@@ -3,11 +3,12 @@
 package httpsExServiceTLS
 
 import (
-	"define"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/Peakchen/xgameCommon/define"
 )
 
 func StartHttpsServiceTLS(port int, certfile string, keyfile string, handler define.HandlerFunc) {

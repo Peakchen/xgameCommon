@@ -5,11 +5,12 @@ package httpExService
 import (
 	"net/http"
 	//"fmt"
-	define "github.com/Peakchen/xgameCommon/define"
 	"encoding/json"
 	"log"
 	"strings"
 	"time"
+
+	define "github.com/Peakchen/xgameCommon/define"
 )
 
 func StartHttpService(addr string, handler define.HandlerFunc) {
