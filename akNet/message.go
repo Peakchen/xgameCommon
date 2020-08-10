@@ -21,6 +21,7 @@ import (
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"github.com/Shopify/sarama"
 	cluster "github.com/bsm/sarama-cluster"
+	"github.com/golang/protobuf/proto"
 )
 
 type TMessageProc struct {
@@ -94,6 +95,24 @@ func GetAllMessageIDs() (msgs []uint32) {
 	for msgid, _ := range _MessageTab {
 		msgs = append(msgs, uint32(msgid))
 	}
+	return
+}
+
+func UnPackMsg(mainid, subid uint16, data []byte) (msg proto.Message, cb reflect.Value, err error) {
+	err = nil
+	mt, finded := GetMessageInfo(mainid, subid)
+	if !finded {
+		err = fmt.Errorf("can not regist message, mainid: %v, subid: %v.", mainid, subid)
+		return
+	}
+	dst := reflect.New(mt.paramTypes[1].Elem()).Interface()
+	err = proto.Unmarshal(data, dst.(proto.Message))
+	if err != nil {
+		err = fmt.Errorf("unmarshal message fail, mainid: %v, subid: %v, err: %v.", mainid, subid, err)
+		return
+	}
+	msg = dst.(proto.Message)
+	cb = mt.proc
 	return
 }
 
