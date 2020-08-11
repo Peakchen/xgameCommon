@@ -8,10 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
-	"os/signal"
 	"sync"
-	"syscall"
 
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/aktime"
@@ -61,7 +58,6 @@ func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Reque
 func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
 	defer func() {
 		sw.Done()
-		this.exit()
 	}()
 
 	for {
@@ -79,45 +75,23 @@ func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
 }
 
 func (this *WebSocketSvr) Run() {
-	http.HandleFunc("/ws", this.wsSvrHandler)
+	http.HandleFunc("/echo", this.wsSvrHandler)
 	var ctx context.Context
 	ctx, this.cancel = context.WithCancel(context.Background())
 	pprof.Run(ctx)
 	var sw sync.WaitGroup
-	sw.Add(1)
+	sw.Add(2)
 	go this.disconnloop(ctx, &sw)
-	go this.loopSignalCheck(ctx, &sw)
+	go loopSignalCheck(ctx, &sw)
 	go func() {
 		akLog.FmtPrintln("[client] run http server, host: ", this.pprofAddr)
 		http.ListenAndServe(this.pprofAddr, nil)
 	}()
 	sw.Wait()
+	this.exit()
 }
 
 func (this *WebSocketSvr) exit() {
+	close(this.offch)
 	this.cancel()
-}
-
-func (this *WebSocketSvr) loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
-	defer func() {
-		sw.Done()
-		this.exit()
-	}()
-
-	chsignal := make(chan os.Signal, 1)
-	signal.Notify(chsignal, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case s := <-chsignal:
-			switch s {
-			case syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
-				akLog.FmtPrintln("signal exit:", s)
-				return
-			default:
-				akLog.FmtPrintln("other signal:", s)
-			}
-		}
-	}
 }
