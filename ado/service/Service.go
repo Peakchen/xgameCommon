@@ -20,7 +20,7 @@ type TDBProvider struct {
 	wg     sync.WaitGroup
 }
 
-func (this *TDBProvider) StartDBService(Server string, upcb public.UpdateDBCacheCallBack, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
+func (this *TDBProvider) StartDBService(Server string, upcb public.UpdateDBCacheCallBack, rediscfg *ado.TRedisConfig, mgocfg *ado.TMgoConfig) {
 	this.Server = Server
 	this.rconn = RedisConn.NewRedisConn(rediscfg.Connaddr, rediscfg.DBIndex, rediscfg.Passwd, upcb)
 	this.mconn = MgoConn.NewMgoConn(Server, mgocfg.Username, mgocfg.Passwd, mgocfg.Host)

@@ -38,7 +38,7 @@ func (this *TClusterDBProvider) init(Server string) {
 	this.mgoSessions = make([]*mgo.Session, ado.EMgo_Thread_Cnt)
 }
 
-func (this *TClusterDBProvider) Start(Server string, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
+func (this *TClusterDBProvider) Start(Server string, rediscfg *ado.TRedisConfig, mgocfg *ado.TMgoConfig) {
 	this.init(Server)
 	this.runDBloop(Server)
 }
@@ -57,7 +57,7 @@ func (this *TClusterDBProvider) Exit() {
 	}
 }
 
-func (this *TClusterDBProvider) runDBloop(Server string, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
+func (this *TClusterDBProvider) runDBloop(Server string, rediscfg *ado.TRedisConfig, mgocfg *ado.TMgoConfig) {
 	this.redConn = RedisConn.NewRedisConn(rediscfg.Connaddr, rediscfg.DBIndex, rediscfg.Passwd, nil)
 	this.mgoConn = MgoConn.NewMgoConn(Server, mgocfg.Username, mgocfg.Passwd, mgocfg.Host)
 
