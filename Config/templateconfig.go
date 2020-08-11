@@ -1,4 +1,4 @@
-package LogicConfig
+package Config
 
 /*
 	config use template for others example..

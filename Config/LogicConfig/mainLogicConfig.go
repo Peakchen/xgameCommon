@@ -1,5 +1,0 @@
-package LogicConfig
-
-func LoadLogicAll() {
-
-}
