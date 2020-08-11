@@ -5,14 +5,10 @@ import (
 )
 
 var (
-	clusterProvider *TClusterDBProvider
+	clusterProvider = &TClusterDBProvider{}
 )
 
-func init() {
-	clusterProvider = &TClusterDBProvider{}
-}
-
-func StartMultiDBProvider(Server string) {
+func StartMultiDBProvider(Server string, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
 	clusterProvider.Start(Server)
-	aktime.InitAkTime(clusterProvider.GetRedisConn())
+	aktime.InitAkTime(clusterProvider.GetRedisConn(), rediscfg, mgocfg)
 }
