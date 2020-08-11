@@ -40,7 +40,7 @@ func (this *TClusterDBProvider) init(Server string) {
 
 func (this *TClusterDBProvider) Start(Server string, rediscfg *ado.TRedisConfig, mgocfg *ado.TMgoConfig) {
 	this.init(Server)
-	this.runDBloop(Server)
+	this.runDBloop(Server, rediscfg, mgocfg)
 }
 
 func (this *TClusterDBProvider) GetRedisConn() redis.Conn {

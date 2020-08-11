@@ -10,6 +10,6 @@ var (
 )
 
 func StartMultiDBProvider(Server string, rediscfg *ado.TRedisConfig, mgocfg *ado.TMgoConfig) {
-	clusterProvider.Start(Server)
-	aktime.InitAkTime(clusterProvider.GetRedisConn(), rediscfg, mgocfg)
+	clusterProvider.Start(Server, rediscfg, mgocfg)
+	aktime.InitAkTime(clusterProvider.GetRedisConn())
 }
