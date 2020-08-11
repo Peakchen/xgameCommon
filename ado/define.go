@@ -40,3 +40,25 @@ const (
 const (
 	EDBMgoOper_Update = string("MgoUpdate")
 )
+
+type TRedisConfig struct {
+	DBIndex  int32
+	Connaddr string
+	Passwd   string
+
+	Shareconnaddr string
+	Sharedbindex  int32
+	Pprofaddr     string
+}
+
+type TMgoConfig struct {
+	Username string
+	Passwd   string
+	Host     string
+
+	Shareusername string
+	Sharepasswd   string
+	Sharehost     string
+
+	Pprofaddr string
+}

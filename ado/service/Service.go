@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/Peakchen/xgameCommon/Config/serverConfig"
 	"github.com/Peakchen/xgameCommon/MgoConn"
 	"github.com/Peakchen/xgameCommon/RedisConn"
 	"github.com/Peakchen/xgameCommon/ado"
@@ -21,12 +20,9 @@ type TDBProvider struct {
 	wg     sync.WaitGroup
 }
 
-func (this *TDBProvider) StartDBService(Server string, upcb public.UpdateDBCacheCallBack) {
+func (this *TDBProvider) StartDBService(Server string, upcb public.UpdateDBCacheCallBack, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
 	this.Server = Server
-	rediscfg := serverConfig.GRedisconfigConfig.Get(0)
 	this.rconn = RedisConn.NewRedisConn(rediscfg.Connaddr, rediscfg.DBIndex, rediscfg.Passwd, upcb)
-
-	mgocfg := serverConfig.GMgoconfigConfig.Get(0)
 	this.mconn = MgoConn.NewMgoConn(Server, mgocfg.Username, mgocfg.Passwd, mgocfg.Host)
 }
 

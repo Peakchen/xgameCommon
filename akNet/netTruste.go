@@ -2,20 +2,16 @@ package akNet
 
 // add by stefan
 
-import (
-	"github.com/Peakchen/xgameCommon/Config/serverConfig"
-)
-
 var (
 	GTrustedList   = map[string]bool{}
 	GUnTrustedList = map[string]bool{}
 )
 
 func InitTrusted() {
-	for _, item := range serverConfig.GNetFilterConfig.Get() {
-		GTrustedList[item.White] = true
-		GUnTrustedList[item.Black] = true
-	}
+	// for _, item := range serverConfig.GNetFilterConfig.Get() {
+	// 	GTrustedList[item.White] = true
+	// 	GUnTrustedList[item.Black] = true
+	// }
 }
 
 func IsTrusted(ip string) bool {

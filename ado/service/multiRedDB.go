@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Peakchen/xgameCommon/Config/serverConfig"
 	"github.com/Peakchen/xgameCommon/MgoConn"
 	"github.com/Peakchen/xgameCommon/RedisConn"
 	"github.com/Peakchen/xgameCommon/ado"
@@ -39,7 +38,7 @@ func (this *TClusterDBProvider) init(Server string) {
 	this.mgoSessions = make([]*mgo.Session, ado.EMgo_Thread_Cnt)
 }
 
-func (this *TClusterDBProvider) Start(Server string) {
+func (this *TClusterDBProvider) Start(Server string, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
 	this.init(Server)
 	this.runDBloop(Server)
 }
@@ -58,11 +57,8 @@ func (this *TClusterDBProvider) Exit() {
 	}
 }
 
-func (this *TClusterDBProvider) runDBloop(Server string) {
-	rediscfg := serverConfig.GRedisconfigConfig.Get(0)
+func (this *TClusterDBProvider) runDBloop(Server string, rediscfg *TRedisConfig, mgocfg *TMgoConfig) {
 	this.redConn = RedisConn.NewRedisConn(rediscfg.Connaddr, rediscfg.DBIndex, rediscfg.Passwd, nil)
-
-	mgocfg := serverConfig.GMgoconfigConfig.Get(0)
 	this.mgoConn = MgoConn.NewMgoConn(Server, mgocfg.Username, mgocfg.Passwd, mgocfg.Host)
 
 	this.ctx, this.cancle = context.WithCancel(context.Background())
