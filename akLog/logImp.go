@@ -27,7 +27,6 @@ type TAokoLog struct {
 	filesize      uint64
 	logNum        uint64
 	data          chan string
-	sw            sync.WaitGroup
 	FileNo        uint32
 	consumeClient sarama.ConsumerGroup
 }
@@ -145,13 +144,16 @@ func initLogFile(logtype string, aokoLog *TAokoLog) {
 func run(aokoLog *TAokoLog) {
 	signal.Notify(exitchan, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL, syscall.SIGSEGV)
 	aokoLog.ctx, aokoLog.cancle = context.WithCancel(context.Background())
-	aokoLog.wg.Add(1)
-	go aokoLog.loop()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go aokoLog.loop(&wg)
 	if aokoLog.consumeClient != nil {
-		aokoLog.wg.Add(1)
-		go aokoLog.loop2()
+		wg.Add(1)
+		go aokoLog.loop2(&wg)
 	}
-	aokoLog.wg.Wait()
+	wg.Wait()
+	aokoLog.exit(&wg)
+	time.Sleep(time.Duration(3) * time.Second)
 }
 
 func Error(args ...interface{}) {
@@ -254,19 +256,15 @@ func (this *TAokoLog) endLog() {
 	}
 }
 
-func (this *TAokoLog) exit() {
+func (this *TAokoLog) exit(wg *sync.WaitGroup) {
 	fmt.Println("log exit: ", <-this.data, this.filesize, this.logNum)
 	this.flush()
 	this.endLog()
-	close(this.data)
-	this.sw.Wait()
 }
 
-func (this *TAokoLog) loop() {
+func (this *TAokoLog) loop(wg *sync.WaitGroup) {
 	defer func() {
-		this.sw.Done()
-		this.exit()
-		time.Sleep(time.Duration(3) * time.Second)
+		wg.Done()
 	}()
 
 	tick := time.NewTicker(time.Duration(10 * time.Second))
@@ -285,6 +283,7 @@ func (this *TAokoLog) loop() {
 				continue
 			}
 			fmt.Println("Got signal:", s)
+			os.Exit(0)
 			return
 		case <-tick.C:
 			this.flush()
@@ -292,10 +291,9 @@ func (this *TAokoLog) loop() {
 	}
 }
 
-func (this *TAokoLog) loop2() {
+func (this *TAokoLog) loop2(wg *sync.WaitGroup) {
 	defer func() {
-		this.sw.Done()
-		this.exit()
+		wg.Done()
 	}()
 
 	tick := time.NewTicker(time.Duration(5 * time.Second))
@@ -309,6 +307,7 @@ func (this *TAokoLog) loop2() {
 				continue
 			}
 			fmt.Println("Got signal:", s)
+			os.Exit(0)
 			return
 		case <-tick.C:
 			err := this.consumeClient.Consume(this.ctx, []string{KAFKA_LOG_TOPIC}, this)
