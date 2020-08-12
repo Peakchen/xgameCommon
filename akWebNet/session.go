@@ -11,7 +11,6 @@ import (
 	//"strings"
 	"sync"
 
-	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/akNet"
 	"github.com/Peakchen/xgameCommon/utls"
 )
@@ -67,7 +66,7 @@ func (this *WebSession) offline() {
 }
 
 func (this *WebSession) exit() {
-	//conn close 只执行一次
+	//conn close
 	this.one.Do(func() {
 		this.offline()
 		//this.offch <-this
@@ -106,27 +105,16 @@ func (this *WebSession) readloop() {
 			return
 		}
 
-		this.readCh <- &wsMessage{
-			messageType: msgType,
-			data:        data,
-		}
-
-		go this.read()
+		go this.read(msgType, data)
 	}
 }
 
-func (this *WebSession) read() {
-	msg := <-this.readCh
-	fmt.Println("read messageType: ", msg.messageType, len(msg.data), time.Now().Unix())
-	_, err := this.protoPack.UnPackMsg4Client(msg.data)
-	if err != nil {
-		akLog.Error("unpack action err: ", err)
-		return
-	}
-	if handler := GetMessageHandler(msg.messageType); handler != nil {
+func (this *WebSession) read(messageType int, data []byte) {
+	fmt.Println("read messageType: ", messageType, len(data), time.Now().Unix())
+	if handler := GetMessageHandler(messageType); handler != nil {
 		handler(this, msg)
 	} else {
-		panic(fmt.Errorf("invalid message type: %v.", msg.messageType))
+		panic(fmt.Errorf("invalid message type: %v.", messageType))
 	}
 }
 

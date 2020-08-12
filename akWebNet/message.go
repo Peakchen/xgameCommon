@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"reflect"
 	"sync"
 	"syscall"
 
@@ -20,10 +21,9 @@ import (
 	@param 4：消息参数
 */
 func BroadCastMsgExceptSession(sess *WebSession, bMsg2Me bool, mainId, subId uint16, data proto.Message) {
-	protocolPack := sess.GetProtoPack()
-	msg, err := protocolPack.PackClientMsg(mainId, subId, data)
-	if err != nil {
-		akLog.Error("pack msg fail: ", err)
+	msg, err := PackMsgOp(mainId, subId, data, PACK_PROTO)
+	if msg == nil || err != nil {
+		akLog.Error("pack msg fail: ", mainId, subId)
 		return
 	}
 	sesses := GwebSessionMgr.GetSessions()
@@ -45,10 +45,9 @@ func BroadCastMsgExceptID(mainId, subId uint16, data proto.Message) {
 	sesses.Range(func(k, v interface{}) bool {
 		if v != nil {
 			sess := v.(*WebSession)
-			protocolPack := sess.GetProtoPack()
-			msg, err := protocolPack.PackClientMsg(mainId, subId, data)
-			if err != nil {
-				akLog.Error("pack msg fail: ", err)
+			msg, err := PackMsgOp(mainId, subId, data, PACK_PROTO)
+			if msg == nil {
+				akLog.Error("pack msg fail: ", mainId, subId, err)
 				return false
 			}
 			sess.Write(websocket.BinaryMessage, msg)
@@ -56,15 +55,6 @@ func BroadCastMsgExceptID(mainId, subId uint16, data proto.Message) {
 
 		return true
 	})
-}
-
-func SendMsg(sess *WebSession, mainId, subId uint16, data proto.Message) {
-	protocolPack := sess.GetProtoPack()
-	msg, err := protocolPack.PackClientMsg(mainId, subId, data)
-	if err != nil {
-		return
-	}
-	sess.Write(websocket.BinaryMessage, msg)
 }
 
 func loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
@@ -87,5 +77,32 @@ func loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
 				akLog.FmtPrintln("other signal:", s)
 			}
 		}
+	}
+}
+
+func SendMsg(sess *WebSession, mainId, subId uint16, data proto.Message) {
+	msg, err := PackMsgOp(mainId, subId, data, PACK_PROTO)
+	if msg == nil || err != nil {
+		akLog.Error("pack msg fail: ", mainId, subId, err)
+		return
+	}
+	sess.Write(websocket.BinaryMessage, msg)
+}
+
+func MsgProc(sess *WebSession, data []byte, pt PACK_TYPE) {
+	msg, cb, err := UnPackMsgOp(data, pt)
+	if err != nil {
+		return
+	}
+	//callback define: func (sess *WebSession, proto Message)(bool,error)
+	params := []reflect.Value{
+		reflect.ValueOf(sess),
+		reflect.ValueOf(msg),
+	}
+	ret := cb.Call(params)
+	succ := ret[0].Interface().(bool)
+	reterr := ret[1].Interface()
+	if reterr != nil || !succ {
+		akLog.Error("message proc return err: ", reterr.(error).Error())
 	}
 }

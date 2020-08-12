@@ -25,3 +25,20 @@ const (
 	MsgSendType_P2P       = 1 //点对点 直接发送
 	MsgSendType_BroadCast = 2 //广播
 )
+
+/*
+	|主消息ID|次消息ID|内容长度|内容数据|
+		2  		2		4	 len(内容长度)
+*/
+const (
+	MSG_PACK_HEADID_SIZE = 4
+	MSG_PACK_DATA_SIZE   = 4
+	MSG_PACK_NODATA_SIZE = (MSG_PACK_HEADID_SIZE + MSG_PACK_DATA_SIZE)
+)
+
+//打包方式
+type PACK_TYPE uint8
+
+const (
+	PACK_PROTO = uint8(1)
+)
