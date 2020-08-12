@@ -90,9 +90,12 @@ func (this *WebSocketClient) checkReconnect(ctx context.Context, sw *sync.WaitGr
 		select {
 		case <-ctx.Done():
 			return
-		case <-this.offch,
-			<-sesstick.C:
+		case <-this.offch:
 			this.newDail()
+		case <-sesstick.C:
+			if this.session == nil {
+				this.newDail()
+			}
 		}
 	}
 }
