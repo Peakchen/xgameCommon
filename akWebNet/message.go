@@ -71,7 +71,7 @@ func loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
 		case s := <-chsignal:
 			switch s {
 			case syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT:
-				akLog.FmtPrintln("signal exit:", s)
+				akLog.FmtPrintln("check exit signal:", s)
 				return
 			default:
 				akLog.FmtPrintln("other signal:", s)

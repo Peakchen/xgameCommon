@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type receiveMsgProc func(sess *WebSession, msg *wsMessage)
+type receiveMsgProc func(sess *WebSession, data []byte)
 
 var (
 	_procMsgs = map[int]receiveMsgProc{
@@ -26,24 +26,24 @@ func GetMessageHandler(id int) receiveMsgProc {
 	return _procMsgs[id]
 }
 
-func TextMessageFunc(sess *WebSession, msg *wsMessage) {
-	fmt.Println("read TextMessage data: ", string(msg.data))
+func TextMessageFunc(sess *WebSession, data []byte) {
+	fmt.Println("read TextMessage data: ", string(data))
 	sess.Write(websocket.TextMessage, []byte("hello,too!"))
 }
 
-func BinaryMessageFunc(sess *WebSession, msg *wsMessage) {
-	MsgProc(sess, msg.data, PACK_PROTO)
+func BinaryMessageFunc(sess *WebSession, data []byte) {
+	MsgProc(sess, data, PACK_PROTO)
 }
 
-func CloseMessageFunc(sess *WebSession, msg *wsMessage) {
+func CloseMessageFunc(sess *WebSession, data []byte) {
 	fmt.Println("read CloseMessage.")
 	sess.offch <- sess
 }
 
-func PingMessageFunc(sess *WebSession, msg *wsMessage) {
+func PingMessageFunc(sess *WebSession, data []byte) {
 	fmt.Println("read PingMessage.")
 }
 
-func PongMessageFunc(sess *WebSession, msg *wsMessage) {
+func PongMessageFunc(sess *WebSession, data []byte) {
 	fmt.Println("read PongMessage.")
 }

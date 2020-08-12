@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/Peakchen/xgameCommon/akNet"
 	"github.com/golang/protobuf/proto"
 )
 
@@ -35,23 +36,23 @@ func (this *TPackProto) UnPack(msg []byte) (err error) {
 
 	this.dataSize = binary.LittleEndian.Uint32(msg[pos:])
 	pos += 4
-	if len(msg[pos:]) < pos+len(this.dataSize) {
+	if len(msg[pos:]) < pos+int(this.dataSize) {
 		err = errors.New("msg data content size invalid.")
 		return
 	}
-	this.data = msg[pos : pos+len(this.dataSize)]
+	this.data = msg[pos : pos+int(this.dataSize)]
 	return
 }
 
 func (this *TPackProto) Pack(out []byte) {
 	var pos int
-	binary.LittleEndian.PutUint16(out[pos:], this.mainid)
+	binary.LittleEndian.PutUint16(out[pos:], this.mainID)
 	pos += 2
 
-	binary.LittleEndian.PutUint16(out[pos:], this.subid)
+	binary.LittleEndian.PutUint16(out[pos:], this.subID)
 	pos += 2
 
-	binary.LittleEndian.PutUint32(out[pos:], this.length)
+	binary.LittleEndian.PutUint32(out[pos:], this.dataSize)
 	pos += 4
 	copy(out[pos:], this.data)
 }

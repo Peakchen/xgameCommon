@@ -40,5 +40,5 @@ const (
 type PACK_TYPE uint8
 
 const (
-	PACK_PROTO = uint8(1)
+	PACK_PROTO = PACK_TYPE(1)
 )

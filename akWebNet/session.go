@@ -11,7 +11,6 @@ import (
 	//"strings"
 	"sync"
 
-	"github.com/Peakchen/xgameCommon/akNet"
 	"github.com/Peakchen/xgameCommon/utls"
 )
 
@@ -30,10 +29,10 @@ type WebSession struct {
 	stopWrite  bool
 	stopRead   bool
 	one        sync.Once
-	protoPack  *akNet.ServerProtocol
+	actor      *TActor
 }
 
-func NewWebSession(conn *websocket.Conn, off chan *WebSession) *WebSession {
+func NewWebSession(conn *websocket.Conn, off chan *WebSession, actor *TActor) *WebSession {
 	return &WebSession{
 		wsconn:     conn,
 		offch:      off,
@@ -41,7 +40,7 @@ func NewWebSession(conn *websocket.Conn, off chan *WebSession) *WebSession {
 		writeCh:    make(chan *wsMessage, maxWriteMsgSize),
 		readCh:     make(chan *wsMessage, maxWriteMsgSize),
 		IdCh:       new(uint32),
-		protoPack:  &akNet.ServerProtocol{},
+		actor:      actor,
 	}
 }
 
@@ -112,7 +111,7 @@ func (this *WebSession) readloop() {
 func (this *WebSession) read(messageType int, data []byte) {
 	fmt.Println("read messageType: ", messageType, len(data), time.Now().Unix())
 	if handler := GetMessageHandler(messageType); handler != nil {
-		handler(this, msg)
+		handler(this, data)
 	} else {
 		panic(fmt.Errorf("invalid message type: %v.", messageType))
 	}
@@ -175,6 +174,6 @@ func (this *WebSession) broadcast(msgtype int, data []byte) {
 	})
 }
 
-func (this *WebSession) GetProtoPack() *akNet.ServerProtocol {
-	return this.protoPack
+func (this *WebSession) GetActor() *TActor {
+	return this.actor
 }

@@ -49,7 +49,9 @@ func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	sess := NewWebSession(wsSocket, this.offch)
+	sess := NewWebSession(wsSocket, this.offch, &TActor{
+		Route: &MsgRoute{},
+	})
 	sess.Handle()
 	fmt.Println("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())
 	GwebSessionMgr.AddSession(sess)

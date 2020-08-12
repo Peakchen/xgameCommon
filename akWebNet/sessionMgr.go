@@ -9,7 +9,7 @@ type wsClientSession struct {
 }
 
 var (
-	GwebSessionMgr *wsClientSession
+	GwebSessionMgr = &wsClientSession{}
 )
 
 func (this *wsClientSession) AddSession(sess *WebSession) {
@@ -30,8 +30,4 @@ func (this *wsClientSession) RemoveSession(addr string) {
 
 func (this *wsClientSession) GetSessions() sync.Map {
 	return this.sessMap
-}
-
-func init() {
-	GwebSessionMgr = &wsClientSession{}
 }

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/akNet"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
 	"github.com/Peakchen/xgameCommon/msgProto/MSG_Server"
 	"github.com/Peakchen/xgameCommon/pprof"
@@ -20,6 +22,7 @@ type WebSocketClient struct {
 	offch     chan *WebSession //离线通道
 	cancel    context.CancelFunc
 	session   *WebSession
+	SvrType   define.ERouteId
 }
 
 func NewWebsocketClient(addr string, pprofAddr string) *WebSocketClient {
@@ -56,7 +59,7 @@ func (this *WebSocketClient) newDail() {
 		akLog.Error("dail fail, err: ", err)
 		return
 	}
-	this.session = NewWebSession(c, this.offch)
+	this.session = NewWebSession(c, this.offch, nil)
 	this.session.Handle()
 	this.sendRegisterMsgs()
 }
