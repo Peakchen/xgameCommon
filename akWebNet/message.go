@@ -94,6 +94,7 @@ func SendMsg(sess *WebSession, mainId, subId uint16, data proto.Message) (succ b
 func MsgProc(sess *WebSession, data []byte, pt PACK_TYPE) {
 	msg, cb, err := UnPackMsgOp(data, pt)
 	if err != nil {
+		akLog.Error("msg proc fail: ", pt, err)
 		return
 	}
 	//callback define: func (sess *WebSession, proto Message)(bool,error)

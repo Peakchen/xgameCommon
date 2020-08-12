@@ -36,7 +36,7 @@ func (this *TPackProto) UnPack(msg []byte) (err error) {
 
 	this.dataSize = binary.LittleEndian.Uint32(msg[pos:])
 	pos += 4
-	if len(msg[pos:]) < pos+int(this.dataSize) {
+	if len(msg[pos:]) < int(this.dataSize) {
 		err = errors.New("msg data content size invalid.")
 		return
 	}
