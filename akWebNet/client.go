@@ -59,7 +59,9 @@ func (this *WebSocketClient) newDail() {
 		akLog.Error("dail fail, err: ", err)
 		return
 	}
-	this.session = NewWebSession(c, this.offch, nil)
+	this.session = NewWebSession(c, this.offch, &TActor{
+		ActorType: ACTOR_FRONT,
+	})
 	this.session.Handle()
 	this.sendRegisterMsgs()
 }

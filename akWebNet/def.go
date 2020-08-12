@@ -42,3 +42,11 @@ type PACK_TYPE uint8
 const (
 	PACK_PROTO = PACK_TYPE(1)
 )
+
+//服务角色类型
+type ACTOR_TYPE uint8
+
+const (
+	ACTOR_FRONT = ACTOR_TYPE(1)
+	ACTOR_BACK  = ACTOR_TYPE(2)
+)

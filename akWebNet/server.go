@@ -50,7 +50,8 @@ func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Reque
 	}
 
 	sess := NewWebSession(wsSocket, this.offch, &TActor{
-		Route: &MsgRoute{},
+		Route:     &MsgRoute{},
+		ActorType: ACTOR_BACK,
 	})
 	sess.Handle()
 	fmt.Println("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())

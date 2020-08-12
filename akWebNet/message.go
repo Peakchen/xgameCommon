@@ -80,13 +80,15 @@ func loopSignalCheck(ctx context.Context, sw *sync.WaitGroup) {
 	}
 }
 
-func SendMsg(sess *WebSession, mainId, subId uint16, data proto.Message) {
-	msg, err := PackMsgOp(mainId, subId, data, PACK_PROTO)
-	if msg == nil || err != nil {
+func SendMsg(sess *WebSession, mainId, subId uint16, data proto.Message) (succ bool, err error) {
+	var msg proto.Message
+	msg, err = PackMsgOp(mainId, subId, data, PACK_PROTO)
+	if err != nil {
 		akLog.Error("pack msg fail: ", mainId, subId, err)
 		return
 	}
 	sess.Write(websocket.BinaryMessage, msg)
+	return true, nil
 }
 
 func MsgProc(sess *WebSession, data []byte, pt PACK_TYPE) {
