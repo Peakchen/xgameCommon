@@ -68,7 +68,7 @@ func (this *WebSocketClient) sendRegisterMsgs() {
 		uint16(MSG_Server.SUBMSG_CS_ServerRegister),
 		req, PACK_PROTO)
 	if msg == nil || err != nil {
-		akLog.Error("pack msg fail: ", mainId, subId, err)
+		akLog.Error("pack msg fail: ", err)
 		return
 	}
 	this.session.Write(websocket.BinaryMessage, msg)
