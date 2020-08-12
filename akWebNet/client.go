@@ -85,7 +85,7 @@ func (this *WebSocketClient) checkReconnect(ctx context.Context, sw *sync.WaitGr
 	defer func() {
 		sw.Done()
 	}()
-	sesstick := time.NewTicker(time.Duration(10 * time.Second()))
+	sesstick := time.NewTicker(time.Duration(10 * time.Second))
 	for {
 		select {
 		case <-ctx.Done():
