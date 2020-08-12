@@ -56,6 +56,22 @@ func (this *WebSocketClient) newDail() {
 	}
 	this.session = NewWebSession(c, this.offch)
 	this.session.Handle()
+	this.sendRegisterMsgs()
+}
+
+func (this *WebSocketClient) sendRegisterMsgs() {
+	req := &MSG_Server.CS_ServerRegister_Req{}
+	req.ServerType = int32(this.SvrType)
+	req.Msgs = akNet.GetAllMessageIDs()
+	akLog.FmtPrintln("register context: ", req.Msgs)
+	msg, err := PackMsgOp(uint16(MSG_MainModule.MAINMSG_SERVER),
+		uint16(MSG_Server.SUBMSG_CS_ServerRegister),
+		req, PACK_PROTO)
+	if msg == nil || err != nil {
+		akLog.Error("pack msg fail: ", mainId, subId, err)
+		return
+	}
+	this.session.Write(websocket.BinaryMessage, msg)
 }
 
 func (this *WebSocketClient) checkReconnect(ctx context.Context, sw *sync.WaitGroup) {
