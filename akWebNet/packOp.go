@@ -10,7 +10,7 @@ import (
 )
 
 type BaseMsgInfo struct {
-	Actor  define.ERouteId
+	Actor  uint16
 	MainID uint16
 	SubID  uint16
 }
