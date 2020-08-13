@@ -56,3 +56,5 @@ const (
 	ACTOR_FRONT = ACTOR_TYPE(1)
 	ACTOR_BACK  = ACTOR_TYPE(2)
 )
+
+const cstKeepLiveHeartBeatSec = 180 //180 3min

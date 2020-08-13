@@ -10,6 +10,8 @@ import (
 
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_HeartBeat"
+	"github.com/Peakchen/xgameCommon/msgProto/MSG_MainModule"
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 )
@@ -147,4 +149,9 @@ func MsgProc(sess *WebSession, data []byte, pt PACK_TYPE) {
 	} else {
 		msgCallBack(sess, pt)
 	}
+}
+
+func sendHeartBeat(sess *WebSession) (succ bool, err error) {
+	rsq := &MSG_HeartBeat.CS_HeartBeat_Req{}
+	return SendMsg(sess, uint16(MSG_MainModule.MAINMSG_HEARTBEAT), uint16(MSG_HeartBeat.SUBMSG_CS_HeartBeat), rsq)
 }

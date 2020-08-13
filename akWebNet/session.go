@@ -55,6 +55,20 @@ func (this *WebSession) GetId() uint32 {
 func (this *WebSession) Handle() {
 	go this.readloop()
 	go this.writeloop()
+	go this.heartbeatloop()
+}
+
+func (this *WebSession) heartbeatloop() {
+	ticker := time.NewTicker(time.Duration(cstKeepLiveHeartBeatSec) * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-this.ctx.Done():
+			return
+		case <-ticker.C:
+			sendHeartBeat(this)
+		}
+	}
 }
 
 func (this *WebSession) offline() {
