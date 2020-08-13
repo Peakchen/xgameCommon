@@ -55,6 +55,7 @@ func (this *WebSocketClient) newDail() {
 		ReadBufferSize:   1024,
 		WriteBufferSize:  1024,
 	}
+	akLog.FmtPrintln("connect url: ", url.String())
 	c, _, err := wsDialer.Dial(url.String(), nil)
 	if err != nil {
 		akLog.Error("dail fail, err: ", err)

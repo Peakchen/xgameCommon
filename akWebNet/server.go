@@ -87,11 +87,11 @@ func (this *WebSocketSvr) Run() {
 	go this.disconnloop(ctx, &sw)
 	go loopSignalCheck(ctx, &sw)
 	go func() {
-		akLog.FmtPrintln("run server, host: ", this.Addr)
+		akLog.FmtPrintln("run server, listen host: ", this.Addr)
 		http.ListenAndServe(this.Addr, nil)
 	}()
 	go func() {
-		akLog.FmtPrintln("run http server, host: ", this.pprofAddr)
+		akLog.FmtPrintln("run pprof http server, host: ", this.pprofAddr)
 		http.ListenAndServe(this.pprofAddr, nil)
 	}()
 	sw.Wait()
