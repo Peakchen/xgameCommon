@@ -32,7 +32,7 @@ func (this *wsClientSession) GetSession(addr string) *WebSession {
 	if !exist {
 		return nil
 	}
-	actorSess = val.(*ActorSession)
+	actorSess := val.(*ActorSession)
 	return actorSess.Sess
 }
 
@@ -42,8 +42,8 @@ func (this *wsClientSession) GetSessionByActor(actor define.ERouteId) (sess *Web
 		randIdx   int32
 		websesses = []*WebSession{}
 	)
-	this.sessMap.Range(func(k, v) {
-		actorSess := val.(*ActorSession)
+	this.sessMap.Range(func(k, v interface{}) {
+		actorSess := v.(*ActorSession)
 		if actorSess.Sess.GetActor().GetActorType() == actor {
 			websesses = append(websesses, sess)
 		}
@@ -56,7 +56,7 @@ func (this *wsClientSession) GetSessionByActor(actor define.ERouteId) (sess *Web
 		return
 	}
 
-	session = websesses[randIdx]
+	sess = websesses[randIdx]
 	return
 }
 
