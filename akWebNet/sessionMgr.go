@@ -42,11 +42,12 @@ func (this *wsClientSession) GetSessionByActor(actor define.ERouteId) (sess *Web
 		randIdx   int32
 		websesses = []*WebSession{}
 	)
-	this.sessMap.Range(func(k, v interface{}) {
+	this.sessMap.Range(func(k, v interface{}) bool {
 		actorSess := v.(*ActorSession)
 		if actorSess.Sess.GetActor().GetActorType() == actor {
 			websesses = append(websesses, sess)
 		}
+		return true
 	})
 
 	slen = int32(len(websesses))
