@@ -148,6 +148,8 @@ var (
 	_svrDefs = map[define.ERouteId]string{
 		define.ERouteId_ER_ESG:        "ExternalGateway",
 		define.ERouteId_ER_ISG:        "InnerGateway",
+		define.ERouteId_ER_ISG_SERVER: "InnerGateway_Server",
+		define.ERouteId_ER_ISG_CLIENT: "InnerGateway_Client",
 		define.ERouteId_ER_DB:         "DB",
 		define.ERouteId_ER_BigWorld:   "BigWorld",
 		define.ERouteId_ER_Login:      "Login",

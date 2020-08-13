@@ -20,7 +20,9 @@ const (
 	ERouteId_ER_Client     ERouteId = 9
 	ERouteId_ER_CenterGate ERouteId = 10
 	ERouteId_ER_MMS        ERouteId = 11
-	ERouteId_ER_Max        ERouteId = 12
+	ERouteId_ER_ISG_SERVER ERouteId = 12
+	ERouteId_ER_ISG_CLIENT ERouteId = 13
+	ERouteId_ER_Max        ERouteId = (ERouteId_ER_ISG_CLIENT + 1)
 )
 
 type HandlerFunc func(http.ResponseWriter, *http.Request)

@@ -2,7 +2,15 @@ package akWebNet
 
 import (
 	"sync"
+
+	"github.com/Peakchen/xgameCommon/define"
+	"github.com/Peakchen/xgameCommon/utls"
 )
+
+type ActorSession struct {
+	Actor define.ERouteId
+	Sess  *WebSession
+}
 
 type wsClientSession struct {
 	sessMap sync.Map
@@ -12,15 +20,43 @@ var (
 	GwebSessionMgr = &wsClientSession{}
 )
 
-func (this *wsClientSession) AddSession(sess *WebSession) {
-	this.sessMap.Store(sess.RemoteAddr, sess)
+func (this *wsClientSession) AddSession(sess *WebSession, actor define.ERouteId) {
+	this.sessMap.Store(sess.RemoteAddr, &ActorSession{
+		Actor: actor,
+		Sess:  sess,
+	})
 }
 
-func (this *wsClientSession) GetSession(addr string) (sess *WebSession) {
+func (this *wsClientSession) GetSession(addr string) *WebSession {
 	val, exist := this.sessMap.Load(addr)
-	if exist {
-		sess = val.(*WebSession)
+	if !exist {
+		return nil
 	}
+	actorSess = val.(*ActorSession)
+	return actorSess.Sess
+}
+
+func (this *wsClientSession) GetSessionByActor(actor define.ERouteId) (sess *WebSession) {
+	var (
+		slen      int32
+		randIdx   int32
+		websesses = []*WebSession{}
+	)
+	this.sessMap.Range(func(k, v) {
+		actorSess := val.(*ActorSession)
+		if actorSess.Sess.GetActor().GetActorType() == actor {
+			websesses = append(websesses, sess)
+		}
+	})
+
+	slen = int32(len(websesses))
+	if slen > 1 {
+		randIdx = utls.RandInt32FromZero(slen)
+	} else if slen == 0 {
+		return
+	}
+
+	session = websesses[randIdx]
 	return
 }
 

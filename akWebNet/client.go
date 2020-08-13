@@ -22,14 +22,15 @@ type WebSocketClient struct {
 	offch     chan *WebSession //离线通道
 	cancel    context.CancelFunc
 	session   *WebSession
-	SvrType   define.ERouteId
+	actor     define.ERouteId
 }
 
-func NewWebsocketClient(addr string, pprofAddr string) *WebSocketClient {
+func NewWebsocketClient(addr string, pprofAddr string, actor define.ERouteId) *WebSocketClient {
 	return &WebSocketClient{
 		Addr:      addr,
 		offch:     make(chan *WebSession, 1024),
 		pprofAddr: pprofAddr,
+		actor:     actor,
 	}
 }
 
@@ -60,7 +61,7 @@ func (this *WebSocketClient) newDail() {
 		return
 	}
 	this.session = NewWebSession(c, this.offch, &TActor{
-		ActorType: ACTOR_FRONT,
+		ActorType: this.actor,
 	})
 	this.session.Handle()
 	this.sendRegisterMsgs()
@@ -68,7 +69,7 @@ func (this *WebSocketClient) newDail() {
 
 func (this *WebSocketClient) sendRegisterMsgs() {
 	req := &MSG_Server.CS_ServerRegister_Req{}
-	req.ServerType = int32(this.SvrType)
+	req.ServerType = int32(this.actor)
 	req.Msgs = akNet.GetAllMessageIDs()
 	akLog.FmtPrintln("register context: ", req.Msgs)
 	msg, err := PackMsgOp(uint16(MSG_MainModule.MAINMSG_SERVER),

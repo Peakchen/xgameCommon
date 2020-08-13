@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 )
@@ -91,21 +92,64 @@ func SendMsg(sess *WebSession, mainId, subId uint16, data proto.Message) (succ b
 	return true, nil
 }
 
+func IsGateWayActor(actor define.ERouteId) bool {
+	return actor == define.ERouteId_ER_ESG || actor == define.ERouteId_ER_ISG_SERVER || actor == define.ERouteId_ER_ISG_CLIENT
+}
+
 func MsgProc(sess *WebSession, data []byte, pt PACK_TYPE) {
-	msg, cb, err := UnPackMsgOp(data, pt)
-	if err != nil {
-		akLog.Error("msg proc fail: ", pt, err)
+	info, err := GetUnPackMsgInfo(data, pt)
+	if err != nil || info == nil {
+		akLog.Error("msg un pack info fail: ", pt, err)
 		return
 	}
-	//callback define: func (sess *WebSession, proto Message)(bool,error)
-	params := []reflect.Value{
-		reflect.ValueOf(sess),
-		reflect.ValueOf(msg),
+	msgCallBack := func(dstses *WebSession, pt PACK_TYPE) {
+		msg, cb, err := UnPackMsgOp(pt)
+		if err != nil {
+			akLog.Error("msg proc fail: ", pt, err)
+			return
+		}
+		//callback define: func (sess *WebSession, proto Message)(bool,error)
+		params := []reflect.Value{
+			reflect.ValueOf(sess),
+			reflect.ValueOf(msg),
+		}
+		ret := cb.Call(params)
+		succ := ret[0].Interface().(bool)
+		reterr := ret[1].Interface()
+		if reterr != nil || !succ {
+			akLog.Error("message proc return err: ", reterr.(error).Error())
+		}
 	}
-	ret := cb.Call(params)
-	succ := ret[0].Interface().(bool)
-	reterr := ret[1].Interface()
-	if reterr != nil || !succ {
-		akLog.Error("message proc return err: ", reterr.(error).Error())
+	actor := sess.GetActor().GetActorType()
+	if IsGateWayActor(actor) {
+		switch info.Actor {
+		case 0:
+			msgCallBack(sess, pt)
+		case uint16(define.ERouteId_ER_Login),
+			uint16(define.ERouteId_ER_Game):
+			msg, cb, err := UnPackMsgOp(pt)
+			if err != nil {
+				akLog.Error("msg proc fail: ", pt, err)
+				return
+			}
+			var dstsess *WebSession
+			if actor == define.ERouteId_ER_ESG { // route msg to inner client
+				dstsess = GetSessionByActor(define.ERouteId_ER_ISG)
+			} else if actor == define.ERouteId_ER_ISG_SERVER { // route msg to external gateway
+				dstsess = GetSessionByActor(define.ERouteId_ER_ESG)
+			} else if actor == define.ERouteId_ER_ISG_CLIENT { // route msg to gate way innner client
+				dstsess = GetSessionByActor(define.ERouteId(info.Actor))
+			} else {
+				akLog.Error("invalid server actor.")
+				return
+			}
+			if dstsess != nil {
+				dstsess.Write(websocket.BinaryMessage, msg)
+			}
+		default:
+			akLog.Error("invalid route actor")
+		}
+	} else {
+		msgCallBack()
 	}
 }

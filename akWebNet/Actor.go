@@ -1,7 +1,9 @@
 package akWebNet
 
+import "github.com/Peakchen/xgameCommon/define"
+
 type TActor struct {
-	ActorType ACTOR_TYPE
+	ActorType define.ERouteId
 	Route     *MsgRoute
 }
 
@@ -9,6 +11,6 @@ func (this *TActor) GetMsgRoute() *MsgRoute {
 	return this.Route
 }
 
-func (this *TActor) GetActorType() ACTOR_TYPE {
+func (this *TActor) GetActorType() define.ERouteId {
 	return this.ActorType
 }

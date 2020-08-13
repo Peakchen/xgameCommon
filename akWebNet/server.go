@@ -12,6 +12,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/Peakchen/xgameCommon/define"
 	"github.com/Peakchen/xgameCommon/pprof"
 	"github.com/gorilla/websocket"
 	//"strings"
@@ -23,13 +24,15 @@ type WebSocketSvr struct {
 	pprofAddr string
 	offch     chan *WebSession //离线通道
 	cancel    context.CancelFunc
+	actor     define.ERouteId
 }
 
-func NewWebsocketSvr(addr string, pprofAddr string) *WebSocketSvr {
+func NewWebsocketSvr(addr string, pprofAddr string, actor define.ERouteId) *WebSocketSvr {
 	return &WebSocketSvr{
 		Addr:      addr,
 		offch:     make(chan *WebSession, 1024),
 		pprofAddr: pprofAddr,
+		actor:     actor,
 	}
 }
 
@@ -42,7 +45,6 @@ var upgrader = websocket.Upgrader{
 }
 
 func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Request) {
-
 	wsSocket, err := upgrader.Upgrade(resp, req, nil)
 	if err != nil {
 		fmt.Println("upgrader websocket fail, err: ", err.Error())
@@ -51,11 +53,10 @@ func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Reque
 
 	sess := NewWebSession(wsSocket, this.offch, &TActor{
 		Route:     &MsgRoute{},
-		ActorType: ACTOR_BACK,
+		ActorType: this.actor,
 	})
 	sess.Handle()
 	fmt.Println("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())
-	GwebSessionMgr.AddSession(sess)
 }
 
 func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
@@ -70,7 +71,6 @@ func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
 			fmt.Println("exit ws socket: ", sess.RemoteAddr, id, aktime.Now().Unix())
 			GwebSessionMgr.RemoveSession(sess.RemoteAddr)
 			//notify offline ... logout
-
 		case <-ctx.Done():
 			return
 		}

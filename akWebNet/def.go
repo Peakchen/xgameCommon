@@ -27,11 +27,17 @@ const (
 )
 
 /*
+	外网关客户端消息组合：
 	|主消息ID|次消息ID|内容长度|内容数据|
 		2  		2		4	 len(内容长度)
+
+	网关内消息组合：
+	|目标服务器|主消息ID|次消息ID|内容长度|内容数据|
+		2			2  		2		4	 len(内容长度)
+
 */
 const (
-	MSG_PACK_HEADID_SIZE = 4
+	MSG_PACK_HEADID_SIZE = 6
 	MSG_PACK_DATA_SIZE   = 4
 	MSG_PACK_NODATA_SIZE = (MSG_PACK_HEADID_SIZE + MSG_PACK_DATA_SIZE)
 )
