@@ -63,8 +63,6 @@ func (this *WebSession) heartbeatloop() {
 	defer ticker.Stop()
 	for {
 		select {
-		case <-this.ctx.Done():
-			return
 		case <-ticker.C:
 			sendHeartBeat(this)
 		}
