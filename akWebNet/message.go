@@ -126,7 +126,7 @@ func MsgProc(sess *WebSession, data []byte, pt PACK_TYPE) {
 	if IsGateWayActor(actor) {
 		switch info.Actor {
 		case 0:
-			dstsess.Write(websocket.BinaryMessage, data)
+			sess.Write(websocket.BinaryMessage, data)
 		case uint16(define.ERouteId_ER_SG):
 			msgCallBack(sess, pt)
 		case uint16(define.ERouteId_ER_Login),
