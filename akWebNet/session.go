@@ -72,7 +72,7 @@ func (this *WebSession) heartbeatloop() {
 
 func (this *WebSession) offline() {
 	id := this.GetId()
-	akLog.FmtPrintln("exit ws socket: ", this.RemoteAddr, id, time.Now().Unix())
+	akLog.FmtPrintf("exit ws socket, actor: %v, RemoteAddr: %v, time: %v.", this.actor.GetActorType(), this.RemoteAddr, id, time.Now().Unix())
 	GwebSessionMgr.RemoveSession(this.RemoteAddr)
 	//notify offline ... logout
 }

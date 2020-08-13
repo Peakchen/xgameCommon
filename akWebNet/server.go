@@ -58,32 +58,13 @@ func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Reque
 	akLog.FmtPrintln("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())
 }
 
-func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
-	defer func() {
-		sw.Done()
-	}()
-
-	for {
-		select {
-		case sess := <-this.offch:
-			id := sess.GetId()
-			akLog.FmtPrintln("exit ws socket: ", sess.RemoteAddr, id, aktime.Now().Unix())
-			GwebSessionMgr.RemoveSession(sess.RemoteAddr)
-			//notify offline ... logout
-		case <-ctx.Done():
-			return
-		}
-	}
-}
-
 func (this *WebSocketSvr) Run() {
 	http.HandleFunc("/echo", this.wsSvrHandler)
 	var ctx context.Context
 	ctx, this.cancel = context.WithCancel(context.Background())
 	pprof.Run(ctx)
 	var sw sync.WaitGroup
-	sw.Add(2)
-	go this.disconnloop(ctx, &sw)
+	sw.Add(1)
 	go loopSignalCheck(ctx, &sw)
 	go func() {
 		akLog.FmtPrintln("run server, listen host: ", this.Addr)
