@@ -57,4 +57,4 @@ const (
 	ACTOR_BACK  = ACTOR_TYPE(2)
 )
 
-const cstKeepLiveHeartBeatSec = (pongWait * 9) / 10
+const cstKeepLiveHeartBeatSec = (60 * 9) / 10
