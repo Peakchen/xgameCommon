@@ -14,3 +14,7 @@ func (this *TActor) GetMsgRoute() *MsgRoute {
 func (this *TActor) GetActorType() define.ERouteId {
 	return this.ActorType
 }
+
+func (this *TActor) AddSession(sess *WebSession, dstRoute define.ERouteId) {
+	GwebSessionMgr.AddSession(sess, dstRoute)
+}

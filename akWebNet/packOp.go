@@ -59,9 +59,11 @@ func GetUnPackMsgInfo(data []byte, pt PACK_TYPE) (info *BaseMsgInfo, err error) 
 	op.Init()
 	info, err = op.GetMsgInfo(data)
 	if info.MainID == uint16(MSG_MainModule.MAINMSG_SERVER) {
-		return
+		info.Actor = uint16(define.ERouteId_ER_SG)
 	} else if info.MainID == uint16(MSG_MainModule.MAINMSG_LOGIN) {
 		info.Actor = uint16(define.ERouteId_ER_Login)
+	} else if info.MainID == uint16(MSG_MainModule.MAINMSG_HEARTBEAT) || info.MainID == uint16(MSG_MainModule.MAINMSG_RPC) {
+		return
 	} else if info.MainID >= uint16(MSG_MainModule.MAINMSG_PLAYER) {
 		info.Actor = uint16(define.ERouteId_ER_Game)
 	}
