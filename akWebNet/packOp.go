@@ -16,9 +16,10 @@ type BaseMsgInfo struct {
 }
 
 type MsgOperIF interface {
+	Init()
 	Pack(mainid, subid uint16, msg proto.Message) (out []byte, err error)
 	UnPack() (msg proto.Message, cb reflect.Value, err error)
-	GetMsgInfo(data []byte) (info *BaseMsgInfo)
+	GetMsgInfo(data []byte) (info *BaseMsgInfo, err error)
 }
 
 var (
