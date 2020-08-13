@@ -11,6 +11,7 @@ import (
 	//"strings"
 	"sync"
 
+	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/utls"
 )
 
@@ -71,7 +72,7 @@ func (this *WebSession) heartbeatloop() {
 
 func (this *WebSession) offline() {
 	id := this.GetId()
-	fmt.Println("exit ws socket: ", this.RemoteAddr, id, time.Now().Unix())
+	akLog.FmtPrintln("exit ws socket: ", this.RemoteAddr, id, time.Now().Unix())
 	GwebSessionMgr.RemoveSession(this.RemoteAddr)
 	//notify offline ... logout
 }
@@ -108,7 +109,7 @@ func (this *WebSession) readloop() {
 		msgType, data, err := this.wsconn.ReadMessage()
 		if err != nil {
 			websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure)
-			fmt.Println("msg read fail, err: ", err.Error(), time.Now().Unix())
+			akLog.Error("msg read fail, err: ", err.Error(), time.Now().Unix())
 			return
 		}
 
@@ -121,7 +122,7 @@ func (this *WebSession) readloop() {
 }
 
 func (this *WebSession) read(messageType int, data []byte) {
-	fmt.Println("read messageType: ", messageType, len(data), time.Now().Unix())
+	akLog.FmtPrintln("read messageType: ", messageType, len(data), time.Now().Unix())
 	if handler := GetMessageHandler(messageType); handler != nil {
 		handler(this, data)
 	} else {
@@ -142,12 +143,12 @@ func (this *WebSession) writeloop() {
 		case msg := <-this.writeCh:
 			this.wsconn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := this.wsconn.WriteMessage(msg.messageType, msg.data); err != nil {
-				fmt.Println("send msg fail, err: ", err.Error(), time.Now().Unix())
+				akLog.Error("send msg fail, err: ", err.Error(), time.Now().Unix())
 				return
 			}
 		case <-ticker.C:
 			if err := this.wsconn.WriteControl(websocket.PingMessage, []byte("ping"), time.Now().Add(deadline)); err != nil {
-				fmt.Println("send msg over time, err: ", err.Error(), time.Now().Unix())
+				akLog.Error("send msg over time, err: ", err.Error(), time.Now().Unix())
 				return
 			}
 		}
@@ -157,7 +158,7 @@ func (this *WebSession) writeloop() {
 func (this *WebSession) sendOffline() {
 	/* send message to close connetion... */
 	if err := this.wsconn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "now closing..."), time.Now().Add(time.Second)); err != nil {
-		fmt.Println("send close fail, err: ", err)
+		akLog.Error("send close fail, err: ", err)
 		return
 	}
 }
@@ -167,7 +168,7 @@ func (this *WebSession) Write(msgtype int, data []byte) {
 		return
 	}
 
-	fmt.Println("session writed channel data len: ", len(this.writeCh), utls.SizeVal(this.writeCh), time.Now().Unix())
+	akLog.FmtPrintln("session writed channel data len: ", len(this.writeCh), utls.SizeVal(this.writeCh), time.Now().Unix())
 	this.writeCh <- &wsMessage{
 		messageType: msgtype,
 		data:        data,

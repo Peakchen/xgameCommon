@@ -6,7 +6,6 @@ package akWebNet
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -47,7 +46,7 @@ var upgrader = websocket.Upgrader{
 func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Request) {
 	wsSocket, err := upgrader.Upgrade(resp, req, nil)
 	if err != nil {
-		fmt.Println("upgrader websocket fail, err: ", err.Error())
+		akLog.Error("upgrader websocket fail, err: ", err.Error())
 		return
 	}
 
@@ -56,7 +55,7 @@ func (this *WebSocketSvr) wsSvrHandler(resp http.ResponseWriter, req *http.Reque
 		ActorType: this.actor,
 	})
 	sess.Handle()
-	fmt.Println("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())
+	akLog.FmtPrintln("connect ws socket: ", sess.RemoteAddr, aktime.Now().Unix())
 }
 
 func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
@@ -68,7 +67,7 @@ func (this *WebSocketSvr) disconnloop(ctx context.Context, sw *sync.WaitGroup) {
 		select {
 		case sess := <-this.offch:
 			id := sess.GetId()
-			fmt.Println("exit ws socket: ", sess.RemoteAddr, id, aktime.Now().Unix())
+			akLog.FmtPrintln("exit ws socket: ", sess.RemoteAddr, id, aktime.Now().Unix())
 			GwebSessionMgr.RemoveSession(sess.RemoteAddr)
 			//notify offline ... logout
 		case <-ctx.Done():
