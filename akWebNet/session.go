@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/Peakchen/xgameCommon/akLog"
+	"github.com/Peakchen/xgameCommon/stacktrace"
 	"github.com/Peakchen/xgameCommon/utls"
 )
 
@@ -71,13 +72,13 @@ func (this *WebSession) heartbeatloop() {
 }
 
 func (this *WebSession) offline() {
-	id := this.GetId()
-	akLog.FmtPrintf("exit ws socket, actor: %v, RemoteAddr: %v, time: %v.", this.actor.GetActorType(), this.RemoteAddr, id, time.Now().Unix())
+	akLog.FmtPrintf("exit ws socket, actor: %v, RemoteAddr: %v, time: %v.", this.actor.GetActorType(), this.RemoteAddr, time.Now().Unix())
 	GwebSessionMgr.RemoveSession(this.RemoteAddr)
 	//notify offline ... logout
 }
 
 func (this *WebSession) exit() {
+	akLog.Error("exit log: ", stacktrace.NormalStackLog())
 	//conn close
 	this.one.Do(func() {
 		this.offline()
