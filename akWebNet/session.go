@@ -55,6 +55,7 @@ func (this *WebSession) GetId() uint32 {
 }
 
 func (this *WebSession) Handle() {
+	akLog.FmtPrintln("read messageType: ", messageType, len(data), time.Now().Unix())
 	go this.readloop()
 	go this.writeloop()
 	go this.heartbeatloop()
