@@ -11,7 +11,7 @@ import (
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/public"
 	"github.com/Peakchen/xgameCommon/stacktrace"
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 	"encoding/gob"
 	"fmt"
 	"os"
@@ -49,7 +49,7 @@ func InitDBStatistics() {
 }
 
 func (this *TDBStatistics) Init() {
-	exename := utls.GetExeFileName()
+	exename := utils.GetExeFileName()
 	_, err := os.Stat(cstStatisticsLog)
 	if err != nil {
 		akLog.Error("err: ", err)

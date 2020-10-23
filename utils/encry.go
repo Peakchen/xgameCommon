@@ -1,6 +1,6 @@
 // add by stefan
 
-package utls
+package utils
 
 import (
 	"bytes"

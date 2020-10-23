@@ -60,7 +60,7 @@ func (this *SessionMgr) GetBalanceSession(key interface{}) (sess TSession) {
 	}
 	sess = sessions[0]
 	// if slen > 1 {
-	// 	randIdx = utls.RandInt32FromZero(slen)
+	// 	randIdx = utils.RandInt32FromZero(slen)
 	// } else if slen == 0 {
 	// 	return
 	// }

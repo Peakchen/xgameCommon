@@ -16,7 +16,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 )
 
 const (
@@ -108,8 +108,8 @@ func Newpprof(file string) (retfile string) {
 }
 
 func checkcreateTempDir() (filepath string) {
-	filepath = utls.GetExeFilePath() + "/pprof"
-	exist, err := utls.IsPathExisted(filepath)
+	filepath = utils.GetExeFilePath() + "/pprof"
+	exist, err := utils.IsPathExisted(filepath)
 	if err != nil {
 		panic("check path exist err: " + err.Error())
 		return

@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/Peakchen/xgameCommon/define"
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 )
 
 type ActorSession struct {
@@ -52,7 +52,7 @@ func (this *wsClientSession) GetSessionByActor(actor define.ERouteId) (sess *Web
 
 	slen = int32(len(websesses))
 	if slen > 1 {
-		randIdx = utls.RandInt32FromZero(slen)
+		randIdx = utils.RandInt32FromZero(slen)
 	} else if slen == 0 {
 		return
 	}

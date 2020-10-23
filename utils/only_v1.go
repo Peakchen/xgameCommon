@@ -1,4 +1,4 @@
-package utls
+package utils
 
 import (
 	"github.com/bwmarrin/snowflake"

@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/Peakchen/xgameCommon/define"
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 )
 
 var (
@@ -41,7 +41,7 @@ func (this *TSvr2SvrSession) GetSession(key interface{}) (session TcpSession) {
 
 	slen = int32(len(sessions))
 	if slen > 1 {
-		randIdx = utls.RandInt32FromZero(slen)
+		randIdx = utils.RandInt32FromZero(slen)
 	} else if slen == 0 {
 		return
 	}

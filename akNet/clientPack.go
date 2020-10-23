@@ -5,7 +5,7 @@ package akNet
 import (
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/stacktrace"
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 	"encoding/binary"
 	"fmt"
 	"github.com/golang/protobuf/proto"
@@ -217,7 +217,7 @@ func (this *ClientProtocol) UnPackMsg4Client(InData []byte) (pos int, err error)
 	this.length = binary.LittleEndian.Uint32(InData[pos:])
 	pos += 4
 
-	if utls.SliceBytesLength(InData) < int(pos+int(this.length)) {
+	if utils.SliceBytesLength(InData) < int(pos+int(this.length)) {
 		err = fmt.Errorf("client mainid: %v, subid: %v; err: InData len: %v, pos: %v, data len: %v.", this.mainid, this.subid, len(InData), pos, this.length)
 		return
 	}
@@ -242,7 +242,7 @@ func (this *ClientProtocol) UnPackMsg4Svr(InData []byte) (pos int, err error) {
 	this.postType = binary.LittleEndian.Uint16(InData[pos:])
 	pos += 2
 
-	datalen := utls.SliceBytesLength(InData)
+	datalen := utils.SliceBytesLength(InData)
 	identifylength := uint8(InData[pos])
 	pos++
 	if identifylength > 1 {

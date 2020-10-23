@@ -13,7 +13,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/akLog"
 	"github.com/Peakchen/xgameCommon/stacktrace"
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 )
 
 type wsMessage struct {
@@ -170,7 +170,7 @@ func (this *WebSession) Write(msgtype int, data []byte) {
 		return
 	}
 
-	akLog.FmtPrintln("session writed channel data len: ", len(this.writeCh), utls.SizeVal(this.writeCh), time.Now().Unix())
+	akLog.FmtPrintln("session writed channel data len: ", len(this.writeCh), utils.SizeVal(this.writeCh), time.Now().Unix())
 	this.writeCh <- &wsMessage{
 		messageType: msgtype,
 		data:        data,

@@ -14,7 +14,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/public"
-	"github.com/Peakchen/xgameCommon/utls"
+	"github.com/Peakchen/xgameCommon/utils"
 	"github.com/Shopify/sarama"
 )
 
@@ -99,7 +99,7 @@ func initLogFile(logtype string, aokoLog *TAokoLog) {
 		PathDir      string = logtype
 	)
 
-	filename := utls.GetExeFileName()
+	filename := utils.GetExeFileName()
 	switch logtype {
 	case EnLogType_Info:
 		RealFileName = fmt.Sprintf("%v_Info_No%v_%v.log", filename, aokoLog.FileNo, aktime.Now().Local().Format(public.CstTimeDate))
@@ -113,9 +113,9 @@ func initLogFile(logtype string, aokoLog *TAokoLog) {
 
 	}
 
-	exepath := utls.GetExeFilePath()
+	exepath := utils.GetExeFilePath()
 	filepath := exepath + "/" + PathDir
-	exist, err := utls.IsPathExisted(filepath)
+	exist, err := utils.IsPathExisted(filepath)
 	if err != nil {
 		panic("check path exist err: " + err.Error())
 		return
