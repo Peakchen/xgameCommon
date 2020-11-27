@@ -1,9 +1,8 @@
 package utils
 
 import (
+	"log"
 	"reflect"
-
-	"github.com/Peakchen/xgameCommon/akLog"
 )
 
 type BytesWrapper struct {
@@ -90,7 +89,7 @@ func (r *BytesWrapper) ReadString() string {
 
 func (r *BytesWrapper) Write(obj interface{}) {
 	if res, err := encodeValue(reflect.ValueOf(obj)); err != nil {
-		akLog.Error("%v", err)
+		log.Fatalln(err)
 	} else {
 		*r.Bytes = append(*r.Bytes, res...)
 	}

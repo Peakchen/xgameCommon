@@ -3,9 +3,8 @@ package utils
 import (
 	"bytes"
 	"errors"
+	"log"
 	"reflect"
-
-	"github.com/Peakchen/xgameCommon/akLog"
 )
 
 // 在指针数组元素前加一个bool值，标示该元素是否为nil
@@ -212,7 +211,7 @@ func decodeValue(f reflect.Value, bytes []byte) []byte {
 	defer func() {
 		err := recover()
 		if err != nil {
-			akLog.Error(err)
+			log.Fatalln(err)
 		}
 	}()
 	if f.Type().Kind() == reflect.Ptr {
@@ -308,10 +307,10 @@ func decodeValue(f reflect.Value, bytes []byte) []byte {
 			f.Set(slice)
 		default:
 			// FIXME 还有别的类型可能会报错
-			akLog.Error("!!!暂不支持的类型解码，待完善")
+			log.Fatalln("!!!暂不支持的类型解码，待完善")
 		}
 	default:
-		akLog.Error(f.Type(), "解码错误")
+		log.Fatalln(f.Type(), "解码错误")
 	}
 	//kk := f.Type().Kind()
 	//log.Debugln(kk)
