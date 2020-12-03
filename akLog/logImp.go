@@ -18,6 +18,11 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+type LoadingContent struct {
+	Content string
+	logType string
+}
+
 type TAokoLog struct {
 	filename      string
 	filehandle    *os.File
@@ -26,7 +31,7 @@ type TAokoLog struct {
 	wg            sync.WaitGroup
 	filesize      uint64
 	logNum        uint64
-	data          chan string
+	data          chan *LoadingContent
 	FileNo        uint32
 	consumeClient sarama.ConsumerGroup
 }
@@ -62,10 +67,10 @@ func (this *TAokoLog) createConsumer() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 	config.Consumer.Offsets.Initial = sarama.OffsetNewest
-	config.Consumer.Offsets.CommitInterval = 10
-	config.Consumer.Offsets.AutoCommit.Enable = true
-	config.Consumer.Offsets.AutoCommit.Interval = 2
-	config.Version = sarama.V2_5_0_0
+	// config.Consumer.Offsets.CommitInterval = 10
+	// config.Consumer.Offsets.AutoCommit.Enable = true
+	// config.Consumer.Offsets.AutoCommit.Interval = 2
+	config.Version = sarama.V2_0_0_0
 	client, err := sarama.NewConsumerGroup(brokerAddr, KAFKA_LOG_CONSUMER_GROUP, config)
 	if err != nil {
 		panic("create ConsumerGroup err: " + err.Error())
@@ -137,7 +142,7 @@ func initLogFile(logtype string, aokoLog *TAokoLog) {
 
 	aokoLog.filehandle = filehandler
 	aokoLog.filename = RealFileName
-	aokoLog.data = make(chan string, EnLogDataChanMax)
+	aokoLog.data = make(chan *LoadingContent, EnLogDataChanMax)
 
 }
 
@@ -180,8 +185,8 @@ func Info(format string, args ...interface{}) {
 }
 
 func Fail(args ...interface{}) {
-	format := aktime.Now().Local().Format(public.CstTimeFmt)
-	WriteLog(EnLogType_Fail, "[Fail]\t", format, args)
+	timeFormat := aktime.Now().Local().Format(public.CstTimeFmt)
+	WriteLog(EnLogType_Fail, ("[Fail]\t" + timeFormat), "", args)
 }
 
 func Debug(format string, args ...interface{}) {
@@ -214,7 +219,7 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 		print(a,b,c...)
 	*/
 	if len(format) == 0 && len(args) > 0 {
-		logStr += fmt.Sprintf(title + format)
+		logStr += fmt.Sprintf(title + format + "\t")
 		for i, data := range args {
 			if i+1 <= len(args) {
 				logStr += fmt.Sprintf("%v", data)
@@ -226,6 +231,10 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 	} else if len(format) > 0 && len(args) > 0 { //print("a: %v, b: %v.",a,b)
 		logStr = fmt.Sprintf(title+format, args...)
 		logStr += "\n"
+	}
+
+	if logtype == EnLogType_Fail {
+		logStr += string(debug.Stack())
 	}
 
 	if len(logStr) == 0 {
@@ -241,11 +250,14 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 
 	aokoLog.filesize += uint64(len(logStr))
 	aokoLog.logNum++
-	aokoLog.data <- logStr
+	aokoLog.data <- &LoadingContent{
+		Content: logStr,
+		logType: logtype,
+	}
 
 	if aokoLog.logNum%EnLogDataChanMax == 0 {
 		aokoLog.flush()
-		aokoLog.data = make(chan string, EnLogDataChanMax)
+		aokoLog.data = make(chan *LoadingContent, EnLogDataChanMax)
 	}
 }
 
@@ -318,8 +330,8 @@ func (this *TAokoLog) loop2(wg *sync.WaitGroup) {
 	}
 }
 
-func (this *TAokoLog) writelog(src string) {
-	_, err := this.filehandle.WriteString(src)
+func (this *TAokoLog) writelog(src *LoadingContent) {
+	_, err := this.filehandle.WriteString(src.Content)
 	if err != nil {
 		return
 	}
@@ -341,8 +353,9 @@ func (this *TAokoLog) ConsumeClaim(session sarama.ConsumerGroupSession, claim sa
 	for message := range claim.Messages() {
 		key := string(message.Key)
 		val := string(message.Value)
-		slog := fmt.Sprintf("module: %v, info: %v.", key, val)
-		this.writelog(slog)
+		this.writelog(&LoadingContent{
+			Content: fmt.Sprintf("module: %v, info: %v.", key, val),
+		})
 		session.MarkMessage(message, "")
 	}
 	return nil

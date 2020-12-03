@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"github.com/Peakchen/xgameCommon/aktime"
 	"fmt"
-	"github.com/sony/sonyflake"
 	"strconv"
+
+	"github.com/Peakchen/xgameCommon/aktime"
+	"github.com/sony/sonyflake"
 )
 
 func getMachineID_linux() (uint16, error) {
