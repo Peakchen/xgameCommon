@@ -335,6 +335,9 @@ func (this *TAokoLog) writelog(src *LoadingContent) {
 	if err != nil {
 		return
 	}
+	if src.logType == EnLogType_Fail {
+		exitchan <- syscall.SIGKILL
+	}
 }
 
 func (this *TAokoLog) flush() {
