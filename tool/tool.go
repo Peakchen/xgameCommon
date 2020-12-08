@@ -4,11 +4,12 @@ package tool
 
 import (
 	"bytes"
-	"github.com/gonutz/ide/w32"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strconv"
-	"strings"
+	"syscall"
+
 	//"runtime"
 	"github.com/Peakchen/xgameCommon/akLog"
 	//"syscall"
@@ -96,5 +97,25 @@ func BatHide(param []string) {
 	if err != nil {
 		akLog.Error(err.Error())
 		return
+	}
+}
+
+func SignalExit(fn func()) {
+	chsignal := make(chan os.Signal, 1)
+	//listen sign: ctrl+c, kill
+	signal.Notify(chsignal, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+	for {
+		select {
+		case s := <-chsignal:
+			switch s {
+			case syscall.SIGKILL, syscall.SIGTERM, syscall.SIGQUIT:
+				akLog.FmtPrintln("signal exit:", s)
+				if fn != nil {
+					fn()
+				}
+			default:
+				akLog.FmtPrintln("other signal:", s)
+			}
+		}
 	}
 }
