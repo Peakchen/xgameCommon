@@ -3,6 +3,7 @@ package tool
 //add by stefan for linux windows.
 
 import (
+	"fmt"
 	"syscall"
 )
 
