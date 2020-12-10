@@ -39,3 +39,8 @@ func WinColorPrint(color int, str string) {
 
 	fmt.Println(str)
 }
+
+func WinColorChange(color int) {
+	handle, _, _ := sysProc.Call(uintptr(syscall.Stdout), uintptr(color))
+	defer sysCloseHandle.Call(handle)
+}

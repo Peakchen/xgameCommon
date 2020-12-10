@@ -14,6 +14,7 @@ import (
 
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/Peakchen/xgameCommon/public"
+	"github.com/Peakchen/xgameCommon/tool"
 	"github.com/Peakchen/xgameCommon/utils"
 	"github.com/Shopify/sarama"
 )
@@ -250,6 +251,32 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 
 	aokoLog.filesize += uint64(len(logStr))
 	aokoLog.logNum++
+
+	switch logtype {
+	case EnLogType_Info:
+		if utils.IsWindows() {
+			tool.WinColorChange(tool.WinFontColor_Yellow)
+		} else {
+			logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_YELLOW, logStr)
+		}
+
+	case EnLogType_Error:
+		if utils.IsWindows() {
+			tool.WinColorChange(tool.WinFontColor_Red)
+		} else {
+			logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_Red, logStr)
+		}
+	case EnLogType_Fail:
+
+	case EnLogType_Debug:
+		if utils.IsWindows() {
+			tool.WinColorChange(tool.WinFontColor_Light_green)
+		} else {
+			logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxBackground_GREEN, logStr)
+		}
+	}
+
+	FmtPrintln(logStr)
 	aokoLog.data <- &LoadingContent{
 		Content: logStr,
 		logType: logtype,
