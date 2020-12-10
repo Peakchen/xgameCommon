@@ -164,25 +164,24 @@ func run(aokoLog *TAokoLog) {
 
 func Error(args ...interface{}) {
 	timeFormat := aktime.Now().Local().Format(public.CstTimeFmt)
-	format := "time: " + timeFormat + ", Info: %v."
-	WriteLog(EnLogType_Error, "[Error]\t", format, args)
+	WriteLog(EnLogType_Error, "[Error]\t"+timeFormat, "", args)
 }
 
 func ErrorIDCard(identify string, args ...interface{}) {
 	format := fmt.Sprintf("identify: %v, %v.", identify, args)
 	timeFormat := aktime.Now().Local().Format(public.CstTimeFmt)
-	WriteLog(EnLogType_Error, "[Error]\t", timeFormat, format)
+	WriteLog(EnLogType_Error, "[IDCard]\t", timeFormat, format)
 }
 
 func ErrorModule(data public.IDBCache, args ...interface{}) {
 	format := fmt.Sprintf("main: %v, sub: %v, identify: %v, %v.", data.MainModel(), data.SubModel(), data.Identify(), args)
 	timeFormat := aktime.Now().Local().Format(public.CstTimeFmt)
-	WriteLog(EnLogType_Error, "[Error]\t", timeFormat, format)
+	WriteLog(EnLogType_Error, "[Module]\t", timeFormat, format)
 }
 
 func Info(format string, args ...interface{}) {
 	timeFormat := aktime.Now().Local().Format(public.CstTimeFmt)
-	WriteLog(EnLogType_Info, "[Info]\t", timeFormat+format, args)
+	WriteLog(EnLogType_Info, "[Info]\t"+timeFormat, format, args)
 }
 
 func Fail(args ...interface{}) {
@@ -230,7 +229,7 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 	} else if len(args) == 0 && len(format) > 0 { //print("aaa,bbb,ccc.")
 		logStr = fmt.Sprintf(title + format)
 	} else if len(format) > 0 && len(args) > 0 { //print("a: %v, b: %v.",a,b)
-		logStr = fmt.Sprintf(title+format, args...)
+		logStr = fmt.Sprintf(title+"\t"+format, args...)
 		logStr += "\n"
 	}
 
@@ -252,35 +251,23 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 	aokoLog.filesize += uint64(len(logStr))
 	aokoLog.logNum++
 
-	switch logtype {
-	case EnLogType_Info:
-		if utils.IsWindows() {
-			tool.WinColorChange(tool.WinFontColor_Yellow)
-		} else {
-			logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_YELLOW, logStr)
-		}
-
-	case EnLogType_Error:
-		if utils.IsWindows() {
-			tool.WinColorChange(tool.WinFontColor_Red)
-		} else {
-			logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_Red, logStr)
-		}
-	case EnLogType_Fail:
-
-	case EnLogType_Debug:
-		if utils.IsWindows() {
-			tool.WinColorChange(tool.WinFontColor_Light_green)
-		} else {
-			logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxBackground_GREEN, logStr)
-		}
-	}
-
-	FmtPrintln(logStr)
 	aokoLog.data <- &LoadingContent{
 		Content: logStr,
 		logType: logtype,
 	}
+
+	switch logtype {
+	case EnLogType_Info:
+		logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_YELLOW, logStr)
+	case EnLogType_Error:
+		logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_Red, logStr)
+	case EnLogType_Fail:
+		logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxForeground_WHITE, logStr)
+	case EnLogType_Debug:
+		logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxBackground_GREEN, logStr)
+	}
+
+	fmt.Println(logStr)
 
 	if aokoLog.logNum%EnLogDataChanMax == 0 {
 		aokoLog.flush()
@@ -349,9 +336,11 @@ func (this *TAokoLog) loop2(wg *sync.WaitGroup) {
 			os.Exit(0)
 			return
 		case <-tick.C:
-			err := this.consumeClient.Consume(this.ctx, []string{KAFKA_LOG_TOPIC}, this)
-			if err != nil {
-				fmt.Println("client.Consume error=[%v]", err.Error())
+			if this.consumeClient != nil {
+				err := this.consumeClient.Consume(this.ctx, []string{KAFKA_LOG_TOPIC}, this)
+				if err != nil {
+					fmt.Println("client.Consume error=", err.Error())
+				}
 			}
 		}
 	}

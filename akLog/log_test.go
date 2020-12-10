@@ -1,12 +1,8 @@
 package akLog
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestLog(t *testing.T) {
-	fmt.Println("test log start.")
-
-	return
+	Error("1111")
+	Info("%v", "1111")
 }
