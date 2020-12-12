@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"strconv"
+	"math"
 
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/sony/sonyflake"
@@ -17,11 +17,13 @@ func checkMachineID_linux(machineID uint16) bool {
 }
 
 func getMachineID_win() (uint16, error) {
-	val, err := strconv.Atoi(GetPhysicalID())
-	if err != nil {
-		return 0, err
+	v := RandomInt(math.MaxInt16)
+	var cnt int
+	for v == 0 && cnt < 100 {
+		v = RandomInt(math.MaxInt16)
+		cnt++
 	}
-	return uint16(val), nil
+	return v, nil
 }
 
 func checkMachineID_win(machineID uint16) bool {
