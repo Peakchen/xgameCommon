@@ -64,3 +64,13 @@ func NewOnly_v2() (id uint64, err error) {
 	}
 	return
 }
+
+func NewInt64_v2() uint64 {
+	id, _ := NewOnly_v2()
+	return id
+}
+
+func NewString_v2() string {
+	id, _ := NewOnly_v2()
+	return Int642String(int64(id))
+}
