@@ -128,7 +128,7 @@ func RandomInt32Between(low int32, high int32) int32 {
 
 // c# random.next [low, high)
 func RandomNextInt32(low, high int32) int32 {
-	return RandomIntBetween(low, high-1)
+	return RandomInt32Between(low, high-1)
 }
 
 // c# random.next [0, high)
@@ -146,7 +146,7 @@ func RandomUInt32Between(low uint32, high uint32) uint32 {
 		return 0
 	}
 
-	v := uint32(rand.Intn(high-low+1)) + low
+	v := uint32(rand.Int31n(int32(high-low+1))) + low
 	if v > uint32(math.MaxInt32) {
 		v = uint32(math.MaxInt32)
 	}
@@ -159,7 +159,7 @@ func RandomNextUInt32(low, high uint32) uint32 {
 }
 
 // c# random.next [0, high)
-func RandomUInt32(high int32) int32 {
+func RandomUInt32(high uint32) int32 {
 	return RandomNextUInt32(0, high)
 }
 
@@ -201,7 +201,7 @@ func RandomUInt64Between(low uint64, high uint64) uint64 {
 		return 0
 	}
 
-	v := uint64(rand.Intn(high-low+1)) + low
+	v := uint64(rand.Int63n(int64(high-low+1))) + low
 	if v > uint64(math.MaxInt64) {
 		v = uint64(math.MaxInt64)
 	}
