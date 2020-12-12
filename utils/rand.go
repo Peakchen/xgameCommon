@@ -159,7 +159,7 @@ func RandomNextUInt32(low, high uint32) uint32 {
 }
 
 // c# random.next [0, high)
-func RandomUInt32(high uint32) int32 {
+func RandomUInt32(high uint32) uint16 {
 	return RandomNextUInt32(0, high)
 }
 

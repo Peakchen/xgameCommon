@@ -23,7 +23,7 @@ func getMachineID_win() (uint16, error) {
 		v = RandomInt(math.MaxInt16)
 		cnt++
 	}
-	return uin16(v), nil
+	return uint16(v), nil
 }
 
 func checkMachineID_win(machineID uint16) bool {
