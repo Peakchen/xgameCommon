@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/Peakchen/xgameCommon/aktime"
 	"github.com/sony/sonyflake"
@@ -13,21 +12,15 @@ func getMachineID_linux() (uint16, error) {
 }
 
 func checkMachineID_linux(machineID uint16) bool {
-	return machineID != 0
+	return false
 }
 
 func getMachineID_win() (uint16, error) {
-	v := RandomInt(math.MaxInt16)
-	var cnt int
-	for v == 0 && cnt < 100 {
-		v = RandomInt(math.MaxInt16)
-		cnt++
-	}
-	return uint16(v), nil
+	return 0, nil
 }
 
 func checkMachineID_win(machineID uint16) bool {
-	return machineID != 0
+	return false
 }
 
 func NewOnly_v2() (id uint64, err error) {
