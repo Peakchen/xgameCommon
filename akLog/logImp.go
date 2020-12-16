@@ -267,7 +267,7 @@ func WriteLog(logtype, title, format string, args ...interface{}) {
 		logStr = fmt.Sprintf("\x1b[40m\x1b[%dm%s\x1b[0m", tool.LinuxBackground_GREEN, logStr)
 	}
 
-	fmt.Println(logStr)
+	fmt.Print(logStr)
 
 	if aokoLog.logNum%EnLogDataChanMax == 0 {
 		aokoLog.flush()
