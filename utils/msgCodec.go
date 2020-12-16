@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"errors"
 
 	"github.com/golang/protobuf/proto"
@@ -10,9 +11,9 @@ import (
 )
 
 var (
-	json = jsoniter.ConfigCompatibleWithStandardLibrary
+	jsonlib = jsoniter.ConfigCompatibleWithStandardLibrary
 
-	DefaultCodec             = json
+	DefaultCodec             = jsonlib
 	DefaultRpcCodecType      = "json"
 	ErrorRpcInvalidPbMessage = errors.New("Invalid Pb Message")
 )
