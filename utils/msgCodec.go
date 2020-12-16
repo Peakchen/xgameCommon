@@ -3,10 +3,10 @@ package utils
 import (
 	"bytes"
 	"encoding/gob"
-	"encoding/json"
 	"errors"
 
 	"github.com/golang/protobuf/proto"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/vmihailenco/msgpack"
 )
 
@@ -48,12 +48,12 @@ type CodecJson struct{}
 
 // marshal
 func (c *CodecJson) Marshal(v interface{}) ([]byte, error) {
-	return json.Marshal(v)
+	return jsonlib.Marshal(v)
 }
 
 // unmarshal
 func (c *CodecJson) Unmarshal(data []byte, v interface{}) error {
-	return json.Unmarshal(data, v)
+	return jsonlib.Unmarshal(data, v)
 }
 
 // msgpack codec
