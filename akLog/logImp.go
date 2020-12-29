@@ -119,16 +119,9 @@ func initLogFile(logtype string, log *TAokoLog) {
 
 	exepath := utils.GetExeFilePath()
 	filepath := exepath + "/" + PathDir
-	exist, err := utils.IsPathExisted(filepath)
-	if err != nil {
-		panic("check path exist err: " + err.Error())
-	}
-
-	if false == exist {
-		err = os.Mkdir(filepath, os.ModePerm)
-		if err != nil {
-			panic("log mkdir fail, err: " + err.Error())
-		}
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		os.Mkdir(filepath, 0777)
+		os.Chmod(filepath, 0777)
 	}
 
 	filehandler, err := os.OpenFile(filepath+"/"+RealFileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
