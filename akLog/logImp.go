@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"runtime/debug"
 	"sync"
 	"syscall"
@@ -167,9 +168,9 @@ func ErrorModule(data public.IDBCache, args ...interface{}) {
 	WriteLog(EnLogType_Error, "[Module]\t"+timeFormat, format, args)
 }
 
-func Info(format string, args ...interface{}) {
+func Info(args ...interface{}) {
 	timeFormat := aktime.Now().Local().Format(public.CstTimeFmt)
-	WriteLog(EnLogType_Info, "[Info]\t"+timeFormat, format, args)
+	WriteLog(EnLogType_Info, "[Info]\t"+timeFormat, "", args)
 }
 
 func Fail(args ...interface{}) {
@@ -199,30 +200,20 @@ func WriteLog(logtype, title, format string, args []interface{}) {
 		return
 	}
 
-	var (
-		logStr string
-	)
-
-	/*
-		print(a,b,c...)
-	*/
-	if len(format) == 0 && len(args) > 0 {
-		logStr += fmt.Sprintf(title + format + "\t")
-		for i, data := range args {
-			if i+1 <= len(args) {
-				logStr += fmt.Sprintf("%v", data)
-			}
+	var logStr string
+	pc, _, line, ok := runtime.Caller(2)
+	if ok {
+		logStr += fmt.Sprintf(title+" "+"[%v:%v]", runtime.FuncForPC(pc).Name(), line)
+	}
+	logStr += fmt.Sprintf(" " + format)
+	for i, data := range args {
+		if i+1 <= len(args) {
+			logStr += fmt.Sprintf("%v", data)
 		}
-	} else if len(args) == 0 && len(format) > 0 { //print("aaa,bbb,ccc.")
-		logStr = fmt.Sprintf(title + "\t" + format)
-	} else if len(format) > 0 && len(args) > 0 { //print("a: %v, b: %v.",a,b)
-		logStr = fmt.Sprintf(title+"\t"+format, args...)
+		if i+1 < len(args) && i > 0 {
+			logStr += ","
+		}
 	}
-
-	if len(logStr) == 0 {
-		return
-	}
-
 	logStr += "\n"
 	if logtype == EnLogType_Fail {
 		logStr += string(debug.Stack())
